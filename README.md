@@ -6,5 +6,4 @@
 0.   Wireless Connectivity
 
 ![image](/calculator_pcb/ViewFront.jpg)
-
-
+![image](/calculator_pcb/ViewBack.jpg)
