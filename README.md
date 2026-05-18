@@ -4,3 +4,5 @@
 0.   Eink Screen
 0.   SD Card slot
 0.   Wireless Connectivity
+
+![image](board_files/calculator_pcb/
