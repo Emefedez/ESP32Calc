@@ -5,4 +5,6 @@
 0.   SD Card slot
 0.   Wireless Connectivity
 
-![image](board_files/calculator_pcb/
+![image](/calculator_pcb/ViewFront.jpg)
+
+
