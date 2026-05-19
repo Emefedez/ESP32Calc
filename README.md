@@ -7,3 +7,5 @@
 
 ![image](/calculator_pcb/ViewFront.jpg)
 ![image](/calculator_pcb/ViewBack.jpg)
+
+* Current 3D case: https://a360.co/4ukxaMP
