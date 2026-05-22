@@ -1,0 +1,512 @@
+{
+  "version": 1,
+  "author": "user",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp",
+      "top": -38.58,
+      "left": -149.03,
+      "attrs": { "flashSize": "16", "psramSize": "8", "esp32Frequency": "40000000" }
+    },
+    { "type": "wokwi-ftdi", "id": "ftdi", "top": -140, "left": -240, "attrs": {} },
+    { "type": "board-epaper-2in9", "id": "epd", "top": -239.4, "left": -264.72, "attrs": {} },
+    {
+      "type": "wokwi-microsd-card",
+      "id": "sd",
+      "top": 74.03,
+      "left": 439.33,
+      "rotate": 270,
+      "attrs": {}
+    },
+    { "type": "wokwi-header", "id": "sense", "top": -50, "left": -340, "attrs": { "pins": "1" } },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_0",
+      "top": 303.8,
+      "left": -115.2,
+      "attrs": { "label": "1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_1",
+      "top": 303.8,
+      "left": -76.8,
+      "attrs": { "label": "2" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_2",
+      "top": 300,
+      "left": -30,
+      "attrs": { "label": "3" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_3",
+      "top": 300,
+      "left": 15,
+      "attrs": { "label": "4" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_4",
+      "top": 300,
+      "left": 60,
+      "attrs": { "label": "5" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_5",
+      "top": 300,
+      "left": 105,
+      "attrs": { "label": "6" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_0",
+      "top": 335,
+      "left": -120,
+      "attrs": { "label": "7" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_1",
+      "top": 335,
+      "left": -75,
+      "attrs": { "label": "8" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_2",
+      "top": 335,
+      "left": -30,
+      "attrs": { "label": "9" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_3",
+      "top": 335,
+      "left": 15,
+      "attrs": { "label": "0" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_4",
+      "top": 335,
+      "left": 60,
+      "attrs": { "label": "+" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_5",
+      "top": 335,
+      "left": 105,
+      "attrs": { "label": "-" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_0",
+      "top": 370,
+      "left": -120,
+      "attrs": { "label": "*" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_1",
+      "top": 370,
+      "left": -75,
+      "attrs": { "label": "/" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_2",
+      "top": 370,
+      "left": -30,
+      "attrs": { "label": "=" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_3",
+      "top": 370,
+      "left": 15,
+      "attrs": { "label": "." }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_4",
+      "top": 370,
+      "left": 60,
+      "attrs": { "label": "C" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_5",
+      "top": 370,
+      "left": 105,
+      "attrs": { "label": "AC" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_0",
+      "top": 405,
+      "left": -120,
+      "attrs": { "label": "sin" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_1",
+      "top": 405,
+      "left": -75,
+      "attrs": { "label": "cos" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_2",
+      "top": 405,
+      "left": -30,
+      "attrs": { "label": "tan" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_3",
+      "top": 405,
+      "left": 15,
+      "attrs": { "label": "log" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_4",
+      "top": 405,
+      "left": 60,
+      "attrs": { "label": "ln" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_5",
+      "top": 405,
+      "left": 105,
+      "attrs": { "label": "sqrt" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_0",
+      "top": 440,
+      "left": -120,
+      "attrs": { "label": "(" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_1",
+      "top": 440,
+      "left": -75,
+      "attrs": { "label": ")" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_2",
+      "top": 440,
+      "left": -30,
+      "attrs": { "label": "^" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_3",
+      "top": 440,
+      "left": 15,
+      "attrs": { "label": "A" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_4",
+      "top": 440,
+      "left": 60,
+      "attrs": { "label": "B" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_5",
+      "top": 440,
+      "left": 105,
+      "attrs": { "label": "C" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_0",
+      "top": 475,
+      "left": -120,
+      "attrs": { "label": "D" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_1",
+      "top": 475,
+      "left": -75,
+      "attrs": { "label": "E" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_2",
+      "top": 475,
+      "left": -30,
+      "attrs": { "label": "F" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_3",
+      "top": 475,
+      "left": 15,
+      "attrs": { "label": "X" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_4",
+      "top": 475,
+      "left": 60,
+      "attrs": { "label": "Y" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_5",
+      "top": 475,
+      "left": 105,
+      "attrs": { "label": "Z" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_0",
+      "top": 510,
+      "left": -120,
+      "attrs": { "label": "UP" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_1",
+      "top": 510,
+      "left": -75,
+      "attrs": { "label": "DN" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_2",
+      "top": 510,
+      "left": -30,
+      "attrs": { "label": "LT" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_3",
+      "top": 510,
+      "left": 15,
+      "attrs": { "label": "RT" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_4",
+      "top": 510,
+      "left": 60,
+      "attrs": { "label": "ENT" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_5",
+      "top": 510,
+      "left": 105,
+      "attrs": { "label": "ESC" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_0",
+      "top": 545,
+      "left": -120,
+      "attrs": { "label": "M+" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_1",
+      "top": 545,
+      "left": -75,
+      "attrs": { "label": "M-" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_2",
+      "top": 545,
+      "left": -30,
+      "attrs": { "label": "MR" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_3",
+      "top": 545,
+      "left": 15,
+      "attrs": { "label": "F1" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_4",
+      "top": 545,
+      "left": 60,
+      "attrs": { "label": "F2" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_5",
+      "top": 545,
+      "left": 105,
+      "attrs": { "label": "F3" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_0",
+      "top": 580,
+      "left": -120,
+      "attrs": { "label": "F4" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_1",
+      "top": 580,
+      "left": -75,
+      "attrs": { "label": "F5" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_2",
+      "top": 580,
+      "left": -30,
+      "attrs": { "label": "OPT" }
+    }
+  ],
+  "connections": [
+    [ "esp:4", "epd:RST", "green", [] ],
+    [ "esp:5", "epd:BUSY", "gray", [] ],
+    [ "esp:6", "epd:CS", "blue", [] ],
+    [ "esp:7", "epd:DC", "purple", [] ],
+    [ "esp:15", "epd:DIN", "orange", [] ],
+    [ "esp:16", "epd:CLK", "yellow", [] ],
+    [ "esp:17", "epd:VCC", "red", [] ],
+    [ "esp:GND", "epd:GND", "black", [] ],
+    [ "esp:43", "ftdi:RXD", "orange", [] ],
+    [ "esp:44", "ftdi:TXD", "purple", [] ],
+    [ "esp:8", "ftdi:RTS", "brown", [] ],
+    [ "esp:18", "ftdi:VOUT", "brown", [] ],
+    [ "esp:3V3.1", "ftdi:VCC", "red", [] ],
+    [ "esp:GND", "ftdi:GND", "black", [] ],
+    [ "esp:3", "sense:1", "orange", [] ],
+    [ "esp:42", "sd:CS", "blue", [] ],
+    [ "esp:41", "sd:DI", "orange", [] ],
+    [ "esp:40", "sd:SCK", "yellow", [] ],
+    [ "esp:39", "sd:DO", "cyan", [] ],
+    [ "esp:3V3.2", "sd:VCC", "red", [] ],
+    [ "esp:GND", "sd:GND", "black", [] ],
+    [ "btn_0_0:1.l", "btn_0_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_0_1:1.l", "btn_0_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_0_2:1.l", "btn_0_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_0_3:1.l", "btn_0_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_0_4:1.l", "btn_0_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:38", "btn_0_0:1.r", "gray", [] ],
+    [ "btn_1_0:1.l", "btn_1_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_1_1:1.l", "btn_1_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_1_2:1.l", "btn_1_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_1_3:1.l", "btn_1_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_1_4:1.l", "btn_1_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:37", "btn_1_0:1.r", "gray", [] ],
+    [ "btn_2_0:1.l", "btn_2_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_2_1:1.l", "btn_2_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_2_2:1.l", "btn_2_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_2_3:1.l", "btn_2_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_2_4:1.l", "btn_2_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:36", "btn_2_0:1.r", "gray", [] ],
+    [ "btn_3_0:1.l", "btn_3_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_3_1:1.l", "btn_3_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_3_2:1.l", "btn_3_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_3_3:1.l", "btn_3_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_3_4:1.l", "btn_3_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:35", "btn_3_0:1.r", "gray", [] ],
+    [ "btn_4_0:1.l", "btn_4_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_4_1:1.l", "btn_4_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_4_2:1.l", "btn_4_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_4_3:1.l", "btn_4_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_4_4:1.l", "btn_4_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:0", "btn_4_0:1.r", "gray", [] ],
+    [ "btn_5_0:1.l", "btn_5_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_5_1:1.l", "btn_5_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_5_2:1.l", "btn_5_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_5_3:1.l", "btn_5_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_5_4:1.l", "btn_5_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:9", "btn_5_0:1.r", "gray", [] ],
+    [ "btn_6_0:1.l", "btn_6_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_6_1:1.l", "btn_6_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_6_2:1.l", "btn_6_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_6_3:1.l", "btn_6_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_6_4:1.l", "btn_6_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:10", "btn_6_0:1.r", "gray", [] ],
+    [ "btn_7_0:1.l", "btn_7_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_7_1:1.l", "btn_7_2:1.l", "gray", [ "h45" ] ],
+    [ "btn_7_2:1.l", "btn_7_3:1.l", "gray", [ "h45" ] ],
+    [ "btn_7_3:1.l", "btn_7_4:1.l", "gray", [ "h45" ] ],
+    [ "btn_7_4:1.l", "btn_7_5:1.l", "gray", [ "h45" ] ],
+    [ "esp:11", "btn_7_0:1.r", "gray", [] ],
+    [ "btn_8_0:1.l", "btn_8_1:1.l", "gray", [ "h45" ] ],
+    [ "btn_8_1:1.l", "btn_8_2:1.l", "gray", [ "h45" ] ],
+    [ "esp:12", "btn_8_0:1.r", "gray", [] ],
+    [ "esp:45", "btn_0_0:2.r", "white", [] ],
+    [ "esp:45", "btn_1_0:2.r", "white", [] ],
+    [ "esp:45", "btn_2_0:2.r", "white", [] ],
+    [ "esp:45", "btn_3_0:2.r", "white", [] ],
+    [ "esp:45", "btn_4_0:2.r", "white", [] ],
+    [ "esp:45", "btn_5_0:2.r", "white", [] ],
+    [ "esp:45", "btn_6_0:2.r", "white", [] ],
+    [ "esp:45", "btn_7_0:2.r", "white", [] ],
+    [ "esp:45", "btn_8_0:2.r", "white", [] ],
+    [ "esp:8", "btn_0_1:2.r", "white", [] ],
+    [ "esp:8", "btn_1_1:2.r", "white", [] ],
+    [ "esp:8", "btn_2_1:2.r", "white", [] ],
+    [ "esp:8", "btn_3_1:2.r", "white", [] ],
+    [ "esp:8", "btn_4_1:2.r", "white", [] ],
+    [ "esp:8", "btn_5_1:2.r", "white", [] ],
+    [ "esp:8", "btn_6_1:2.r", "white", [] ],
+    [ "esp:8", "btn_7_1:2.r", "white", [] ],
+    [ "esp:8", "btn_8_1:2.r", "white", [] ],
+    [ "esp:47", "btn_0_2:2.r", "white", [] ],
+    [ "esp:47", "btn_1_2:2.r", "white", [] ],
+    [ "esp:47", "btn_2_2:2.r", "white", [] ],
+    [ "esp:47", "btn_3_2:2.r", "white", [] ],
+    [ "esp:47", "btn_4_2:2.r", "white", [] ],
+    [ "esp:47", "btn_5_2:2.r", "white", [] ],
+    [ "esp:47", "btn_6_2:2.r", "white", [] ],
+    [ "esp:47", "btn_7_2:2.r", "white", [] ],
+    [ "esp:47", "btn_8_2:2.r", "white", [] ],
+    [ "esp:21", "btn_0_3:2.r", "white", [] ],
+    [ "esp:21", "btn_1_3:2.r", "white", [] ],
+    [ "esp:21", "btn_2_3:2.r", "white", [] ],
+    [ "esp:21", "btn_3_3:2.r", "white", [] ],
+    [ "esp:21", "btn_4_3:2.r", "white", [] ],
+    [ "esp:21", "btn_5_3:2.r", "white", [] ],
+    [ "esp:21", "btn_6_3:2.r", "white", [] ],
+    [ "esp:21", "btn_7_3:2.r", "white", [] ],
+    [ "esp:14", "btn_0_4:2.r", "white", [] ],
+    [ "esp:14", "btn_1_4:2.r", "white", [] ],
+    [ "esp:14", "btn_2_4:2.r", "white", [] ],
+    [ "esp:14", "btn_3_4:2.r", "white", [] ],
+    [ "esp:14", "btn_4_4:2.r", "white", [] ],
+    [ "esp:14", "btn_5_4:2.r", "white", [] ],
+    [ "esp:14", "btn_6_4:2.r", "white", [] ],
+    [ "esp:14", "btn_7_4:2.r", "white", [] ],
+    [ "esp:13", "btn_0_5:2.r", "white", [] ],
+    [ "esp:13", "btn_1_5:2.r", "white", [] ],
+    [ "esp:13", "btn_2_5:2.r", "white", [] ],
+    [ "esp:13", "btn_3_5:2.r", "white", [] ],
+    [ "esp:13", "btn_4_5:2.r", "white", [] ],
+    [ "esp:13", "btn_5_5:2.r", "white", [] ],
+    [ "esp:13", "btn_6_5:2.r", "white", [] ],
+    [ "esp:13", "btn_7_5:2.r", "white", [] ],
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:GND.2", "sd:GND", "black", [ "v0", "h470.4" ] ],
+    [ "sd:VCC", "esp:3V3.1", "red", [ "v-144", "h-671.86", "v57.6" ] ]
+  ],
+  "dependencies": { "Waveshare_EPD": "*" }
+}

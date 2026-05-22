@@ -1,0 +1,55 @@
+#ifndef KEYPAD_MATRIX_H
+#define KEYPAD_MATRIX_H
+
+#include <stdint.h>
+#include <stdbool.h>
+
+#define MATRIX_ROWS 9
+#define MATRIX_COLS 6
+
+#define DEBOUNCE_MS 20
+#define HOLD_MS     600
+#define HOLD_REPEAT_MS 200
+
+static const uint8_t ROW_PINS[MATRIX_ROWS] = {38, 37, 36, 35, 0, 9, 10, 11, 12};
+static const uint8_t COL_PINS[MATRIX_COLS] = {45, 8, 47, 21, 14, 13};
+
+typedef enum {
+    KEY_NONE = 0,
+
+    KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9,
+    KEY_DOT, KEY_PLUS, KEY_MINUS, KEY_MULT, KEY_DIV,
+    KEY_EQUALS, KEY_CLEAR, KEY_AC,
+
+    KEY_SIN, KEY_COS, KEY_TAN, KEY_LOG, KEY_LN, KEY_SQRT,
+    KEY_LPAREN, KEY_RPAREN, KEY_POWER,
+
+    KEY_A, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F,
+    KEY_X, KEY_Y, KEY_Z,
+
+    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT,
+    KEY_ENTER, KEY_ESCAPE,
+
+    KEY_MEM_PLUS, KEY_MEM_MINUS, KEY_MEM_RECALL,
+    KEY_F1, KEY_F2, KEY_F3, KEY_F4, KEY_F5,
+    KEY_OPT,
+
+    KEY_COUNT
+} key_code_t;
+
+static const key_code_t KEY_MAP[MATRIX_ROWS][MATRIX_COLS] = {
+    { KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6 },
+    { KEY_7, KEY_8, KEY_9, KEY_0, KEY_PLUS, KEY_MINUS },
+    { KEY_MULT, KEY_DIV, KEY_EQUALS, KEY_DOT, KEY_CLEAR, KEY_AC },
+    { KEY_SIN, KEY_COS, KEY_TAN, KEY_LOG, KEY_LN, KEY_SQRT },
+    { KEY_LPAREN, KEY_RPAREN, KEY_POWER, KEY_A, KEY_B, KEY_C },
+    { KEY_D, KEY_E, KEY_F, KEY_X, KEY_Y, KEY_Z },
+    { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_ENTER, KEY_ESCAPE },
+    { KEY_MEM_PLUS, KEY_MEM_MINUS, KEY_MEM_RECALL, KEY_F1, KEY_F2, KEY_F3 },
+    { KEY_F4, KEY_F5, KEY_OPT, KEY_NONE, KEY_NONE, KEY_NONE },
+};
+
+void keypad_init(void);
+key_code_t keypad_scan(void);
+
+#endif

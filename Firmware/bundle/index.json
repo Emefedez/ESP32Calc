@@ -1,0 +1,22 @@
+{
+  "entry.js": {
+    "size": 5508642,
+    "hash": "dc7de380c708b5ddd8eb76e03c946b4c6cb94b2c"
+  },
+  "entry.css": {
+    "size": 13039,
+    "hash": "fff986159e063a7c7f25a39ce25435f732ce6418"
+  },
+  "version.json": {
+    "size": 46,
+    "hash": "6747a7f06f39d894b3302f8e204733e87099b85f",
+    "version": {
+      "commit": "cf0571b481a1",
+      "time": 1779450931796
+    }
+  },
+  "bundle.json": {
+    "size": 2568675,
+    "hash": "ff12665595b9ebce907a2b5f013aa48b97ac01be"
+  }
+}
