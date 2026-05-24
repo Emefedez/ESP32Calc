@@ -1,0 +1,15 @@
+{
+  "include": [
+    "config",
+    "display",
+    "drivers",
+    "screens",
+    "core",
+    "tests",
+    "hal",
+    "modules"
+  ],
+  "reportMissingImports": false,
+  "reportAttributeAccessIssue": false,
+  "reportMissingModuleSource": false
+}

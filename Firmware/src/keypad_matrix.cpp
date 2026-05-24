@@ -1,47 +1,138 @@
 #include "keypad_matrix.h"
-#include <Arduino.h>
 
-static unsigned long last_debounce[MATRIX_ROWS][MATRIX_COLS];
-static bool last_state[MATRIX_ROWS][MATRIX_COLS];
+#include "app_config.h"
+#include "app_log.h"
+#include "driver/gpio.h"
+#include "esp_check.h"
+#include "esp_rom_sys.h"
+#include "freertos/task.h"
+#include "keymap.h"
+#include "pins.h"
 
-void keypad_init(void) {
-    for (int c = 0; c < MATRIX_COLS; c++) {
-        pinMode(COL_PINS[c], INPUT_PULLDOWN);
-    }
-    for (int r = 0; r < MATRIX_ROWS; r++) {
-        pinMode(ROW_PINS[r], OUTPUT);
-        digitalWrite(ROW_PINS[r], HIGH);
-    }
-    memset(last_debounce, 0, sizeof(last_debounce));
-    memset(last_state, 0, sizeof(last_state));
+namespace esp32calc {
+namespace {
+constexpr const char* TAG = "keypad";
+
+uint64_t pin_mask(const gpio_num_t* pins, size_t count) {
+  uint64_t mask = 0;
+  for (size_t i = 0; i < count; ++i) {
+    mask |= (1ULL << static_cast<uint8_t>(pins[i]));
+  }
+  return mask;
+}
+}  // namespace
+
+esp_err_t KeypadMatrix::init() {
+  gpio_config_t row_cfg {};
+  row_cfg.intr_type = GPIO_INTR_DISABLE;
+  row_cfg.mode = GPIO_MODE_INPUT;
+  row_cfg.pin_bit_mask = pin_mask(pins::kMatrixRows.data(), pins::kMatrixRows.size());
+  row_cfg.pull_down_en = GPIO_PULLDOWN_DISABLE;
+  row_cfg.pull_up_en = GPIO_PULLUP_ENABLE;
+  ESP_RETURN_ON_ERROR(gpio_config(&row_cfg), TAG, "configure rows");
+
+  gpio_config_t col_cfg {};
+  col_cfg.intr_type = GPIO_INTR_DISABLE;
+  col_cfg.mode = GPIO_MODE_OUTPUT_OD;
+  col_cfg.pin_bit_mask = pin_mask(pins::kMatrixCols.data(), pins::kMatrixCols.size());
+  col_cfg.pull_down_en = GPIO_PULLDOWN_DISABLE;
+  col_cfg.pull_up_en = GPIO_PULLUP_ENABLE;
+  ESP_RETURN_ON_ERROR(gpio_config(&col_cfg), TAG, "configure columns");
+
+  for (auto col : pins::kMatrixCols) {
+    gpio_set_level(col, 1);
+  }
+
+  ESP32CALC_LOGI(TAG, "matrix ready: %u rows x %u cols", kRows, kCols);
+  return ESP_OK;
 }
 
-key_code_t keypad_scan(void) {
-    unsigned long now = millis();
+esp_err_t KeypadMatrix::start(QueueHandle_t app_events) {
+  app_events_ = app_events;
+  BaseType_t ok = xTaskCreatePinnedToCore(
+      &KeypadMatrix::task_trampoline,
+      "keypad",
+      4096,
+      this,
+      8,
+      nullptr,
+      config::kUiCore);
+  return ok == pdPASS ? ESP_OK : ESP_ERR_NO_MEM;
+}
 
-    for (int r = 0; r < MATRIX_ROWS; r++) {
-        digitalWrite(ROW_PINS[r], LOW);
-        delayMicroseconds(50);
+void KeypadMatrix::task_trampoline(void* arg) {
+  static_cast<KeypadMatrix*>(arg)->task();
+}
 
-        for (int c = 0; c < MATRIX_COLS; c++) {
-            key_code_t key = KEY_MAP[r][c];
-            if (key == KEY_NONE) continue;
+void KeypadMatrix::task() {
+  bool raw[kRows][kCols] {};
+  while (true) {
+    scan_raw(raw);
 
-            bool pressed = (digitalRead(COL_PINS[c]) == LOW);
-
-            if (pressed != last_state[r][c]) {
-                last_debounce[r][c] = now;
-                last_state[r][c] = pressed;
-            }
-
-            if (pressed && (now - last_debounce[r][c] >= DEBOUNCE_MS)) {
-                digitalWrite(ROW_PINS[r], HIGH);
-                return key;
-            }
+    for (uint8_t row = 0; row < kRows; ++row) {
+      for (uint8_t col = 0; col < kCols; ++col) {
+        if (raw[row][col] == last_raw_[row][col]) {
+          if (counters_[row][col] < config::kInputDebounceSamples) {
+            ++counters_[row][col];
+          }
+        } else {
+          counters_[row][col] = 0;
+          last_raw_[row][col] = raw[row][col];
         }
 
-        digitalWrite(ROW_PINS[r], HIGH);
+        if (counters_[row][col] >= config::kInputDebounceSamples &&
+            raw[row][col] != stable_[row][col]) {
+          stable_[row][col] = raw[row][col];
+          publish_key(row, col, raw[row][col] ? KeyPhase::Pressed : KeyPhase::Released);
+        }
+      }
     }
 
-    return KEY_NONE;
+    vTaskDelay(pdMS_TO_TICKS(config::kInputScanPeriodMs));
+  }
 }
+
+void KeypadMatrix::scan_raw(bool (&pressed)[KeypadMatrix::kRows][KeypadMatrix::kCols]) {
+  for (uint8_t row = 0; row < kRows; ++row) {
+    for (uint8_t col = 0; col < kCols; ++col) {
+      pressed[row][col] = false;
+    }
+  }
+
+  for (uint8_t col = 0; col < kCols; ++col) {
+    for (auto pin : pins::kMatrixCols) {
+      gpio_set_level(pin, 1);
+    }
+    gpio_set_level(pins::kMatrixCols[col], 0);
+    esp_rom_delay_us(80);
+
+    for (uint8_t row = 0; row < kRows; ++row) {
+      pressed[row][col] = gpio_get_level(pins::kMatrixRows[row]) == 0;
+    }
+  }
+
+  for (auto pin : pins::kMatrixCols) {
+    gpio_set_level(pin, 1);
+  }
+}
+
+void KeypadMatrix::publish_key(uint8_t row, uint8_t col, KeyPhase phase) {
+  const KeyDef& key = key_at(row, col);
+  if (is_blank_key(key)) {
+    return;
+  }
+
+  AppEvent event {};
+  event.type = AppEventType::Key;
+  event.key = KeyEvent {row, col, key.label, phase};
+
+  if (phase == KeyPhase::Pressed) {
+    ESP32CALC_LOGD(TAG, "press r%u c%u %s", row, col, key.label);
+  }
+
+  if (app_events_ != nullptr) {
+    xQueueSend(app_events_, &event, 0);
+  }
+}
+
+}  // namespace esp32calc

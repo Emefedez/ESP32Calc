@@ -1,0 +1,220 @@
+[2026-05-24T12:58:57] capture #1
+source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
+captured_size: 620x334 pixels
+avg: #C7C9C8  dark: 13.587%  mid: 16.827%  light: 69.586%  luma: 0..255
+colors: raw_unique=396 quantized_unique=37
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  120173 px  58.032%
+  #303030  17181 px  8.297%
+  #F0F0F0  8781 px  4.240%
+  #E0E0E0  6908 px  3.336%
+  #D0D0D0  5834 px  2.817%
+  #C0C0C0  5095 px  2.460%
+  #A0A0A0  4795 px  2.316%
+  #B0B0B0  4417 px  2.133%
+  #000000  4194 px  2.025%
+  #808080  3826 px  1.848%
+  #909090  3642 px  1.759%
+  #707070  3201 px  1.546%
+  #405030  2986 px  1.442%
+  #606060  2779 px  1.342%
+luma_map (# dark, + mid, . light):
+  +###############################################################################
+  +..MM...MM...M....M....M....M....M..M.M....M..MMM....M...MM....M.M.MM...MM.M..M#
+  +.....M..M.M......M..M.MM........M..M.........M.M..M....M.M..M.MM.M......M.MM.M#
+  +..M..M....MM.....M..M...........M..M.........M....M.....M...M..........M..M..+#
+  +.......M.............M..............M........................M..............M+#
+  +....MM....M.........M........MM....M........MM....M.........M...M....M....M..+#
+  +M.M.......M.M..M.M...MM..MMM.M.MM.M.MM.M..M......M....M.M.......M....M.M..M..+#
+  +..MM....M..MM....M...MMM..M....MM...MMM...M....MM...M....M....MM........M....M#
+  +MMMMMM....M..MM..M..MMMM.MM.MMM.MMMMMM.MM.M.MM.M..M.M.M.MM.MM...M..M.MMM..M..+#
+  +MM.MMM..M.MM..MM.M.MM.M..MM..MM.M..M.M.M..M.MM.M..M...M..M.MM.M.MM...MM.M.MM.M#
+  +MM.M....MM.M.M..M.M.M..M.MM......MMMM.M...MMM...M...MM...MM.M..M...MM.M....M.+#
+  +...M....MM.M.MM..MMM..MMM....M..MMMM.MM...MMM..MMMM..MM..MMM..MMMM.MMM..M..M.M#
+  +......MMMM.M..M.MM.M.MM......MMMM.MMMMM..MMMMMMMM.MMM.M..M.MMMM...M.MM..M..MMM#
+  +....M.MMM...M.M.MM.M.MM.M..M...MM.M..M.M..M...M..M.MM...MM.MMMM.M.MM...MMM.MMM#
+  +MM...MM...MMM..MMM..MM...M.M..M.M..M..MMM.M...M.........M.....M....M.........M#
+  +MMM.MMM..MMMM.MMMM.MMM.MMM.M.MM..M.M..MMM...............MM....M....M.........M#
+  +M..MMM..MM...MM..MMM..MMMM..MMM.MM.M..M.M..M.M.MM....M..MMM...MM....MMM.MM...M#
+  +..M.MM.MMMMMMMM..MMMMMMMMMMMMMMMMM.MMMM..MMM.MMMM.MM.M..MMM.MMMM.MM.MMMMMMMMMM#
+  +.MM.MMMMM.MMM...MM..MMM...MM.MMMMM.MMM...MM.MMM.M.MM....M...MM.M..M..M.M..M.M+#
+  +M.M..M.MM.MMMMMM.M..MMMM.MMM.MMMMMMMMMMMMMM.MMM.MMMM.MM.M..MMM.MMMM..M.M..MMM+#
+  +M..M.M..MMM..MMM.M.MM.MMMM...MM.M.MM.MMMM...MM.MMMMM.MM..M.MM.MMM.M..M..M.M..M#
+  +M..MMM.MM.M..MM...MMM.MM.M..MMM..MMM..M.M...MM..M.MMMMM..MMMMMMMM...MM..MMM.M+#
+  +MM.M.MMMM..MMMMMMMM..MMM.M.MM.MMMM.MMMM..MMMM.MMM.MMMM..MMM...MMMM.MMM..MM.M.M#
+  +MM...M..M.MM...MM...MMM.M.M..M.MM..MM.MMMM...MMMM.MM.M..MM..MM.MMMM...MM.MM.M+#
+  +MMMM.MMMM.MMMM.MMM..MMMMMMM.M.MMMM.MMMMMMMM..MMM.MMMM..MMM..MMMMMMMM..MMMMMMMM#
+  +.MMMMMMMMMMM.MM..MMM..MMM.MMMM.MMMM.MMMMM.MMM.MMMMM.MMM..MMMM.MMM..MMMMMMMM..M#
+  +.MMMMMM.MMMM.MMMMMMMMMMMMM..MMMMMMMM.MMMM.M.MM.MMMM..MM..MMMM.MMMM..MMMMMMMM.M#
+  +............M.MMMM...MMM.MMMM.MMM..MMM..MMM..MMMMMMMMM...M..MMM.MMMM.MMMMMMMMM#
+  +............M.MMMM..MMMMMMMMMMM.MM.MMMM.MMM..MMMMMMMMM...M..MMM..MMMM.M.MMMMMM#
+  +..M........MM.M..M..MM...M.M.MM......M........M.....M...M....................+#
+  +M....+....+....M.M..+....M.M.MM.+....M....+....M....M....+...................+#
+  ################################################################################
+
+[2026-05-24T12:58:58] capture #2
+source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
+captured_size: 620x334 pixels
+avg: #C7C8C8  dark: 15.046%  mid: 15.365%  light: 69.589%  luma: 0..255
+colors: raw_unique=310 quantized_unique=28
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  120331 px  58.108%
+  #303030  21754 px  10.505%
+  #F0F0F0  8772 px  4.236%
+  #E0E0E0  6897 px  3.331%
+  #D0D0D0  5838 px  2.819%
+  #C0C0C0  5096 px  2.461%
+  #A0A0A0  4796 px  2.316%
+  #B0B0B0  4412 px  2.131%
+  #000000  4206 px  2.031%
+  #808080  3827 px  1.848%
+  #909090  3641 px  1.758%
+  #707070  3201 px  1.546%
+  #606060  2781 px  1.343%
+  #505050  2604 px  1.257%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  +..MM...MM...M....M....M....M....M..M.M....M..MMM....M...MM....M.M.MM...MM.M..M#
+  +.....M..M.M......M..M.MM........M..M.........M.M..M....M.M..M.MM.M......M.MM.M#
+  +..M..M....MM.....M..M...........M..M.........M....M.....M...M..........M..M..+#
+  +.......M.............M..............M........................M..............M+#
+  +....MM....M.........M........MM....M........MM....M.........M...M....M....M..+#
+  +M.M.......M.M..M.M...MM..MMM.M.MM.M.MM.M..M......M....M.M.......M....M.M..M..+#
+  +..MM....M..MM....M...MMM..M....MM...MMM...M....MM...M....M....MM........M....M#
+  +MMMMMM....M..MM..M..MMMM.MM.MMM.MMMMMM.MM.M.MM.M..M.M.M.MM.MM...M..M.MMM..M..+#
+  +MM.MMM..M.MM..MM.M.MM.M..MM..MM.M..M.M.M..M.MM.M..M...M..M.MM.M.MM...MM.M.MM.M#
+  +MM.M....MM.M.M..M.M.M..M.MM......MMMM.M...MMM...M...MM...MM.M..M...MM.M....M.+#
+  +...M....MM.M.MM..MMM..MMM....M..MMMM.MM...MMM..MMMM..MM..MMM..MMMM.MMM..M..M.M#
+  +......MMMM.M..M.MM.M.MM......MMMM.MMMMM..MMMMMMMM.MMM.M..M.MMMM...M.MM..M..MMM#
+  +....M.MMM...M.M.MM.M.MM.M..M...MM.M..M.M..M...M..M.MM...MM.MMMM.M.MM...MMM.MMM#
+  +MM...MM...MMM..MMM..MM...M.M..M.M..M..MMM.M...M.........M.....M....M.........M#
+  +MMM.MMM..MMMM.MMMM.MMM.MMM.M.MM..M.M..MMM...............MM....M....M.........M#
+  +M..MMM..MM...MM..MMM..MMMM..MMM.MM.M..M.M..M.M.MM....M..MMM...MM....MMM.MM...M#
+  +..M.MM.MMMMMMMM..MMMMMMMMMMMMMMMMM.MMMM..MMM.MMMM.MM.M..MMM.MMMM.MM.MMMMMMMMMM#
+  +.MM.MMMMM.MMM...MM..MMM...MM.MMMMM.MMM...MM.MMM.M.MM....M...MM.M..M..M.M..M.M+#
+  +M.M..M.MM.MMMMMM.M..MMMM.MMM.MMMMMMMMMMMMMM.MMM.MMMM.MM.M..MMM.MMMM..M.M..MMM+#
+  +M..M.M..MMM..MMM.M.MM.MMMM...MM.M.MM.MMMM...MM.MMMMM.MM..M.MM.MMM.M..M..M.M..M#
+  +M..MMM.MM.M..MM...MMM.MM.M..MMM..MMM..M.M...MM..M.MMMMM..MMMMMMMM...MM..MMM.M+#
+  +MM.M.MMMM..MMMMMMMM..MMM.M.MM.MMMM.MMMM..MMMM.MMM.MMMM..MMM...MMMM.MMM..MM.M.M#
+  +MM...M..M.MM...MM...MMM.M.M..M.MM..MM.MMMM...MMMM.MM.M..MM..MM.MMMM...MM.MM.M+#
+  +MMMM.MMMM.MMMM.MMM..MMMMMMM.M.MMMM.MMMMMMMM..MMM.MMMM..MMM..MMMMMMMM..MMMMMMMM#
+  +.MMMMMMMMMMM.MM..MMM..MMM.MMMM.MMMM.MMMMM.MMM.MMMMM.MMM..MMMM.MMM..MMMMMMMM..M#
+  +.MMMMMM.MMMM.MMMMMMMMMMMMM..MMMMMMMM.MMMM.M.MM.MMMM..MM..MMMM.MMMM..MMMMMMMM.M#
+  +............M.MMMM...MMM.MMMM.MMM..MMM..MMM..MMMMMMMMM...M..MMM.MMMM.MMMMMMMMM#
+  +............M.MMMM..MMMMMMMMMMM.MM.MMMM.MMM..MMMMMMMMM...M..MMM..MMMM.M.MMMMMM#
+  +..M........MM.M..M..MM...M.M.MM......M........M.....M...M....................+#
+  +M....+....+....M.M..+....M.M.MM.+....M....+....M....M....+...................+#
+  ################################################################################
+
+[2026-05-24T12:59:02] capture #3
+source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
+captured_size: 620x334 pixels
+avg: #CFD0CF  dark: 13.765%  mid: 11.904%  light: 74.331%  luma: 0..255
+colors: raw_unique=308 quantized_unique=27
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  134681 px  65.038%
+  #303030  21061 px  10.170%
+  #F0F0F0  7149 px  3.452%
+  #E0E0E0  5665 px  2.736%
+  #D0D0D0  4663 px  2.252%
+  #000000  4157 px  2.007%
+  #A0A0A0  3991 px  1.927%
+  #C0C0C0  3894 px  1.880%
+  #B0B0B0  3424 px  1.653%
+  #909090  2832 px  1.368%
+  #808080  2795 px  1.350%
+  #408050  2557 px  1.235%
+  #707070  2319 px  1.120%
+  #606060  2139 px  1.033%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  +M....MM...M....M....M....M....M....+....M....M....M....M....M....M....M....M.+#
+  +.M....M....M.........M...M.........M....M.........M.....M...M....M.........M.+#
+  +....M.............M..............MM........M....MM........M.....M........M...+#
+  +..M......M....M....M.........M....M...M..............MM.............MM...M...+#
+  +M...MMM...MMM..MM...M.M..M.M..M....M.M..M.M.MM...MM...M....MM.M..M.........M.+#
+  +M..MMMM.M.MMMMMMM.M..M.M.M..M..MMM..MMMMMMMM..M.M...MM..MMM.M.MMMM.M.MM.M.MM.+#
+  +M..MM...M....M.........M....M...MM....M.M.......M....M.M....M..M......M.M....+#
+  +.MMMMMMMM....M.MMMM.MM...M.MM..MMM.MM.M.MMM..MM...MMM..MMM..M......M..MMM.MMM+#
+  +...M...MM..MMM....M..M.M..M.M..M.M..M.M.MMM...M.M..MMM...M.....M...MM..M.M.MM+#
+  +.MM.MMMMMM.MM.M.M.MMM.MMM.MM..MM.MMM.MM.MMMM..M.MM.M.M..M..MM..MM.M..MMMMMM.MM#
+  +MM..MMM...M...MMM..M.M...MM..MMM..MMM..M.M....M.........M..MM..MM.M.MMM...MM.+#
+  +MMMMMM.MMMMMMMMMMM.M..MM.MMMMM.M..M.M..M.M..M...MM.MMMM.MMMMM.M.M.MM.M.MMMM.MM#
+  +...MM...M....M.........M....MM..M...........M.MMM...MM...MM....M....MM..MM...M#
+  +MM...MM.....M..MM..................MM...MM...M....M.M..M....M...MM....M....M.+#
+  +.MM..MMMM..MM...M...M........................M.M..MM...MM...MM..M.M...MM...MMM#
+  +M...MM..M....M.M..M....M.M..MMM..M....M.M..MMM..M....MMM.MMM...M.M.MMMM..MM..+#
+  +.M..M..MM..MMMM.MMM..MM.MM.MMM..MMMMMM.MM.MM..MMMMMMMMM.MMMMMMMMMM.M.MM..MMMM+#
+  +....M...M...M...MMM...M...MMM...MM...M...MMM...MM..MM...MMM...M....MM..MMM...M#
+  +MMM.MM.M..M.MMMMMMM.MMMMMM.MMMM.MMMM.MM.MMMMMMMM.MMMMMMMMM...MMM..MMM..MM....M#
+  +.M...MMM..MMM..M.M..MM...M...MM....MM...M...MMM...MM...M...MMM...M...MM.....M+#
+  +MMMMMMM.MM.M.MM.MMMMMM.MMMM.M.MMMM.MM.M.MMMM.MM.M.M..M.MMMMMM....M...MMM..M..+#
+  +M...M...MM...M....MM...MM...M....MM...MM....M...MM...M.....M.................+#
+  +...MM....M....M....M....M...MM....M...MM..MMM....M........MM...M.MMM..MM...MM+#
+  +........M.........M....M..............M....M....M....M.........M..MM...MM...MM#
+  +.M....MM........M....M.........M....M....M....M.........M...M.....MM..MMM..MMM#
+  +.MM........M....M.........M....M....M....M.........M....M.........M....M....M+#
+  +MMMMM....MMMMMM....M....M....M....M....M....M....M.........M....M....M...M...+#
+  +MMMMM....MMMMMM....M....MM...M....M....M....M....MM...M....M....M....M....M..+#
+  +...M........M.........M....M....M....M....M...MM....M.........MMMMMM....MMMMMM#
+  ++..M....M........M....M....M....M....M....M+...M+...M....M....MMMMMM....MMMMMM#
+  ################################################################################
+
+[2026-05-24T12:59:05] capture #4
+source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
+captured_size: 620x334 pixels
+avg: #C7C8C8  dark: 15.007%  mid: 15.278%  light: 69.715%  luma: 0..255
+colors: raw_unique=310 quantized_unique=28
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  120689 px  58.281%
+  #303030  21724 px  10.491%
+  #F0F0F0  8727 px  4.214%
+  #E0E0E0  6869 px  3.317%
+  #D0D0D0  5809 px  2.805%
+  #C0C0C0  5075 px  2.451%
+  #A0A0A0  4737 px  2.288%
+  #B0B0B0  4399 px  2.124%
+  #000000  4203 px  2.030%
+  #808080  3802 px  1.836%
+  #909090  3635 px  1.755%
+  #707070  3181 px  1.536%
+  #606060  2786 px  1.345%
+  #505050  2576 px  1.244%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  +..MM...MM...M....M....M....M..M.M....M....M...MM..M.M...MM....M.M.MM...MM....M#
+  +.....M..M.M......M..M.MM......M.M..M.........M.M..M......M..M.MM.M...MM.M.M..M#
+  +..M..M....MM.....M..M...........M..M.........M....M.....M...M..........M..M..+#
+  +.......M.............M..............M........................M..............M+#
+  +....MM....M.........M........MM....M........MM....M.........M...M....M....M..+#
+  +M.M.......M.M..M.M...MM..MMM.M.MM.M.MM.M..M......M....M.M.......M....M.M..M..+#
+  +..MM....M..MM....M...MMM..M....MM...MMM...M....MM...M....M....MM........M....M#
+  +MMMMMM....M..MM..M..MMMM.MM.MMM.MMMMMM.MM.M.MM.M..M.M.M.MM.MM...M..M.MMM..M..+#
+  +MM.MMM..M.MM..MM.M.MM.M..MM..MM.M..M.M.M..M.MM.M..M...M..M.MM.M.MM...MM.M.MM.M#
+  +MM.M....MM.M.M..M.M.M..M.MM......MMMM.M...MMM...M...MM...MM.M..M...MM.M....M.+#
+  +...M....MM.M.MM..MMM..MMM....M..MMMM.MM...MMM..MMMM..MM..MMM..MMMM.MMM..M..M.M#
+  +......MMMM.M..M.MM.M.MM......MMMM.MMMMM..MMMMMMMM.MMM.M..M.MMMM...M.MM..M..MMM#
+  +....M.MMM...M.M.MM.M.MM.M..M...MM.M..M.M..M...M..M.MM...MM.MMMM.M.MM...MMM.MMM#
+  +MM...MM...MMM..MMM..MM...M.M..M.M..M..MMM.M...M.........M.....M....M.........M#
+  +MMM.MMM..MMMM.MMMM.MMM.MMM.M.MM..M.M..MMM...............MM....M....M.........M#
+  +M..MMM..MM...MM..MMM..MMMM..MMM.MM.M..M.M..M.M.MM....M..MMM...MM....MMM.MM...M#
+  +..M.MM.MMMMMMMM..MMMMMMMMMMMMMMMMM.MMMM..MMM.MMMM.MM.M..MMM.MMMM.MM.MMMMMMMMMM#
+  +.MM.MMMMM.MMM...MM..MMM...MM.MMMMM.MMM...MM.MMM.M.MM....M...MM.M..M..M.M..M.M+#
+  +M.M..M.MM.MMMMMM.M..MMMM.MMM.MMMMMMMMMMMMMM.MMM.MMMM.MM.M..MMM.MMMM..M.M..MMM+#
+  +M..M.M..MMM..MMM.M.MM.MMMM...MM.M.MM.MMMM...MM.MMMMM.MM..M.MM.MMM.M..M..M.M..M#
+  +M..MMM.MM.M..MM...MMM.MM.M..MMM..MMM..M.M...MM..M.MMMMM..MMMMMMMM...MM..MMM.M+#
+  +MM.M.MMMM..MMMMMMMM..MMM.M.MM.MMMM.MMMM..MMMM.MMM.MMMM..MMM...MMMM.MMM..MM.M.M#
+  +MM...M..M.MM...MM...MMM.M.M..M.MM..MM.MMMM...MMMM.MM.M..MM..MM.MMMM...MM.MM.M+#
+  +MMMM.MMMM.MMMM.MMM..MMMMMMM.M.MMMM.MMMMMMMM..MMM.MMMM..MMM..MMMMMMMM..MMMMMMMM#
+  +.MMMMMMMMMMM.MM..MMM..MMM.MMMM.MMMM.MMMMM.MMM.MMMMM.MMM..MMMM.MMM..MMMMMMMM..M#
+  +.MMMMMM.MMMM.MMMMMMMMMMMMM..MMMMMMMM.MMMM.M.MM.MMMM..MM..MMMM.MMMM..MMMMMMMM.M#
+  +............M.MMMM...MMM.MMMM.MMM..MMM..MMM..MMMMMMMMM...M..MMM.MMMM.MMMMMMMMM#
+  +............M.MMMM..MMMMMMMMMMM.MM.MMMM.MMM..MMMMMMMMM...M..MMM..MMMM.M.MMMMMM#
+  +..M........MM.M.....MM...M...MM..............................................+#
+  +M.M..+.M..+.M..M....+....M...MM..............................................+#
+  ################################################################################
+

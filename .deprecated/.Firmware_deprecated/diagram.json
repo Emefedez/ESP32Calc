@@ -1,0 +1,1372 @@
+{
+  "version": 1,
+  "author": "ESP32Calc",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp",
+      "top": -40,
+      "left": -170,
+      "attrs": {
+        "flashSize": "16",
+        "psramSize": "8"
+      }
+    },
+    {
+      "type": "board-epaper-2in9",
+      "id": "epd",
+      "top": -250,
+      "left": -280,
+      "attrs": {
+        "color": "black"
+      }
+    },
+    {
+      "type": "wokwi-microsd-card",
+      "id": "sd",
+      "top": 80,
+      "left": 440,
+      "rotate": 270,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-header",
+      "id": "sense",
+      "top": -50,
+      "left": -350,
+      "attrs": {
+        "pins": "1"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_0",
+      "top": 270,
+      "left": -150,
+      "attrs": {
+        "label": "SHIFT"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_1",
+      "top": 270,
+      "left": -92,
+      "attrs": {
+        "label": "ALPHA"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_2",
+      "top": 270,
+      "left": -34,
+      "attrs": {
+        "label": "UP"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_3",
+      "top": 270,
+      "left": 24,
+      "attrs": {
+        "label": "MODE"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_4",
+      "top": 270,
+      "left": 82,
+      "attrs": {
+        "label": "INT"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_0_5",
+      "top": 270,
+      "left": 140,
+      "attrs": {
+        "label": "CALC"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_0",
+      "top": 312,
+      "left": -150,
+      "attrs": {
+        "label": "LT"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_1",
+      "top": 312,
+      "left": -92,
+      "attrs": {
+        "label": "DN"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_2",
+      "top": 312,
+      "left": -34,
+      "attrs": {
+        "label": "RT"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_3",
+      "top": 312,
+      "left": 24,
+      "attrs": {
+        "label": "dx"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_4",
+      "top": 312,
+      "left": 82,
+      "attrs": {
+        "label": "'''"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_1_5",
+      "top": 312,
+      "left": 140,
+      "attrs": {
+        "label": "sqrt"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_0",
+      "top": 354,
+      "left": -150,
+      "attrs": {
+        "label": "xyz"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_1",
+      "top": 354,
+      "left": -92,
+      "attrs": {
+        "label": "xyz^2"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_2",
+      "top": 354,
+      "left": -34,
+      "attrs": {
+        "label": "xyz^a"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_3",
+      "top": 354,
+      "left": 24,
+      "attrs": {
+        "label": "(/)v"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_4",
+      "top": 354,
+      "left": 82,
+      "attrs": {
+        "label": "(/)"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_2_5",
+      "top": 354,
+      "left": 140,
+      "attrs": {
+        "label": "log"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_0",
+      "top": 396,
+      "left": -150,
+      "attrs": {
+        "label": "ln"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_1",
+      "top": 396,
+      "left": -92,
+      "attrs": {
+        "label": "logab"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_2",
+      "top": 396,
+      "left": -34,
+      "attrs": {
+        "label": "rcl"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_3",
+      "top": 396,
+      "left": 24,
+      "attrs": {
+        "label": "eng"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_4",
+      "top": 396,
+      "left": 82,
+      "attrs": {
+        "label": "()"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_3_5",
+      "top": 396,
+      "left": 140,
+      "attrs": {
+        "label": "S<>D"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_0",
+      "top": 438,
+      "left": -150,
+      "attrs": {
+        "label": "M+-"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_1",
+      "top": 438,
+      "left": -92,
+      "attrs": {
+        "label": "7"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_2",
+      "top": 438,
+      "left": -34,
+      "attrs": {
+        "label": "8"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_3",
+      "top": 438,
+      "left": 24,
+      "attrs": {
+        "label": "9"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_4",
+      "top": 438,
+      "left": 82,
+      "attrs": {
+        "label": "DEL"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_4_5",
+      "top": 438,
+      "left": 140,
+      "attrs": {
+        "label": "AC"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_0",
+      "top": 480,
+      "left": -150,
+      "attrs": {
+        "label": "sen"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_1",
+      "top": 480,
+      "left": -92,
+      "attrs": {
+        "label": "4"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_2",
+      "top": 480,
+      "left": -34,
+      "attrs": {
+        "label": "5"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_3",
+      "top": 480,
+      "left": 24,
+      "attrs": {
+        "label": "6"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_4",
+      "top": 480,
+      "left": 82,
+      "attrs": {
+        "label": "*"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_5_5",
+      "top": 480,
+      "left": 140,
+      "attrs": {
+        "label": "/"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_0",
+      "top": 522,
+      "left": -150,
+      "attrs": {
+        "label": "cos"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_1",
+      "top": 522,
+      "left": -92,
+      "attrs": {
+        "label": "1"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_2",
+      "top": 522,
+      "left": -34,
+      "attrs": {
+        "label": "2"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_3",
+      "top": 522,
+      "left": 24,
+      "attrs": {
+        "label": "3"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_4",
+      "top": 522,
+      "left": 82,
+      "attrs": {
+        "label": "+"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_6_5",
+      "top": 522,
+      "left": 140,
+      "attrs": {
+        "label": "-"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_0",
+      "top": 564,
+      "left": -150,
+      "attrs": {
+        "label": "tan"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_1",
+      "top": 564,
+      "left": -92,
+      "attrs": {
+        "label": "0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_2",
+      "top": 564,
+      "left": -34,
+      "attrs": {
+        "label": "."
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_3",
+      "top": 564,
+      "left": 24,
+      "attrs": {
+        "label": "x10^x"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_4",
+      "top": 564,
+      "left": 82,
+      "attrs": {
+        "label": "Ans"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_7_5",
+      "top": 564,
+      "left": 140,
+      "attrs": {
+        "label": "="
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_0",
+      "top": 606,
+      "left": -150,
+      "attrs": {
+        "label": "hyp"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_1",
+      "top": 606,
+      "left": -92,
+      "attrs": {
+        "label": "--"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_2",
+      "top": 606,
+      "left": -34,
+      "attrs": {
+        "label": "--"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_3",
+      "top": 606,
+      "left": 24,
+      "attrs": {
+        "label": "--"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_4",
+      "top": 606,
+      "left": 82,
+      "attrs": {
+        "label": "--"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_8_5",
+      "top": 606,
+      "left": 140,
+      "attrs": {
+        "label": "--"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp:4",
+      "epd:RST",
+      "green",
+      []
+    ],
+    [
+      "esp:5",
+      "epd:BUSY",
+      "gray",
+      []
+    ],
+    [
+      "esp:6",
+      "epd:CS",
+      "blue",
+      []
+    ],
+    [
+      "esp:7",
+      "epd:DC",
+      "purple",
+      []
+    ],
+    [
+      "esp:15",
+      "epd:DIN",
+      "orange",
+      []
+    ],
+    [
+      "esp:16",
+      "epd:CLK",
+      "yellow",
+      []
+    ],
+    [
+      "esp:17",
+      "epd:VCC",
+      "red",
+      []
+    ],
+    [
+      "esp:GND",
+      "epd:GND",
+      "black",
+      []
+    ],
+    [
+      "esp:3",
+      "sense:1",
+      "orange",
+      []
+    ],
+    [
+      "esp:42",
+      "sd:CS",
+      "blue",
+      []
+    ],
+    [
+      "esp:41",
+      "sd:DI",
+      "orange",
+      []
+    ],
+    [
+      "esp:40",
+      "sd:SCK",
+      "yellow",
+      []
+    ],
+    [
+      "esp:39",
+      "sd:DO",
+      "cyan",
+      []
+    ],
+    [
+      "esp:3V3.1",
+      "sd:VCC",
+      "red",
+      []
+    ],
+    [
+      "esp:GND.1",
+      "sd:GND",
+      "black",
+      []
+    ],
+    [
+      "btn_0_0:1.l",
+      "btn_0_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_0_1:1.l",
+      "btn_0_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_0_2:1.l",
+      "btn_0_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_0_3:1.l",
+      "btn_0_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_0_4:1.l",
+      "btn_0_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:38",
+      "btn_0_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_1_0:1.l",
+      "btn_1_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_1_1:1.l",
+      "btn_1_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_1_2:1.l",
+      "btn_1_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_1_3:1.l",
+      "btn_1_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_1_4:1.l",
+      "btn_1_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:37",
+      "btn_1_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_2_0:1.l",
+      "btn_2_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_2_1:1.l",
+      "btn_2_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_2_2:1.l",
+      "btn_2_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_2_3:1.l",
+      "btn_2_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_2_4:1.l",
+      "btn_2_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:36",
+      "btn_2_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_3_0:1.l",
+      "btn_3_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_3_1:1.l",
+      "btn_3_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_3_2:1.l",
+      "btn_3_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_3_3:1.l",
+      "btn_3_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_3_4:1.l",
+      "btn_3_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:35",
+      "btn_3_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_4_0:1.l",
+      "btn_4_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_4_1:1.l",
+      "btn_4_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_4_2:1.l",
+      "btn_4_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_4_3:1.l",
+      "btn_4_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_4_4:1.l",
+      "btn_4_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:0",
+      "btn_4_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_5_0:1.l",
+      "btn_5_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_5_1:1.l",
+      "btn_5_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_5_2:1.l",
+      "btn_5_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_5_3:1.l",
+      "btn_5_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_5_4:1.l",
+      "btn_5_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:9",
+      "btn_5_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_6_0:1.l",
+      "btn_6_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_6_1:1.l",
+      "btn_6_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_6_2:1.l",
+      "btn_6_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_6_3:1.l",
+      "btn_6_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_6_4:1.l",
+      "btn_6_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:10",
+      "btn_6_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_7_0:1.l",
+      "btn_7_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_7_1:1.l",
+      "btn_7_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_7_2:1.l",
+      "btn_7_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_7_3:1.l",
+      "btn_7_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_7_4:1.l",
+      "btn_7_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:11",
+      "btn_7_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "btn_8_0:1.l",
+      "btn_8_1:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_8_1:1.l",
+      "btn_8_2:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_8_2:1.l",
+      "btn_8_3:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_8_3:1.l",
+      "btn_8_4:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "btn_8_4:1.l",
+      "btn_8_5:1.l",
+      "gray",
+      [
+        "h45"
+      ]
+    ],
+    [
+      "esp:12",
+      "btn_8_0:1.r",
+      "gray",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_0_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_1_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_2_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_3_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_4_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_5_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_6_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_7_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:45",
+      "btn_8_0:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_0_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_1_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_2_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_3_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_4_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_5_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_6_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_7_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:8",
+      "btn_8_1:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_0_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_1_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_2_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_3_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_4_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_5_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_6_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_7_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:47",
+      "btn_8_2:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_0_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_1_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_2_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_3_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_4_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_5_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_6_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_7_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:21",
+      "btn_8_3:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_0_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_1_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_2_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_3_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_4_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_5_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_6_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_7_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:14",
+      "btn_8_4:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_0_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_1_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_2_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_3_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_4_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_5_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_6_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_7_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:13",
+      "btn_8_5:2.r",
+      "white",
+      []
+    ],
+    [
+      "esp:TX",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX",
+      "$serialMonitor:TX",
+      "",
+      []
+    ]
+  ],
+  "dependencies": {}
+}

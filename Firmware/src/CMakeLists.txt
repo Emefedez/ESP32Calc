@@ -1,0 +1,30 @@
+idf_component_register(
+  SRCS
+    "main.cpp"
+    "app_log.cpp"
+    "keymap.cpp"
+    "keypad_matrix.cpp"
+    "display/weact_213_bw.cpp"
+    "graphics/mono_canvas.cpp"
+    "graphics/raylib_epaper_port.cpp"
+    "battery/battery_monitor.cpp"
+    "storage/sd_storage.cpp"
+    "calc/calc_engine.cpp"
+    "programs/program_loader.cpp"
+    "wireless/wireless_service.cpp"
+    "ui/menu.cpp"
+  INCLUDE_DIRS
+    "."
+    "display"
+    "graphics"
+    "battery"
+    "storage"
+    "calc"
+    "programs"
+    "wireless"
+    "ui"
+  REQUIRES
+    esp_lcd
+    esp_raylib_port
+    raylib
+)

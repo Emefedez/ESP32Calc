@@ -1,0 +1,25 @@
+# Key codes — mirrors Firmware_deprecated/src/core/keypad.h enum
+
+KEY_NONE = 0
+
+KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9 = range(10, 20)
+KEY_DOT, KEY_PLUS, KEY_MINUS, KEY_MULT, KEY_DIV = range(20, 25)
+KEY_EQUALS, KEY_AC, KEY_DEL = range(25, 28)
+
+KEY_SIN, KEY_COS, KEY_TAN, KEY_LOG, KEY_LN, KEY_SQRT = range(28, 34)
+
+KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT = range(34, 38)
+
+KEY_SHIFT, KEY_ALPHA, KEY_MODE, KEY_INTEGRAL, KEY_CALC = range(38, 43)
+KEY_DX, KEY_PRIME = range(43, 45)
+
+KEY_XYZ, KEY_XYZ2, KEY_XYZA = range(45, 48)
+KEY_FRAC_VERT, KEY_FRAC = range(48, 50)
+KEY_LOGAB, KEY_RCL, KEY_ENG = range(50, 53)
+KEY_PARENS, KEY_S_D = range(53, 55)
+
+KEY_M_PLUS_MINUS = 55
+KEY_X10X, KEY_ANS = range(56, 58)
+KEY_HYP = 58
+
+KEY_COUNT = 59

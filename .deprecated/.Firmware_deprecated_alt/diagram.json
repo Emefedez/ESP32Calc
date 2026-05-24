@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "author": "ESP32Calc",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-s3-devkitc-1", "id": "esp", "top": 0, "left": 0, "attrs": { "flashSize": "16", "psramSize": "8" } },
+    { "type": "board-epaper-2in9", "id": "epd", "top": 200, "left": -200, "rotate": 180, "attrs": { "color": "black" } }
+  ],
+  "connections": [
+    [ "esp:4", "epd:RST", "green", [] ],
+    [ "esp:5", "epd:BUSY", "gray", [] ],
+    [ "esp:6", "epd:CS", "blue", [] ],
+    [ "esp:7", "epd:DC", "purple", [] ],
+    [ "esp:15", "epd:DIN", "orange", [] ],
+    [ "esp:16", "epd:CLK", "yellow", [] ],
+    [ "esp:17", "epd:VCC", "red", [] ],
+    [ "esp:GND", "epd:GND", "black", [] ]
+  ]
+}

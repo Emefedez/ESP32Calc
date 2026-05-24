@@ -1,0 +1,9 @@
+.pio
+compile_commands.json
+sdkconfig.*
+bundle/
+build/
+__pycache__/
+*.pyc
+*.mpy
+tools/wokwi-tools/node_modules/
