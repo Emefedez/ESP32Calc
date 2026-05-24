@@ -35,26 +35,38 @@ void MenuUi::run() {
   while (true) {
     AppEvent event {};
     if (xQueueReceive(app_events_, &event, portMAX_DELAY) == pdTRUE) {
+#if ESP32CALC_USE_RAYLIB
+      update_state(event);
+      while (xQueueReceive(app_events_, &event, 0) == pdTRUE) {
+        update_state(event);
+      }
+      render(RefreshMode::Fast);
+#else
       handle_event(event);
+#endif
     }
   }
 }
 
-void MenuUi::handle_event(const AppEvent& event) {
+void MenuUi::update_state(const AppEvent& event) {
   switch (event.type) {
     case AppEventType::Key:
-      handle_key(event.key);
+      apply_key(event.key);
       break;
     case AppEventType::Battery:
       battery_ = event.battery;
-      render(RefreshMode::Fast);
       break;
     default:
       break;
   }
 }
 
-void MenuUi::handle_key(const KeyEvent& key) {
+void MenuUi::handle_event(const AppEvent& event) {
+  update_state(event);
+  render(RefreshMode::Fast);
+}
+
+void MenuUi::apply_key(const KeyEvent& key) {
   if (key.phase != KeyPhase::Pressed) {
     return;
   }
@@ -64,20 +76,17 @@ void MenuUi::handle_key(const KeyEvent& key) {
   if (def.role == KeyRole::Shift) {
     shift_ = !shift_;
     ESP32CALC_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
-    render(RefreshMode::Fast);
     return;
   }
 
   if (def.role == KeyRole::Alpha) {
     alpha_ = !alpha_;
     ESP32CALC_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
-    render(RefreshMode::Fast);
     return;
   }
 
   if (def.role == KeyRole::Mode) {
     screen_ = Screen::Menu;
-    render(RefreshMode::Fast);
     return;
   }
 
@@ -86,24 +95,26 @@ void MenuUi::handle_key(const KeyEvent& key) {
       case KeyRole::Up:
       case KeyRole::Left:
         move_selection(-1);
-        render(RefreshMode::Fast);
-        break;
+        return;
       case KeyRole::Down:
       case KeyRole::Right:
         move_selection(1);
-        render(RefreshMode::Fast);
-        break;
+        return;
       case KeyRole::Enter:
         open_selected_mode();
-        render(RefreshMode::Fast);
-        break;
+        return;
       default:
-        break;
+        return;
     }
   } else if (def.role == KeyRole::Clear) {
     screen_ = Screen::Menu;
-    render(RefreshMode::Fast);
+    return;
   }
+}
+
+void MenuUi::handle_key(const KeyEvent& key) {
+  apply_key(key);
+  render(RefreshMode::Fast);
 }
 
 void MenuUi::move_selection(int delta) {

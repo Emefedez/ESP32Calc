@@ -23,6 +23,9 @@ class Weact213BwDisplay {
 
   esp_err_t full_update(const uint8_t* buffer, size_t len);
   esp_err_t fast_update(const uint8_t* buffer, size_t len);
+  esp_err_t fast_partial_update(const uint8_t* buffer, size_t len,
+                                uint16_t x, uint16_t y,
+                                uint16_t width, uint16_t height);
   esp_err_t update_canvas(const MonoCanvas& canvas, RefreshMode mode);
   esp_err_t update_native_buffer(const std::array<uint8_t, config::kDisplayNativeBufferSize>& buffer,
                                  RefreshMode mode);
@@ -41,6 +44,12 @@ class Weact213BwDisplay {
   esp_err_t set_ram_counter(uint16_t x, uint16_t y);
   esp_err_t write_bw_buffer(const uint8_t* buffer, size_t len);
   esp_err_t write_red_buffer(const uint8_t* buffer, size_t len);
+  esp_err_t write_partial_bw_buffer(const uint8_t* buffer, size_t len,
+                                    uint16_t x, uint16_t y,
+                                    uint16_t width, uint16_t height);
+  esp_err_t write_partial_red_buffer(const uint8_t* buffer, size_t len,
+                                     uint16_t x, uint16_t y,
+                                     uint16_t width, uint16_t height);
   esp_err_t full_refresh();
   esp_err_t fast_refresh();
 
@@ -49,6 +58,8 @@ class Weact213BwDisplay {
   bool using_partial_mode_ = false;
   bool initial_full_refresh_done_ = false;
   std::array<uint8_t, config::kDisplayNativeBufferSize> packed_ {};
+  std::array<uint8_t, config::kDisplayNativeBufferSize> previous_ {};
+  MonoCanvas previous_canvas_ {};
 };
 
 }  // namespace esp32calc

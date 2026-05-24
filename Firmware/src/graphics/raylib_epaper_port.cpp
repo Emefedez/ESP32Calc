@@ -10,6 +10,7 @@
 #include "esp_lcd_panel_interface.h"
 #include "esp_lcd_panel_io_interface.h"
 #include "esp_raylib_port.h"
+#include "esp_timer.h"
 #include "graphics/mono_canvas.h"
 #include "raylib.h"
 
@@ -43,15 +44,15 @@ EpaperPanelIo* io_from_base(esp_lcd_panel_io_t* io) {
   return reinterpret_cast<EpaperPanelIo*>(io);
 }
 
-uint8_t rgb565_luma(uint16_t pixel) {
-  const uint8_t red = static_cast<uint8_t>(((pixel >> 11) & 0x1F) * 255 / 31);
-  const uint8_t green = static_cast<uint8_t>(((pixel >> 5) & 0x3F) * 255 / 63);
-  const uint8_t blue = static_cast<uint8_t>((pixel & 0x1F) * 255 / 31);
-  return static_cast<uint8_t>((red * 299 + green * 587 + blue * 114) / 1000);
-}
-
-bool rgb565_is_black(uint16_t pixel) {
-  return rgb565_luma(pixel) < kBlackThreshold;
+static inline bool rgb565_is_black(uint16_t pixel) {
+  if (pixel == 0xFFFF) return false;
+  if (pixel == 0x0000) return true;
+  const uint8_t r5 = (pixel >> 11) & 0x1F;
+  const uint8_t g6 = (pixel >> 5) & 0x3F;
+  const uint8_t b5 = pixel & 0x1F;
+  return static_cast<uint32_t>(r5) * 2460u +
+         static_cast<uint32_t>(g6) * 2376u +
+         static_cast<uint32_t>(b5) * 938u < 150000u;
 }
 
 void signal_transfer_done(EpaperPanelIo* io) {
@@ -88,28 +89,52 @@ esp_err_t panel_draw_bitmap(esp_lcd_panel_t* panel_base,
     panel->canvas.clear(true);
   }
 
+  const int64_t t_pixel_start = esp_timer_get_time();
   const auto* pixels = static_cast<const uint16_t*>(color_data);
-  for (int local_y = 0; local_y < height; ++local_y) {
-    const int dst_y = y_start + local_y;
-    if (dst_y < 0 || dst_y >= MonoCanvas::kHeight) {
-      continue;
+  if (x_start == 0 && y_start == 0 &&
+      x_end == MonoCanvas::kWidth && y_end == MonoCanvas::kHeight) {
+    uint8_t* canvas_data = panel->canvas.data();
+    for (int local_y = 0; local_y < height; ++local_y) {
+      const uint16_t* src_row = pixels + local_y * width;
+      for (int bx = 0; bx < width; bx += 8) {
+        uint8_t byte = 0xFF;
+        for (int b = 0; b < 8; ++b) {
+          if (rgb565_is_black(src_row[bx + b])) {
+            byte &= static_cast<uint8_t>(~(0x80 >> b));
+          }
+        }
+        canvas_data[local_y * ((MonoCanvas::kWidth + 7) / 8) + bx / 8] = byte;
+      }
     }
-    for (int local_x = 0; local_x < width; ++local_x) {
-      const int dst_x = x_start + local_x;
-      if (dst_x < 0 || dst_x >= MonoCanvas::kWidth) {
+  } else {
+    for (int local_y = 0; local_y < height; ++local_y) {
+      const int dst_y = y_start + local_y;
+      if (dst_y < 0 || dst_y >= MonoCanvas::kHeight) {
         continue;
       }
-      const uint16_t pixel = pixels[local_y * width + local_x];
-      panel->canvas.set_pixel(dst_x, dst_y, rgb565_is_black(pixel));
+      for (int local_x = 0; local_x < width; ++local_x) {
+        const int dst_x = x_start + local_x;
+        if (dst_x < 0 || dst_x >= MonoCanvas::kWidth) {
+          continue;
+        }
+        panel->canvas.set_pixel(dst_x, dst_y, rgb565_is_black(pixels[local_y * width + local_x]));
+      }
     }
   }
+  const int64_t t_pixel_end = esp_timer_get_time();
 
   if (x_start <= 0 && x_end >= MonoCanvas::kWidth && y_end >= MonoCanvas::kHeight) {
     const RefreshMode mode = panel->next_refresh_mode;
     panel->next_refresh_mode = RefreshMode::Full;
-    ESP32CALC_LOGD(TAG, "raylib RGB565 frame -> e-paper %s update",
-                   mode == RefreshMode::Full ? "full" : "fast");
+    ESP32CALC_LOGI(TAG, "raylib RGB565 frame -> e-paper %s update (pixel_loop=%lldus)",
+                   mode == RefreshMode::Full ? "full" : "fast",
+                   t_pixel_end - t_pixel_start);
+    const int64_t t_upd_start = esp_timer_get_time();
     const esp_err_t err = panel->display->update_canvas(panel->canvas, mode);
+    const int64_t t_upd_end = esp_timer_get_time();
+    ESP32CALC_LOGI(TAG, "update_canvas=%lldus (total frame=%lldus)",
+                   t_upd_end - t_upd_start,
+                   t_upd_end - t_pixel_start);
     signal_transfer_done(panel->io);
     ESP_RETURN_ON_ERROR(err, TAG, "display raylib frame");
     return ESP_OK;

@@ -132,8 +132,7 @@ static void exec_cmd(chip_t *c) {
 
   case 0x12:                           /* SW_RESET */
     reset_chip(c);
-    busy_on(c, 50);
-    return;                            /* keep BUSY high */
+    return;
 
   case 0x18:                           /* TEMP_SENSOR – 1 B, ignore */
     break;
@@ -147,7 +146,7 @@ static void exec_cmd(chip_t *c) {
 
   case 0x20:                           /* MASTER_ACTIVATE */
     render(c);
-    busy_on(c, c->update_ctrl2 == 0xF7 ? 100 : 50);
+    busy_off(c);                       /* instant — no refresh timing in sim */
     return;
 
   case 0x24:                           /* WRITE_BW_DATA */

@@ -32,6 +32,8 @@ class MenuUi {
     Settings,
   };
 
+  void apply_key(const KeyEvent& key);
+  void update_state(const AppEvent& event);
   void handle_event(const AppEvent& event);
   void handle_key(const KeyEvent& key);
   void render(RefreshMode mode);
