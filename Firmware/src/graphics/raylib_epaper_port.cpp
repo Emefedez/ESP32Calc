@@ -5,10 +5,10 @@
 #include <algorithm>
 #include <cstring>
 
-#include "app_log.h"
 #include "esp_check.h"
 #include "esp_lcd_panel_interface.h"
 #include "esp_lcd_panel_io_interface.h"
+#include "esp_log.h"
 #include "esp_raylib_port.h"
 #include "esp_timer.h"
 #include "graphics/mono_canvas.h"
@@ -31,6 +31,8 @@ struct EpaperPanel {
   EpaperPanelIo* io = nullptr;
   MonoCanvas canvas {};
   RefreshMode next_refresh_mode = RefreshMode::Full;
+  bool capture_mode = false;
+  const uint16_t* captured_fb = nullptr;
 };
 
 EpaperPanel g_panel;
@@ -69,21 +71,26 @@ esp_err_t panel_noop(esp_lcd_panel_t*) {
 }
 
 esp_err_t panel_draw_bitmap(esp_lcd_panel_t* panel_base,
-                            int x_start,
-                            int y_start,
-                            int x_end,
-                            int y_end,
+                            int x_start, int y_start,
+                            int x_end, int y_end,
                             const void* color_data) {
   EpaperPanel* panel = panel_from_base(panel_base);
   ESP_RETURN_ON_FALSE(panel != nullptr && panel->display != nullptr,
-                      ESP_ERR_INVALID_STATE,
-                      TAG,
-                      "panel not initialized");
+                      ESP_ERR_INVALID_STATE, TAG, "panel not initialized");
   ESP_RETURN_ON_FALSE(color_data != nullptr, ESP_ERR_INVALID_ARG, TAG, "missing color data");
 
   const int width = x_end - x_start;
   const int height = y_end - y_start;
   ESP_RETURN_ON_FALSE(width > 0 && height > 0, ESP_ERR_INVALID_ARG, TAG, "empty bitmap");
+
+  // Capture mode: store base framebuffer pointer, skip canvas + EPD
+  if (panel->capture_mode) {
+    if (y_start == 0 && x_start == 0) {
+      panel->captured_fb = static_cast<const uint16_t*>(color_data);
+    }
+    signal_transfer_done(panel->io);
+    return ESP_OK;
+  }
 
   if (x_start == 0 && y_start == 0) {
     panel->canvas.clear(true);
@@ -91,11 +98,14 @@ esp_err_t panel_draw_bitmap(esp_lcd_panel_t* panel_base,
 
   const int64_t t_pixel_start = esp_timer_get_time();
   const auto* pixels = static_cast<const uint16_t*>(color_data);
-  if (x_start == 0 && y_start == 0 &&
-      x_end == MonoCanvas::kWidth && y_end == MonoCanvas::kHeight) {
+
+  // Fast path: full-width chunk at any y position, byte-at-a-time
+  if (x_start == 0 && x_end == MonoCanvas::kWidth) {
     uint8_t* canvas_data = panel->canvas.data();
+    constexpr size_t kCanvasBpr = (MonoCanvas::kWidth + 7) / 8;
     for (int local_y = 0; local_y < height; ++local_y) {
       const uint16_t* src_row = pixels + local_y * width;
+      const size_t row_idx = static_cast<size_t>(y_start + local_y) * kCanvasBpr;
       for (int bx = 0; bx < width; bx += 8) {
         uint8_t byte = 0xFF;
         for (int b = 0; b < 8; ++b) {
@@ -103,38 +113,36 @@ esp_err_t panel_draw_bitmap(esp_lcd_panel_t* panel_base,
             byte &= static_cast<uint8_t>(~(0x80 >> b));
           }
         }
-        canvas_data[local_y * ((MonoCanvas::kWidth + 7) / 8) + bx / 8] = byte;
+        canvas_data[row_idx + bx / 8] = byte;
       }
     }
   } else {
+    // Slow path: arbitrary sub-region, pixel-by-pixel
     for (int local_y = 0; local_y < height; ++local_y) {
       const int dst_y = y_start + local_y;
-      if (dst_y < 0 || dst_y >= MonoCanvas::kHeight) {
-        continue;
-      }
+      if (dst_y < 0 || dst_y >= MonoCanvas::kHeight) continue;
       for (int local_x = 0; local_x < width; ++local_x) {
         const int dst_x = x_start + local_x;
-        if (dst_x < 0 || dst_x >= MonoCanvas::kWidth) {
-          continue;
-        }
-        panel->canvas.set_pixel(dst_x, dst_y, rgb565_is_black(pixels[local_y * width + local_x]));
+        if (dst_x < 0 || dst_x >= MonoCanvas::kWidth) continue;
+        panel->canvas.set_pixel(dst_x, dst_y,
+                                rgb565_is_black(pixels[local_y * width + local_x]));
       }
     }
   }
   const int64_t t_pixel_end = esp_timer_get_time();
 
-  if (x_start <= 0 && x_end >= MonoCanvas::kWidth && y_end >= MonoCanvas::kHeight) {
+  // End-of-frame detection: last chunk reaches the bottom
+  if (x_start == 0 && x_end >= MonoCanvas::kWidth && y_end >= MonoCanvas::kHeight) {
     const RefreshMode mode = panel->next_refresh_mode;
     panel->next_refresh_mode = RefreshMode::Full;
-    ESP32CALC_LOGI(TAG, "raylib RGB565 frame -> e-paper %s update (pixel_loop=%lldus)",
-                   mode == RefreshMode::Full ? "full" : "fast",
-                   t_pixel_end - t_pixel_start);
+    ESP_LOGI(TAG, "raylib RGB565 frame -> e-paper %s update (pixel_loop=%lldus)",
+             mode == RefreshMode::Full ? "full" : "fast",
+             t_pixel_end - t_pixel_start);
     const int64_t t_upd_start = esp_timer_get_time();
     const esp_err_t err = panel->display->update_canvas(panel->canvas, mode);
     const int64_t t_upd_end = esp_timer_get_time();
-    ESP32CALC_LOGI(TAG, "update_canvas=%lldus (total frame=%lldus)",
-                   t_upd_end - t_upd_start,
-                   t_upd_end - t_pixel_start);
+    ESP_LOGI(TAG, "update_canvas=%lldus (total frame=%lldus)",
+             t_upd_end - t_upd_start, t_upd_end - t_pixel_start);
     signal_transfer_done(panel->io);
     ESP_RETURN_ON_ERROR(err, TAG, "display raylib frame");
     return ESP_OK;
@@ -239,6 +247,20 @@ void RaylibEpaperPort::set_next_refresh_mode(RefreshMode mode) {
   g_panel.next_refresh_mode = mode;
 }
 
+void RaylibEpaperPort::capture_begin() {
+  g_panel.capture_mode = true;
+  g_panel.captured_fb = nullptr;
+}
+
+const uint16_t* RaylibEpaperPort::capture_end() {
+  g_panel.capture_mode = false;
+  return g_panel.captured_fb;
+}
+
+const uint16_t* RaylibEpaperPort::framebuffer() {
+  return g_panel.captured_fb;
+}
+
 esp_err_t RaylibEpaperPort::init(Weact213BwDisplay& display) {
   if (initialized_) {
     return ESP_OK;
@@ -271,8 +293,42 @@ esp_err_t RaylibEpaperPort::init(Weact213BwDisplay& display) {
   InitWindow(config::kDisplayLogicalWidth, config::kDisplayLogicalHeight, "ESP32Calc");
 
   initialized_ = true;
-  ESP32CALC_LOGI(TAG, "raylib software renderer ready for e-paper bridge");
+  ESP_LOGI(TAG, "raylib software renderer ready for e-paper bridge");
   return ESP_OK;
+}
+
+void draw_raylib_region(MonoCanvas& canvas, int x, int y, int w, int h,
+                         void (*draw_fn)(void*), void* ctx) {
+  if (!draw_fn) return;
+
+  // Ensure raylib is initialized (call init even if already done)
+  // Must have a display ref; use a global or pass one. For simplicity,
+  // we assume init was already called by MenuUi/RaylibEpaperPort.
+
+  g_panel.capture_mode = true;
+  g_panel.captured_fb = nullptr;
+  BeginDrawing();
+  BeginScissorMode(x, y, w, h);
+  DrawRectangle(x, y, w, h, WHITE);  // clear sub-region
+
+  // Offset coordinate system so draw_fn uses region-local coords
+  Camera2D cam{};
+  cam.target = {0, 0};
+  cam.offset = {static_cast<float>(x), static_cast<float>(y)};
+  cam.rotation = 0;
+  cam.zoom = 1.0f;
+  BeginMode2D(cam);
+  draw_fn(ctx);
+  EndMode2D();
+
+  EndScissorMode();
+  EndDrawing();  // capture mode prevents EPD flush
+
+  g_panel.capture_mode = false;
+  const uint16_t* fb = g_panel.captured_fb;
+  if (fb) {
+    canvas.blit_rgb565(fb, MonoCanvas::kWidth, MonoCanvas::kHeight, x, y, w, h);
+  }
 }
 
 }  // namespace esp32calc

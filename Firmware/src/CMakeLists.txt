@@ -1,7 +1,6 @@
 idf_component_register(
   SRCS
     "main.cpp"
-    "app_log.cpp"
     "keymap.cpp"
     "keypad_matrix.cpp"
     "display/weact_213_bw.cpp"

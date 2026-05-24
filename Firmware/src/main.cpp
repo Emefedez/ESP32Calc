@@ -1,10 +1,10 @@
 #include "app_config.h"
-#include "app_log.h"
 #include "battery/battery_monitor.h"
 #include "calc/calc_engine.h"
 #include "display/weact_213_bw.h"
 #include "esp_err.h"
 #include "esp_heap_caps.h"
+#include "esp_log.h"
 #include "esp_system.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
@@ -19,8 +19,7 @@
 #include <algorithm>
 #include <array>
 
-namespace {
-constexpr const char* TAG = "boot";
+static const char* TAG = "boot";
 
 QueueHandle_t g_app_events = nullptr;
 esp32calc::Weact213BwDisplay g_display;
@@ -30,7 +29,6 @@ esp32calc::SdStorage g_sd;
 esp32calc::CalcEngine g_calc;
 esp32calc::WirelessService g_wireless;
 esp32calc::MonoCanvas g_boot_canvas;
-std::array<uint8_t, esp32calc::config::kDisplayNativeBufferSize> g_native_test {};
 
 #if ESP32CALC_USE_RAYLIB
 constexpr uint32_t kUiTaskStackBytes = 128 * 1024;
@@ -43,29 +41,30 @@ void ui_task(void*) {
   ui.run();
 }
 
-void log_startup_memory() {
-  ESP32CALC_LOGI(TAG,
-                 "heap internal=%u psram=%u",
-                 heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
-                 heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
+static void log_startup_memory() {
+  ESP_LOGI(TAG, "heap internal=%u psram=%u",
+           heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+           heap_caps_get_free_size(MALLOC_CAP_SPIRAM));
 }
 
-void log_if_error(const char* action, esp_err_t err) {
+static void log_if_error(const char* action, esp_err_t err) {
   if (err != ESP_OK) {
-    ESP32CALC_LOG_ERR(TAG, action, err);
+    ESP_LOGE(TAG, "%s failed: %s (0x%x)", action, esp_err_to_name(err), err);
   }
 }
 
-void render_native_display_test() {
+static void render_native_display_test() {
 #if ESP32CALC_BOOT_NATIVE_TEST
   if (!g_display.ready()) {
     return;
   }
 
-  std::fill(g_native_test.begin(), g_native_test.end(), 0xFF);
+  using NativeBuf = std::array<uint8_t, esp32calc::config::kDisplayNativeBufferSize>;
+  NativeBuf& native_test = *new NativeBuf();
+  native_test.fill(0xFF);
   constexpr uint16_t bytes_per_row = esp32calc::config::kDisplayNativeWidth / 8;
   for (uint16_t y = 0; y < esp32calc::config::kDisplayNativeHeight; ++y) {
-    uint8_t* row = &g_native_test[static_cast<size_t>(y) * bytes_per_row];
+    uint8_t* row = &native_test[static_cast<size_t>(y) * bytes_per_row];
 
     row[0] = 0x00;
     row[bytes_per_row - 1] = 0x00;
@@ -82,14 +81,14 @@ void render_native_display_test() {
     }
   }
 
-  ESP32CALC_LOGI(TAG, "rendering raw native EPD diagnostic");
+  ESP_LOGI(TAG, "rendering raw native EPD diagnostic");
   log_if_error("native display test",
-               g_display.update_native_buffer(g_native_test, esp32calc::RefreshMode::Full));
+               g_display.update_native_buffer(native_test, esp32calc::RefreshMode::Full));
   vTaskDelay(pdMS_TO_TICKS(1600));
 #endif
 }
 
-void render_display_self_test() {
+static void render_display_self_test() {
 #if ESP32CALC_BOOT_DISPLAY_TEST
   if (!g_display.ready()) {
     return;
@@ -128,13 +127,13 @@ void render_display_self_test() {
   g_boot_canvas.draw_text(35, 50, "ROT90 250X122", 1, true);
   g_boot_canvas.draw_text(35, 74, "MODE MENU NEXT", 1, true);
 
-  ESP32CALC_LOGI(TAG, "rendering boot display self-test");
+  ESP_LOGI(TAG, "rendering boot display self-test");
   log_if_error("display self-test",
                g_display.update_canvas(g_boot_canvas, esp32calc::RefreshMode::Full));
   vTaskDelay(pdMS_TO_TICKS(1200));
 #endif
 }
-void render_boot_splash() {
+static void render_boot_splash() {
   if (!g_display.ready()) {
     return;
   }
@@ -163,16 +162,13 @@ void render_boot_splash() {
   g_boot_canvas.draw_text(10, 110, "v0.1.0", 1, true);
   g_boot_canvas.draw_text(180, 110, "Booting...", 1, true);
 
-  ESP32CALC_LOGI(TAG, "rendering boot splash");
+  ESP_LOGI(TAG, "rendering boot splash");
   log_if_error("boot splash",
                g_display.update_canvas(g_boot_canvas, esp32calc::RefreshMode::Full));
 }
 
-}  // namespace
-
 extern "C" void app_main(void) {
-  esp32calc::log::init();
-  ESP32CALC_LOGI(TAG, "ESP32Calc firmware boot");
+  ESP_LOGI(TAG, "ESP32Calc firmware boot");
   log_startup_memory();
 
   esp_err_t err = nvs_flash_init();
@@ -181,18 +177,18 @@ extern "C" void app_main(void) {
     err = nvs_flash_init();
   }
   if (err != ESP_OK) {
-    ESP32CALC_LOG_ERR(TAG, "nvs init", err);
+    ESP_LOGE(TAG, "nvs init failed: %s (0x%x)", esp_err_to_name(err), err);
   }
 
   g_app_events = xQueueCreate(esp32calc::config::kAppEventQueueDepth, sizeof(esp32calc::AppEvent));
   if (g_app_events == nullptr) {
-    ESP32CALC_LOGE(TAG, "failed to create app event queue");
+    ESP_LOGE(TAG, "failed to create app event queue");
     return;
   }
 
   err = g_display.init();
   if (err != ESP_OK) {
-    ESP32CALC_LOG_ERR(TAG, "display init", err);
+    ESP_LOGE(TAG, "display init failed: %s (0x%x)", esp_err_to_name(err), err);
   }
   render_boot_splash();
   render_native_display_test();
@@ -202,14 +198,14 @@ extern "C" void app_main(void) {
   if (err == ESP_OK) {
     log_if_error("keypad start", g_keypad.start(g_app_events));
   } else {
-    ESP32CALC_LOG_ERR(TAG, "keypad init", err);
+    ESP_LOGE(TAG, "keypad init failed: %s (0x%x)", esp_err_to_name(err), err);
   }
 
   err = g_battery.init();
   if (err == ESP_OK) {
     log_if_error("battery start", g_battery.start(g_app_events));
   } else {
-    ESP32CALC_LOG_ERR(TAG, "battery init", err);
+    ESP_LOGE(TAG, "battery init failed: %s (0x%x)", esp_err_to_name(err), err);
   }
 
   g_sd.mount();
@@ -225,8 +221,8 @@ extern "C" void app_main(void) {
       nullptr,
       esp32calc::config::kUiCore);
   if (ui_ok != pdPASS) {
-    ESP32CALC_LOGE(TAG, "failed to start ui task");
+    ESP_LOGE(TAG, "failed to start ui task");
   }
 
-  ESP32CALC_LOGI(TAG, "boot complete");
+  ESP_LOGI(TAG, "boot complete");
 }

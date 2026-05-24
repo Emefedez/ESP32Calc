@@ -4,9 +4,9 @@
 #include <cmath>
 
 #include "app_config.h"
-#include "app_log.h"
 #include "esp_adc/adc_oneshot.h"
 #include "esp_check.h"
+#include "esp_log.h"
 #include "freertos/task.h"
 #include "pins.h"
 
@@ -31,7 +31,7 @@ esp_err_t BatteryMonitor::init() {
 
   adc_handle_ = handle;
   latest_ = sample();
-  ESP32CALC_LOGI(TAG, "adc ready on GPIO%d, pack=%umV", pins::kBatterySense, latest_.pack_mv);
+  ESP_LOGI(TAG, "adc ready on GPIO%d, pack=%umV", pins::kBatterySense, latest_.pack_mv);
   return ESP_OK;
 }
 
@@ -63,11 +63,11 @@ void BatteryMonitor::task() {
       xQueueSend(app_events_, &event, 0);
     }
 
-    ESP32CALC_LOGD(TAG,
-                   "adc=%umV pack=%umV charge=%u%%",
-                   latest_.adc_mv,
-                   latest_.pack_mv,
-                   latest_.percent);
+    ESP_LOGD(TAG,
+             "adc=%umV pack=%umV charge=%u%%",
+             latest_.adc_mv,
+             latest_.pack_mv,
+             latest_.percent);
     vTaskDelay(pdMS_TO_TICKS(config::kBatteryPollPeriodMs));
   }
 }
@@ -78,7 +78,7 @@ BatterySnapshot BatteryMonitor::sample() {
   if (handle != nullptr) {
     esp_err_t err = adc_oneshot_read(handle, kBatteryAdcChannel, &raw);
     if (err != ESP_OK) {
-      ESP32CALC_LOGW(TAG, "adc read failed: %s", esp_err_to_name(err));
+      ESP_LOGW(TAG, "adc read failed: %s", esp_err_to_name(err));
     }
   }
 

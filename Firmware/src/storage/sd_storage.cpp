@@ -3,10 +3,10 @@
 #include <sys/stat.h>
 
 #include "app_config.h"
-#include "app_log.h"
 #include "driver/sdspi_host.h"
 #include "driver/spi_common.h"
 #include "esp_check.h"
+#include "esp_log.h"
 #include "esp_vfs_fat.h"
 #include "pins.h"
 #include "sdmmc_cmd.h"
@@ -27,7 +27,7 @@ esp_err_t SdStorage::mount() {
 
   esp_err_t err = spi_bus_initialize(pins::kSdSpiHost, &bus_cfg, SPI_DMA_CH_AUTO);
   if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
-    ESP32CALC_LOG_ERR(TAG, "initialize sd spi", err);
+    ESP_LOGE(TAG, "initialize sd spi failed: %s (0x%x)", esp_err_to_name(err), err);
     return err;
   }
 
@@ -50,14 +50,14 @@ esp_err_t SdStorage::mount() {
                                 &mount_config,
                                 &card);
   if (err != ESP_OK) {
-    ESP32CALC_LOGW(TAG, "card not mounted: %s", esp_err_to_name(err));
+    ESP_LOGW(TAG, "card not mounted: %s", esp_err_to_name(err));
     mounted_ = false;
     return err;
   }
 
   mounted_ = true;
   mkdir(config::kProgramsPath, 0775);
-  ESP32CALC_LOGI(TAG, "mounted at %s", config::kSdMountPoint);
+  ESP_LOGI(TAG, "mounted at %s", config::kSdMountPoint);
   return ESP_OK;
 }
 

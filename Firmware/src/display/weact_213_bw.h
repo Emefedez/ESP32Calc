@@ -37,7 +37,6 @@ class Weact213BwDisplay {
   esp_err_t command(uint8_t value);
   esp_err_t data(const uint8_t* data, size_t len, bool wait = true);
   esp_err_t command_with_data(uint8_t cmd, const uint8_t* data, size_t len);
-  esp_err_t data_repeat(uint8_t value, uint32_t repetitions);
   esp_err_t use_full_frame();
   esp_err_t use_partial_frame(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
   esp_err_t set_ram_area(uint16_t start_x, uint16_t start_y, uint16_t end_x, uint16_t end_y);

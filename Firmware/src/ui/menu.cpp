@@ -3,10 +3,13 @@
 #include <algorithm>
 #include <cstdio>
 
-#include "app_log.h"
+#include "esp_log.h"
 #include "freertos/task.h"
 #include "keymap.h"
+
 #if ESP32CALC_USE_RAYLIB
+#include <cmath>
+#include "graphics/raylib_epaper_port.h"
 #include "raylib.h"
 #endif
 
@@ -15,35 +18,59 @@ namespace {
 constexpr const char* TAG = "ui";
 
 constexpr std::array<const char*, 7> kModes = {
-    "STANDARD",
-    "GRAPH",
-    "SYMBOLIC",
-    "PROGRAMS",
-    "FILES",
-    "WIRELESS",
-    "SETTINGS",
+    "STANDARD", "GRAPH", "SYMBOLIC",
+    "PROGRAMS", "FILES", "WIRELESS", "SETTINGS",
 };
+
+#if ESP32CALC_USE_RAYLIB
+bool g_raylib_ready = false;
+
+void graph_draw_fn(void* ctx) {
+  (void)ctx;
+  constexpr int gw = MonoCanvas::kWidth;
+  constexpr int kSbH = 14;
+  constexpr int gh = MonoCanvas::kHeight - kSbH;
+
+  ClearBackground(WHITE);
+  DrawLine(0, gh / 2, gw, gh / 2, BLACK);
+  DrawLine(20, 0, 20, gh, BLACK);
+
+  Vector2 prev = {0, (float)(gh / 2 - 30 * sinf((0 - 20) / 30.0f))};
+  for (int x = 1; x < gw; ++x) {
+    float fx = (float)(x - 20) / 30.0f;
+    float y = (float)(gh / 2 - 30 * sinf(fx));
+    Vector2 cur = {(float)x, y};
+    DrawLineV(prev, cur, BLACK);
+    prev = cur;
+  }
+}
+
+void ensure_raylib(Weact213BwDisplay& display) {
+  if (!g_raylib_ready) {
+    RaylibEpaperPort rp;
+    rp.init(display);
+    g_raylib_ready = true;
+  }
+}
+#endif
+
 }  // namespace
 
 MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display)
     : app_events_(app_events), display_(display) {}
 
 void MenuUi::run() {
-  ESP32CALC_LOGI(TAG, "starting menu");
+  ESP_LOGI(TAG, "starting menu");
   render(RefreshMode::Full);
 
   while (true) {
     AppEvent event {};
     if (xQueueReceive(app_events_, &event, portMAX_DELAY) == pdTRUE) {
-#if ESP32CALC_USE_RAYLIB
       update_state(event);
       while (xQueueReceive(app_events_, &event, 0) == pdTRUE) {
         update_state(event);
       }
       render(RefreshMode::Fast);
-#else
-      handle_event(event);
-#endif
     }
   }
 }
@@ -61,33 +88,25 @@ void MenuUi::update_state(const AppEvent& event) {
   }
 }
 
-void MenuUi::handle_event(const AppEvent& event) {
-  update_state(event);
-  render(RefreshMode::Fast);
-}
-
 void MenuUi::apply_key(const KeyEvent& key) {
-  if (key.phase != KeyPhase::Pressed) {
-    return;
-  }
+  if (key.phase != KeyPhase::Pressed) return;
 
   const KeyDef& def = key_at(key.row, key.col);
 
-  if (def.role == KeyRole::Shift) {
-    shift_ = !shift_;
-    ESP32CALC_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
-    return;
-  }
-
-  if (def.role == KeyRole::Alpha) {
-    alpha_ = !alpha_;
-    ESP32CALC_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
-    return;
-  }
-
-  if (def.role == KeyRole::Mode) {
-    screen_ = Screen::Menu;
-    return;
+  switch (def.role) {
+    case KeyRole::Shift:
+      shift_ = !shift_;
+      ESP_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
+      return;
+    case KeyRole::Alpha:
+      alpha_ = !alpha_;
+      ESP_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
+      return;
+    case KeyRole::Mode:
+      screen_ = Screen::Menu;
+      return;
+    default:
+      break;
   }
 
   if (screen_ == Screen::Menu) {
@@ -108,29 +127,20 @@ void MenuUi::apply_key(const KeyEvent& key) {
     }
   } else if (def.role == KeyRole::Clear) {
     screen_ = Screen::Menu;
-    return;
   }
-}
-
-void MenuUi::handle_key(const KeyEvent& key) {
-  apply_key(key);
-  render(RefreshMode::Fast);
 }
 
 void MenuUi::move_selection(int delta) {
   const int count = static_cast<int>(kModes.size());
   int next = static_cast<int>(selected_) + delta;
-  if (next < 0) {
-    next = count - 1;
-  } else if (next >= count) {
-    next = 0;
-  }
+  if (next < 0) next = count - 1;
+  else if (next >= count) next = 0;
   selected_ = static_cast<uint8_t>(next);
 }
 
 void MenuUi::open_selected_mode() {
   screen_ = screen_for_index(selected_);
-  ESP32CALC_LOGI(TAG, "open mode: %s", kModes[selected_]);
+  ESP_LOGI(TAG, "open mode: %s", kModes[selected_]);
 }
 
 MenuUi::Screen MenuUi::screen_for_index(uint8_t index) const {
@@ -140,70 +150,18 @@ MenuUi::Screen MenuUi::screen_for_index(uint8_t index) const {
     case 2: return Screen::Symbolic;
     case 3: return Screen::Programs;
     case 4: return Screen::Files;
-    case 5: return Screen::Wireless;
     default: return Screen::Settings;
   }
 }
 
 void MenuUi::render(RefreshMode mode) {
-#if ESP32CALC_USE_RAYLIB
-  render_raylib(mode);
-  return;
-#else
   canvas_.clear(true);
   render_status_bar();
 
   if (screen_ == Screen::Menu) {
     render_menu();
   } else {
-    switch (screen_) {
-      case Screen::Standard:
-        render_placeholder("STANDARD", "NUMERIC ENTRY");
-        break;
-      case Screen::Graph:
-        render_placeholder("GRAPH", "PLOT PIPELINE");
-        break;
-      case Screen::Symbolic:
-        render_placeholder("SYMBOLIC", "CAS ENGINE");
-        break;
-      case Screen::Programs:
-        render_placeholder("PROGRAMS", "/SDCARD/PROGRAMS");
-        break;
-      case Screen::Files:
-        render_placeholder("FILES", "SD BROWSER");
-        break;
-      case Screen::Wireless:
-        render_placeholder("WIRELESS", "RESERVED");
-        break;
-      case Screen::Settings:
-        render_placeholder("SETTINGS", "DEVICE CONFIG");
-        break;
-      case Screen::Menu:
-        break;
-    }
-  }
-
-  RefreshMode actual_mode = RefreshMode::Full;
-#if !ESP32CALC_FORCE_FULL_REFRESH
-  actual_mode = first_render_done_ ? mode : RefreshMode::Full;
-#else
-  (void)mode;
-#endif
-  esp_err_t err = display_.update_canvas(canvas_, actual_mode);
-  if (err != ESP_OK) {
-    ESP32CALC_LOGW(TAG, "display update skipped: %s", esp_err_to_name(err));
-  } else {
-    first_render_done_ = true;
-  }
-#endif
-}
-
-#if ESP32CALC_USE_RAYLIB
-void MenuUi::render_raylib(RefreshMode mode) {
-  esp_err_t err = raylib_.init(display_);
-  if (err != ESP_OK) {
-    ESP32CALC_LOGW(TAG, "raylib init skipped: %s", esp_err_to_name(err));
-    return;
+    render_content();
   }
 
   RefreshMode actual = RefreshMode::Full;
@@ -212,92 +170,38 @@ void MenuUi::render_raylib(RefreshMode mode) {
 #else
   (void)mode;
 #endif
-  raylib_.set_next_refresh_mode(actual);
-
-  BeginDrawing();
-  ClearBackground(RAYWHITE);
-  render_status_bar_raylib();
-
-  if (screen_ == Screen::Menu) {
-    render_menu_raylib();
+  esp_err_t err = display_.update_canvas(canvas_, actual);
+  if (err != ESP_OK) {
+    ESP_LOGW(TAG, "display update skipped: %s", esp_err_to_name(err));
   } else {
-    switch (screen_) {
-      case Screen::Standard:
-        render_placeholder_raylib("STANDARD", "NUMERIC ENTRY");
-        break;
-      case Screen::Graph:
-        render_placeholder_raylib("GRAPH", "PLOT PIPELINE");
-        break;
-      case Screen::Symbolic:
-        render_placeholder_raylib("SYMBOLIC", "CAS ENGINE");
-        break;
-      case Screen::Programs:
-        render_placeholder_raylib("PROGRAMS", "/SDCARD/PROGRAMS");
-        break;
-      case Screen::Files:
-        render_placeholder_raylib("FILES", "SD BROWSER");
-        break;
-      case Screen::Wireless:
-        render_placeholder_raylib("WIRELESS", "RESERVED");
-        break;
-      case Screen::Settings:
-        render_placeholder_raylib("SETTINGS", "DEVICE CONFIG");
-        break;
-      case Screen::Menu:
-        break;
-    }
-  }
-
-  EndDrawing();
-  first_render_done_ = true;
-}
-
-void MenuUi::render_status_bar_raylib() {
-  DrawText("ESP32CALC", 2, 2, 8, BLACK);
-
-  if (shift_) {
-    DrawRectangle(68, 0, 32, 12, BLACK);
-    DrawText("SHIFT", 72, 2, 8, WHITE);
-  } else {
-    DrawText("SHIFT", 72, 2, 8, BLACK);
-  }
-
-  if (alpha_) {
-    DrawRectangle(103, 0, 33, 12, BLACK);
-    DrawText("ALPHA", 107, 2, 8, WHITE);
-  } else {
-    DrawText("ALPHA", 107, 2, 8, BLACK);
-  }
-
-  char battery_text[16] {};
-  std::snprintf(battery_text, sizeof(battery_text), "%u%%", battery_.percent);
-  DrawText(battery_text, 224, 2, 8, BLACK);
-  DrawLine(0, 13, MonoCanvas::kWidth, 13, BLACK);
-}
-
-void MenuUi::render_menu_raylib() {
-  DrawText("MODE", 4, 19, 16, BLACK);
-
-  for (uint8_t i = 0; i < kModes.size(); ++i) {
-    const int x = (i % 2) == 0 ? 5 : 128;
-    const int y = 43 + (i / 2) * 18;
-    if (i == selected_) {
-      DrawRectangle(x - 3, y - 3, 115, 14, BLACK);
-      DrawText(kModes[i], x, y, 8, WHITE);
-    } else {
-      DrawRectangleLines(x - 3, y - 3, 115, 14, BLACK);
-      DrawText(kModes[i], x, y, 8, BLACK);
-    }
+    first_render_done_ = true;
   }
 }
 
-void MenuUi::render_placeholder_raylib(const char* title, const char* subtitle) {
-  DrawText(title, 4, 22, 16, BLACK);
-  DrawText(subtitle, 5, 49, 8, BLACK);
-  DrawLine(5, 64, 245, 64, BLACK);
-  DrawText("MODE RETURNS MENU", 5, 76, 8, BLACK);
-}
+void MenuUi::render_content() {
+  switch (screen_) {
+    case Screen::Graph:
+#if ESP32CALC_USE_RAYLIB
+      ensure_raylib(display_);
+      draw_raylib_region(canvas_, 0, kStatusBarHeight,
+                         MonoCanvas::kWidth, MonoCanvas::kHeight - kStatusBarHeight,
+                         graph_draw_fn, nullptr);
+#else
+      render_placeholder("GRAPH", "RAYLIB DISABLED");
 #endif
+      return;
+    case Screen::Standard:
+    case Screen::Symbolic:
+    case Screen::Programs:
+    case Screen::Files:
+    case Screen::Wireless:
+    case Screen::Settings:
+      render_placeholder("MODE", "SELECT FROM MENU");
+      return;
+    case Screen::Menu:
+      return;
+  }
+}
 
 void MenuUi::render_status_bar() {
   canvas_.draw_text(2, 2, "ESP32CALC", 1, true);

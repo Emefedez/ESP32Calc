@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <cstring>
 
-#include "app_log.h"
 #include "driver/gpio.h"
 #include "esp_check.h"
+#include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -163,14 +163,15 @@ esp_err_t Weact213BwDisplay::init() {
 
   ready_ = true;
   previous_.fill(0xFF);
+  packed_.fill(0xFF);
   previous_canvas_.clear(true);
-  ESP32CALC_LOGI(TAG,
-                 "WeAct 2.13 B/W display ready (%ux%u logical, %ux%u visible, spi=%uHz)",
-                 config::kDisplayLogicalWidth,
-                 config::kDisplayLogicalHeight,
-                 config::kDisplayLogicalWidth,
-                 config::kDisplayVisibleLogicalHeight,
-                 ESP32CALC_EPD_SPI_HZ);
+  ESP_LOGI(TAG,
+           "WeAct 2.13 B/W display ready (%ux%u logical, %ux%u visible, spi=%uHz)",
+           config::kDisplayLogicalWidth,
+           config::kDisplayLogicalHeight,
+           config::kDisplayLogicalWidth,
+           config::kDisplayVisibleLogicalHeight,
+           ESP32CALC_EPD_SPI_HZ);
   return ESP_OK;
 }
 
@@ -187,10 +188,10 @@ esp_err_t Weact213BwDisplay::wait_until_idle(uint32_t timeout_ms) {
   const TickType_t timeout = pdMS_TO_TICKS(timeout_ms);
   while (gpio_get_level(pins::kDisplayBusy) == 1) {
     if (xTaskGetTickCount() - start > timeout) {
-      ESP32CALC_LOGW(TAG,
-                     "busy timeout after %ums, busy=%d",
-                     timeout_ms,
-                     gpio_get_level(pins::kDisplayBusy));
+      ESP_LOGW(TAG,
+               "busy timeout after %ums, busy=%d",
+               timeout_ms,
+               gpio_get_level(pins::kDisplayBusy));
       return ESP_ERR_TIMEOUT;
     }
     vTaskDelay(pdMS_TO_TICKS(2));
@@ -227,11 +228,11 @@ esp_err_t Weact213BwDisplay::data(const uint8_t* bytes, size_t len, bool wait) {
   if (wait) {
     esp_err_t err = wait_until_idle();
     int64_t t2 = esp_timer_get_time();
-    ESP32CALC_LOGI(TAG, "data: spi_tx=%lldus busy_wait=%lldus total=%lldus",
-                   t1 - t0, t2 - t1, t2 - t0);
+    ESP_LOGI(TAG, "data: spi_tx=%lldus busy_wait=%lldus total=%lldus",
+             t1 - t0, t2 - t1, t2 - t0);
     return err;
   }
-  ESP32CALC_LOGD(TAG, "data: spi_tx=%lldus (no wait)", t1 - t0);
+  ESP_LOGD(TAG, "data: spi_tx=%lldus (no wait)", t1 - t0);
   return ESP_OK;
 }
 
@@ -240,22 +241,6 @@ esp_err_t Weact213BwDisplay::command_with_data(uint8_t command_value,
                                                size_t len) {
   ESP_RETURN_ON_ERROR(command(command_value), TAG, "command");
   return data(bytes, len, true);
-}
-
-esp_err_t Weact213BwDisplay::data_repeat(uint8_t value, uint32_t repetitions) {
-  std::array<uint8_t, 128> chunk {};
-  std::fill(chunk.begin(), chunk.end(), value);
-  gpio_set_level(pins::kDisplayDc, 1);
-
-  while (repetitions > 0) {
-    const uint32_t count = std::min<uint32_t>(repetitions, chunk.size());
-    spi_transaction_t tx {};
-    tx.length = count * 8;
-    tx.tx_buffer = chunk.data();
-    ESP_RETURN_ON_ERROR(spi_device_polling_transmit(spi_, &tx), TAG, "repeat data");
-    repetitions -= count;
-  }
-  return ESP_OK;
 }
 
 esp_err_t Weact213BwDisplay::use_full_frame() {
@@ -315,7 +300,8 @@ esp_err_t Weact213BwDisplay::write_bw_buffer(const uint8_t* buffer, size_t len) 
                       TAG,
                       "bad BW buffer");
   ESP_RETURN_ON_ERROR(use_full_frame(), TAG, "full frame before BW write");
-  return command_with_data(cmd::kWriteBwData, buffer, len);
+  ESP_RETURN_ON_ERROR(command(cmd::kWriteBwData), TAG, "bw");
+  return data(buffer, len, false);
 }
 
 esp_err_t Weact213BwDisplay::write_red_buffer(const uint8_t* buffer, size_t len) {
@@ -324,7 +310,8 @@ esp_err_t Weact213BwDisplay::write_red_buffer(const uint8_t* buffer, size_t len)
                       TAG,
                       "bad red/old buffer");
   ESP_RETURN_ON_ERROR(use_full_frame(), TAG, "full frame before red write");
-  return command_with_data(cmd::kWriteRedData, buffer, len);
+  ESP_RETURN_ON_ERROR(command(cmd::kWriteRedData), TAG, "red");
+  return data(buffer, len, false);
 }
 
 esp_err_t Weact213BwDisplay::full_refresh() {
@@ -361,13 +348,13 @@ esp_err_t Weact213BwDisplay::fast_refresh() {
   vTaskDelay(pdMS_TO_TICKS(10));
   esp_err_t err = wait_until_idle(5'000);
   int64_t t1 = esp_timer_get_time();
-  ESP32CALC_LOGI(TAG, "fast_refresh: busy_wait=%lldus (total cmd=%lldus)",
-                 t1 - t0, t1 - t0);
+  ESP_LOGI(TAG, "fast_refresh: busy_wait=%lldus (total cmd=%lldus)",
+           t1 - t0, t1 - t0);
   return err;
 }
 
 esp_err_t Weact213BwDisplay::full_update(const uint8_t* buffer, size_t len) {
-  ESP32CALC_LOGD(TAG, "full update");
+  ESP_LOGD(TAG, "full update");
   ESP_RETURN_ON_ERROR(write_red_buffer(buffer, len), TAG, "write old buffer");
   ESP_RETURN_ON_ERROR(write_bw_buffer(buffer, len), TAG, "write bw buffer");
   ESP_RETURN_ON_ERROR(full_refresh(), TAG, "full refresh");
@@ -376,7 +363,7 @@ esp_err_t Weact213BwDisplay::full_update(const uint8_t* buffer, size_t len) {
 }
 
 esp_err_t Weact213BwDisplay::fast_update(const uint8_t* buffer, size_t len) {
-  ESP32CALC_LOGD(TAG, "fast update");
+  ESP_LOGD(TAG, "fast update");
   ESP_RETURN_ON_ERROR(write_bw_buffer(buffer, len), TAG, "write bw buffer");
   ESP_RETURN_ON_ERROR(fast_refresh(), TAG, "fast refresh");
   ESP_RETURN_ON_ERROR(write_red_buffer(buffer, len), TAG, "sync old buffer");
@@ -387,20 +374,22 @@ esp_err_t Weact213BwDisplay::write_partial_bw_buffer(
     const uint8_t* buffer, size_t len,
     uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
   ESP_RETURN_ON_ERROR(use_partial_frame(x, y, width, height), TAG, "partial frame");
-  return command_with_data(cmd::kWriteBwData, buffer, len);
+  ESP_RETURN_ON_ERROR(command(cmd::kWriteBwData), TAG, "bw");
+  return data(buffer, len, false);
 }
 
 esp_err_t Weact213BwDisplay::write_partial_red_buffer(
     const uint8_t* buffer, size_t len,
     uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
   ESP_RETURN_ON_ERROR(use_partial_frame(x, y, width, height), TAG, "partial frame");
-  return command_with_data(cmd::kWriteRedData, buffer, len);
+  ESP_RETURN_ON_ERROR(command(cmd::kWriteRedData), TAG, "red");
+  return data(buffer, len, false);
 }
 
 esp_err_t Weact213BwDisplay::fast_partial_update(
     const uint8_t* buffer, size_t len,
     uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
-  ESP32CALC_LOGD(TAG, "partial update (%ux%u @ %u,%u)", width, height, x, y);
+  ESP_LOGD(TAG, "partial update (%ux%u @ %u,%u)", width, height, x, y);
   ESP_RETURN_ON_ERROR(write_partial_bw_buffer(buffer, len, x, y, width, height),
                       TAG, "partial bw write");
   ESP_RETURN_ON_ERROR(fast_refresh(), TAG, "fast refresh");
@@ -422,8 +411,7 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
   }
   int64_t t_memcmp = esp_timer_get_time();
 
-  // Find dirty region from canvas byte comparison
-  constexpr size_t kCanvasBpr = (MonoCanvas::kWidth + 7) / 8;
+  // Find changed canvas bytes
   size_t first_cb = canvas.size(), last_cb = 0;
   for (size_t i = 0; i < canvas.size(); i++) {
     if (canvas.data()[i] != previous_canvas_.data()[i]) {
@@ -431,24 +419,36 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
       if (i > last_cb) last_cb = i;
     }
   }
-  previous_canvas_ = canvas;
+  int64_t t_canvas_diff = esp_timer_get_time();
 
-  // Affine: native_x = 127 - logical_y → a native byte (8 px) spans 8 logical
-  // rows. Align dirty rows to 8-row boundaries so full native columns are rebuilt.
-  const int16_t ly1 = static_cast<int16_t>(first_cb / kCanvasBpr);
-  const int16_t ly2 = static_cast<int16_t>(last_cb / kCanvasBpr);
-  const int16_t ly1_aligned = (ly1 / 8) * 8;
-  const int16_t ly2_aligned = std::min<int16_t>(
-      static_cast<int16_t>(((ly2 + 7) / 8) * 8 - 1),
-      static_cast<int16_t>(MonoCanvas::kHeight - 1));
-  const int16_t dirty_h = ly2_aligned - ly1_aligned + 1;
-  constexpr int16_t kFullThresholdH = MonoCanvas::kHeight - 16;
-  const bool full_dirty = (dirty_h >= kFullThresholdH);
-
+  // Start from previous native state and patch only changed canvas bytes
+  constexpr size_t kCpr = (MonoCanvas::kWidth + 7) / 8;
+  constexpr size_t kNpr = config::kDisplayNativeWidth / 8;
   previous_ = packed_;
-  int64_t t_before_native = esp_timer_get_time();
-  canvas.to_epd_native(packed_);
-  int64_t t_after_native = esp_timer_get_time();
+  for (size_t idx = first_cb; idx <= last_cb; ++idx) {
+    const uint8_t new_b = canvas.data()[idx];
+    const uint8_t old_b = previous_canvas_.data()[idx];
+    if (new_b == old_b) continue;
+
+    const uint16_t ly = static_cast<uint16_t>(idx / kCpr);
+    const uint16_t bx = static_cast<uint16_t>(idx % kCpr);
+    const uint16_t native_x = static_cast<uint16_t>(config::kDisplayNativeWidth - 1 - ly);
+    const uint16_t byte_col = native_x >> 3;
+    const uint8_t clr_mask = static_cast<uint8_t>(~(0x80 >> (native_x & 7)));
+
+    for (int b = 0; b < 8; ++b) {
+      const uint8_t bit = 0x80 >> b;
+      if ((new_b & bit) == (old_b & bit)) continue;
+      size_t ni = static_cast<size_t>(bx * 8 + b) * kNpr + byte_col;
+      if (new_b & bit) {
+        packed_[ni] |= static_cast<uint8_t>(~clr_mask);
+      } else {
+        packed_[ni] &= clr_mask;
+      }
+    }
+  }
+  previous_canvas_ = canvas;
+  int64_t t_native_patch = esp_timer_get_time();
 
   // Find dirty bytes in native buffer for partial update positioning
   size_t first = 0, last = 0;
@@ -477,39 +477,37 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
   const uint16_t dirty_h2 = ey - sy + 1;
   const uint16_t dirty_bytes = (eb - sb + 1) * dirty_h2;
 
-  if (mode == RefreshMode::Full || dirty_bytes > packed_.size() / 2) {
-    esp_err_t ret = mode == RefreshMode::Full
-                    ? full_update(packed_.data(), packed_.size())
-                    : fast_update(packed_.data(), packed_.size());
+  if (dirty_bytes > packed_.size() * 3 / 4 && mode == RefreshMode::Full) {
+    // Very large change on a full-required frame: slow full refresh
+    esp_err_t ret = full_update(packed_.data(), packed_.size());
     int64_t t_end = esp_timer_get_time();
-    ESP32CALC_LOGI(TAG, "update_canvas: memcmp=%lldus canvas_diff=%lldus to_epd_native=%lldus dirty_scan=%lldus update=%lldus total=%lldus",
-                   t_memcmp - t0,
-                   t_before_native - t_memcmp,
-                   t_after_native - t_before_native,
-                   t_dirty - t_after_native,
-                   t_end - t_dirty,
-                   t_end - t0);
+    ESP_LOGI(TAG, "update_canvas(FULL): memcmp=%lldus diff=%lldus patch=%lldus scan=%lldus send=%lldus total=%lldus",
+                   t_memcmp - t0, t_canvas_diff - t_memcmp,
+                   t_native_patch - t_canvas_diff, t_dirty - t_native_patch,
+                   t_end - t_dirty, t_end - t0);
     return ret;
   }
 
   uint8_t partial[4000];
-  size_t idx = 0;
+  size_t pidx = 0;
   for (uint16_t r = sy; r <= ey; r++) {
     for (uint16_t bc = sb; bc <= eb; bc++) {
-      partial[idx++] = packed_[r * 16 + bc];
+      partial[pidx++] = packed_[r * 16 + bc];
     }
   }
+
+  esp_err_t ret;
   int64_t t_copy = esp_timer_get_time();
-  esp_err_t ret = fast_partial_update(partial, idx, sb * 8, sy, dirty_w2, dirty_h2);
+  if (dirty_bytes > packed_.size() / 2) {
+    ret = fast_update(packed_.data(), packed_.size());
+  } else {
+    ret = fast_partial_update(partial, pidx, sb * 8, sy, dirty_w2, dirty_h2);
+  }
   int64_t t_end = esp_timer_get_time();
-  ESP32CALC_LOGI(TAG, "update_canvas(PARTIAL): memcmp=%lldus canvas_diff=%lldus to_epd_native=%lldus dirty_scan=%lldus partial_copy=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u)",
-                 t_memcmp - t0,
-                 t_before_native - t_memcmp,
-                 t_after_native - t_before_native,
-                 t_dirty - t_after_native,
-                 t_copy - t_dirty,
-                 t_end - t_copy,
-                 t_end - t0,
+  ESP_LOGI(TAG, "update_canvas(PARTIAL): memcmp=%lldus diff=%lldus patch=%lldus scan=%lldus copy=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u)",
+                 t_memcmp - t0, t_canvas_diff - t_memcmp,
+                 t_native_patch - t_canvas_diff, t_dirty - t_native_patch,
+                 t_copy - t_dirty, t_end - t_copy, t_end - t0,
                  dirty_w2, dirty_h2, sb * 8, sy);
   return ret;
 }

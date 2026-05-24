@@ -3,7 +3,7 @@
 #include <dirent.h>
 
 #include "app_config.h"
-#include "app_log.h"
+#include "esp_log.h"
 
 namespace esp32calc {
 namespace {
@@ -14,7 +14,7 @@ esp_err_t ProgramLoader::list_programs(std::vector<std::string>& out) const {
   out.clear();
   DIR* dir = opendir(config::kProgramsPath);
   if (dir == nullptr) {
-    ESP32CALC_LOGW(TAG, "program directory unavailable: %s", config::kProgramsPath);
+    ESP_LOGW(TAG, "program directory unavailable: %s", config::kProgramsPath);
     return ESP_ERR_NOT_FOUND;
   }
 

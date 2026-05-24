@@ -1,9 +1,9 @@
 #include "keypad_matrix.h"
 
 #include "app_config.h"
-#include "app_log.h"
 #include "driver/gpio.h"
 #include "esp_check.h"
+#include "esp_log.h"
 #include "esp_rom_sys.h"
 #include "freertos/task.h"
 #include "keymap.h"
@@ -43,7 +43,7 @@ esp_err_t KeypadMatrix::init() {
     gpio_set_level(col, 1);
   }
 
-  ESP32CALC_LOGI(TAG, "matrix ready: %u rows x %u cols", kRows, kCols);
+  ESP_LOGI(TAG, "matrix ready: %u rows x %u cols", kRows, kCols);
   return ESP_OK;
 }
 
@@ -127,7 +127,7 @@ void KeypadMatrix::publish_key(uint8_t row, uint8_t col, KeyPhase phase) {
   event.key = KeyEvent {row, col, key.label, phase};
 
   if (phase == KeyPhase::Pressed) {
-    ESP32CALC_LOGD(TAG, "press r%u c%u %s", row, col, key.label);
+    ESP_LOGD(TAG, "press r%u c%u %s", row, col, key.label);
   }
 
   if (app_events_ != nullptr) {

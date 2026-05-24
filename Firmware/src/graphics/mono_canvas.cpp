@@ -1,6 +1,6 @@
 #include "graphics/mono_canvas.h"
 
-#include "app_log.h"
+#include "esp_log.h"
 #include "esp_timer.h"
 #include <algorithm>
 #include <cctype>
@@ -178,28 +178,47 @@ void MonoCanvas::draw_text(int x, int y, const char* text, uint8_t scale, bool b
   }
 }
 
-void MonoCanvas::to_epd_native_region(
-    std::array<uint8_t, kNativeBufferSize>& out,
-    int16_t rx, int16_t ry, int16_t rw, int16_t rh) const {
-  const int16_t x_end = std::min<int16_t>(static_cast<int16_t>(rx + rw), static_cast<int16_t>(kWidth));
-  const int16_t y_end = std::min<int16_t>(static_cast<int16_t>(ry + rh), static_cast<int16_t>(kHeight));
-  constexpr uint16_t kBytesPerRow = (kWidth + 7) / 8;
-  constexpr uint16_t kNativeBytesPerRow = config::kDisplayNativeWidth / 8;
+void MonoCanvas::blit_rgb565(const uint16_t* pixels, int src_w, int src_h,
+                              int dx, int dy, int w, int h) {
+  if (!pixels) return;
+  if (w < 0) w = src_w;
+  if (h < 0) h = src_h;
+  constexpr int kBpr = (kWidth + 7) / 8;
 
-  for (int16_t ly = ry; ly < y_end; ++ly) {
-    for (int16_t lx = rx; lx < x_end; ++lx) {
-      const size_t idx = static_cast<size_t>(ly) * kBytesPerRow + lx / 8;
-      const uint8_t m = 0x80 >> (lx % 8);
-      const bool black = (buffer_[idx] & m) == 0;
+  for (int row = 0; row < h; ++row) {
+    const int cy = dy + row;
+    if (cy < 0 || cy >= kHeight) continue;
+    const uint16_t* src = pixels + row * src_w;
 
-      const uint16_t nx = config::kDisplayNativeWidth - 1 - ly;
-      const uint16_t ny = lx;
-      const size_t ni = static_cast<size_t>(ny) * kNativeBytesPerRow + nx / 8;
-      const uint8_t nm = 0x80 >> (nx % 8);
-      if (black) {
-        out[ni] &= static_cast<uint8_t>(~nm);
+    for (int bx = 0; bx < w; bx += 8) {
+      const int cx = dx + bx;
+      if (cx >= kWidth) break;
+      const int bits = std::min(8, w - bx);
+      int byte_col = cx / 8;
+      int bit_shift = cx % 8;
+
+      uint8_t byte = 0xFF;
+      for (int b = 0; b < bits; ++b) {
+        if ((cx + b) < 0) continue;
+        const uint16_t p = src[bx + b];
+        if (p == 0xFFFF) continue;  // pure white
+        const uint32_t r5 = (p >> 11) & 0x1F;
+        const uint32_t g6 = (p >> 5) & 0x3F;
+        const uint32_t b5 = p & 0x1F;
+        if (r5 * 77 + g6 * 150 + b5 * 29 < 2400) {  // ~50% luminance threshold
+          byte &= static_cast<uint8_t>(~(0x80 >> b));
+        }
+      }
+
+      size_t idx = static_cast<size_t>(cy) * kBpr + byte_col;
+      if (bit_shift == 0) {
+        buffer_[idx] = byte;
       } else {
-        out[ni] |= nm;
+        buffer_[idx] = (buffer_[idx] & (0xFFu >> (8 - bit_shift))) | (byte << bit_shift);
+        int next_bits = bits - (8 - bit_shift);
+        if (next_bits > 0 && byte_col + 1 < kBpr) {
+          buffer_[idx + 1] = (buffer_[idx + 1] & (0xFFu << next_bits)) | (byte >> (8 - bit_shift));
+        }
       }
     }
   }
@@ -238,9 +257,9 @@ void MonoCanvas::to_epd_native(std::array<uint8_t, kNativeBufferSize>& out) cons
   }
 
   const int64_t t1 = esp_timer_get_time();
-  ESP32CALC_LOGD("canvas",
-                 "to_epd_native: black=%u skipped_bytes=%u loop=%lldus",
-                 black_pixels, skipped_bytes, t1 - t0);
+  ESP_LOGD("canvas",
+           "to_epd_native: black=%u skipped_bytes=%u loop=%lldus",
+           black_pixels, skipped_bytes, t1 - t0);
 }
 
 }  // namespace esp32calc

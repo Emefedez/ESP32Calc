@@ -2,11 +2,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <algorithm>
-
-#ifndef ESP32CALC_DEBUG_LOGS
-#define ESP32CALC_DEBUG_LOGS 1
-#endif
 
 #ifndef ESP32CALC_USE_RAYLIB
 #define ESP32CALC_USE_RAYLIB 0
@@ -61,17 +56,3 @@ constexpr const char* kSdMountPoint = "/sdcard";
 constexpr const char* kProgramsPath = "/sdcard/programs";
 
 }  // namespace esp32calc::config
-
-struct DirtyRect {
-  bool is_full = true;
-  int16_t x = 0, y = 0, w = 0, h = 0;
-
-  void expand(int16_t px, int16_t py) {
-    if (is_full) return;
-    if (w == 0) { x = px; y = py; w = 1; h = 1; return; }
-    if (px < x) { w += static_cast<int16_t>(x - px); x = px; }
-    if (py < y) { h += static_cast<int16_t>(y - py); y = py; }
-    if (px - x + 1 > w) w = static_cast<int16_t>(px - x + 1);
-    if (py - y + 1 > h) h = static_cast<int16_t>(py - y + 1);
-  }
-};

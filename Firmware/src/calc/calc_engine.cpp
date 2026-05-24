@@ -1,7 +1,7 @@
 #include "calc/calc_engine.h"
 
 #include "app_config.h"
-#include "app_log.h"
+#include "esp_log.h"
 #include "freertos/task.h"
 
 namespace esp32calc {
@@ -27,7 +27,7 @@ void CalcEngine::task_trampoline(void* arg) {
 }
 
 void CalcEngine::task() {
-  ESP32CALC_LOGI(TAG, "symbolic/numeric engine placeholder ready");
+  ESP_LOGI(TAG, "symbolic/numeric engine placeholder ready");
   while (true) {
     // Future work: consume requests from a calc queue and emit AppEventType::CalcResult.
     vTaskDelay(pdMS_TO_TICKS(1000));

@@ -9,9 +9,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "graphics/mono_canvas.h"
-#if ESP32CALC_USE_RAYLIB
-#include "graphics/raylib_epaper_port.h"
-#endif
 
 namespace esp32calc {
 
@@ -22,39 +19,27 @@ class MenuUi {
 
  private:
   enum class Screen : uint8_t {
-    Menu,
-    Standard,
-    Graph,
-    Symbolic,
-    Programs,
-    Files,
-    Wireless,
-    Settings,
+    Menu, Standard, Graph, Symbolic,
+    Programs, Files, Wireless, Settings,
   };
 
   void apply_key(const KeyEvent& key);
   void update_state(const AppEvent& event);
-  void handle_event(const AppEvent& event);
-  void handle_key(const KeyEvent& key);
   void render(RefreshMode mode);
-#if ESP32CALC_USE_RAYLIB
-  void render_raylib(RefreshMode mode);
-  void render_status_bar_raylib();
-  void render_menu_raylib();
-  void render_placeholder_raylib(const char* title, const char* subtitle);
-#endif
+
   void render_status_bar();
   void render_menu();
+  void render_content();
   void render_placeholder(const char* title, const char* subtitle);
+
   void open_selected_mode();
   void move_selection(int delta);
   Screen screen_for_index(uint8_t index) const;
 
+  static constexpr int kStatusBarHeight = 14;
+
   QueueHandle_t app_events_;
   Weact213BwDisplay& display_;
-#if ESP32CALC_USE_RAYLIB
-  RaylibEpaperPort raylib_;
-#endif
   MonoCanvas canvas_ {};
   BatterySnapshot battery_ {};
   Screen screen_ = Screen::Menu;

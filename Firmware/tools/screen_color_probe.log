@@ -1,220 +1,2132 @@
-[2026-05-24T12:58:57] capture #1
-source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
-captured_size: 620x334 pixels
-avg: #C7C9C8  dark: 13.587%  mid: 16.827%  light: 69.586%  luma: 0..255
-colors: raw_unique=396 quantized_unique=37
+[2026-05-24T14:58:30] capture #1
+source: region (x=-1192 y=426 w=236 h=126 scale=1.33)
+captured_size: 472x252 pixels
+avg: #4C4E4C  dark: 64.582%  mid: 12.550%  light: 22.869%  luma: 0..255
+colors: raw_unique=356 quantized_unique=43
 latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
 top_quantized:
-  #FFFFFF  120173 px  58.032%
-  #303030  17181 px  8.297%
-  #F0F0F0  8781 px  4.240%
-  #E0E0E0  6908 px  3.336%
-  #D0D0D0  5834 px  2.817%
-  #C0C0C0  5095 px  2.460%
-  #A0A0A0  4795 px  2.316%
-  #B0B0B0  4417 px  2.133%
-  #000000  4194 px  2.025%
-  #808080  3826 px  1.848%
-  #909090  3642 px  1.759%
-  #707070  3201 px  1.546%
-  #405030  2986 px  1.442%
-  #606060  2779 px  1.342%
+  #000000  62099 px  52.209%
+  #FFFFFF  22784 px  19.155%
+  #303030  10826 px  9.102%
+  #408050  2864 px  2.408%
+  #808080  1708 px  1.436%
+  #405030  1578 px  1.327%
+  #606060  1454 px  1.222%
+  #C0C0C0  1434 px  1.206%
+  #F0F0F0  1431 px  1.203%
+  #E0E0E0  1391 px  1.169%
+  #404040  1299 px  1.092%
+  #202020  1215 px  1.021%
+  #D0D0D0  1163 px  0.978%
+  #A0A0A0  1141 px  0.959%
 luma_map (# dark, + mid, . light):
-  +###############################################################################
-  +..MM...MM...M....M....M....M....M..M.M....M..MMM....M...MM....M.M.MM...MM.M..M#
-  +.....M..M.M......M..M.MM........M..M.........M.M..M....M.M..M.MM.M......M.MM.M#
-  +..M..M....MM.....M..M...........M..M.........M....M.....M...M..........M..M..+#
-  +.......M.............M..............M........................M..............M+#
-  +....MM....M.........M........MM....M........MM....M.........M...M....M....M..+#
-  +M.M.......M.M..M.M...MM..MMM.M.MM.M.MM.M..M......M....M.M.......M....M.M..M..+#
-  +..MM....M..MM....M...MMM..M....MM...MMM...M....MM...M....M....MM........M....M#
-  +MMMMMM....M..MM..M..MMMM.MM.MMM.MMMMMM.MM.M.MM.M..M.M.M.MM.MM...M..M.MMM..M..+#
-  +MM.MMM..M.MM..MM.M.MM.M..MM..MM.M..M.M.M..M.MM.M..M...M..M.MM.M.MM...MM.M.MM.M#
-  +MM.M....MM.M.M..M.M.M..M.MM......MMMM.M...MMM...M...MM...MM.M..M...MM.M....M.+#
-  +...M....MM.M.MM..MMM..MMM....M..MMMM.MM...MMM..MMMM..MM..MMM..MMMM.MMM..M..M.M#
-  +......MMMM.M..M.MM.M.MM......MMMM.MMMMM..MMMMMMMM.MMM.M..M.MMMM...M.MM..M..MMM#
-  +....M.MMM...M.M.MM.M.MM.M..M...MM.M..M.M..M...M..M.MM...MM.MMMM.M.MM...MMM.MMM#
-  +MM...MM...MMM..MMM..MM...M.M..M.M..M..MMM.M...M.........M.....M....M.........M#
-  +MMM.MMM..MMMM.MMMM.MMM.MMM.M.MM..M.M..MMM...............MM....M....M.........M#
-  +M..MMM..MM...MM..MMM..MMMM..MMM.MM.M..M.M..M.M.MM....M..MMM...MM....MMM.MM...M#
-  +..M.MM.MMMMMMMM..MMMMMMMMMMMMMMMMM.MMMM..MMM.MMMM.MM.M..MMM.MMMM.MM.MMMMMMMMMM#
-  +.MM.MMMMM.MMM...MM..MMM...MM.MMMMM.MMM...MM.MMM.M.MM....M...MM.M..M..M.M..M.M+#
-  +M.M..M.MM.MMMMMM.M..MMMM.MMM.MMMMMMMMMMMMMM.MMM.MMMM.MM.M..MMM.MMMM..M.M..MMM+#
-  +M..M.M..MMM..MMM.M.MM.MMMM...MM.M.MM.MMMM...MM.MMMMM.MM..M.MM.MMM.M..M..M.M..M#
-  +M..MMM.MM.M..MM...MMM.MM.M..MMM..MMM..M.M...MM..M.MMMMM..MMMMMMMM...MM..MMM.M+#
-  +MM.M.MMMM..MMMMMMMM..MMM.M.MM.MMMM.MMMM..MMMM.MMM.MMMM..MMM...MMMM.MMM..MM.M.M#
-  +MM...M..M.MM...MM...MMM.M.M..M.MM..MM.MMMM...MMMM.MM.M..MM..MM.MMMM...MM.MM.M+#
-  +MMMM.MMMM.MMMM.MMM..MMMMMMM.M.MMMM.MMMMMMMM..MMM.MMMM..MMM..MMMMMMMM..MMMMMMMM#
-  +.MMMMMMMMMMM.MM..MMM..MMM.MMMM.MMMM.MMMMM.MMM.MMMMM.MMM..MMMM.MMM..MMMMMMMM..M#
-  +.MMMMMM.MMMM.MMMMMMMMMMMMM..MMMMMMMM.MMMM.M.MM.MMMM..MM..MMMM.MMMM..MMMMMMMM.M#
-  +............M.MMMM...MMM.MMMM.MMM..MMM..MMM..MMMMMMMMM...M..MMM.MMMM.MMMMMMMMM#
-  +............M.MMMM..MMMMMMMMMMM.MM.MMMM.MMM..MMMMMMMMM...M..MMM..MMMM.M.MMMMMM#
-  +..M........MM.M..M..MM...M.M.MM......M........M.....M...M....................+#
-  +M....+....+....M.M..+....M.M.MM.+....M....+....M....M....+...................+#
+  ################################################################################
+  ++MMMMMMMMMMMMMM+MM+++++MMMMMMMMM++MM+MMMMMM++++++++++++++++++++++++++MMMMM++M+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMM.MMMMMMMMMM.MMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMM.MMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMM.MMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMM.MMMMMMMMMM.MMMMMMMM.MMMMMMMMMMMMMM+#
+  ++M..................................MMMM..................................MMM+#
+  ++MM.M.M.M...M..M.M.M.MM.MMM.MMMM....MMMM..................................MMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++M..................................MMMM..................................MMM+#
+  ++MMM..MMMMMMMMM.M...................MMMMM.MMM+MMMMM.MMM...................MMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMM.MM.M...........................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMM.MM.MMMM........................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+#
   ################################################################################
 
-[2026-05-24T12:58:58] capture #2
-source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
-captured_size: 620x334 pixels
-avg: #C7C8C8  dark: 15.046%  mid: 15.365%  light: 69.589%  luma: 0..255
-colors: raw_unique=310 quantized_unique=28
+[2026-05-24T15:02:00] capture #2
+source: region (x=-1221 y=420 w=300 h=155 scale=5)
+captured_size: 600x310 pixels
+avg: #191A19  dark: 86.091%  mid: 8.762%  light: 5.146%  luma: 0..255
+colors: raw_unique=315 quantized_unique=30
 latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
 top_quantized:
-  #FFFFFF  120331 px  58.108%
-  #303030  21754 px  10.505%
-  #F0F0F0  8772 px  4.236%
-  #E0E0E0  6897 px  3.331%
-  #D0D0D0  5838 px  2.819%
-  #C0C0C0  5096 px  2.461%
-  #A0A0A0  4796 px  2.316%
-  #B0B0B0  4412 px  2.131%
-  #000000  4206 px  2.031%
-  #808080  3827 px  1.848%
-  #909090  3641 px  1.758%
-  #707070  3201 px  1.546%
-  #606060  2781 px  1.343%
-  #505050  2604 px  1.257%
+  #000000  147822 px  79.474%
+  #303030  7991 px  4.296%
+  #FFFFFF  6363 px  3.421%
+  #408050  3092 px  1.662%
+  #909090  2534 px  1.362%
+  #202020  2170 px  1.167%
+  #707070  1966 px  1.057%
+  #404040  1514 px  0.814%
+  #B0B0B0  1345 px  0.723%
+  #505050  1321 px  0.710%
+  #808080  1315 px  0.707%
+  #A0A0A0  1227 px  0.660%
+  #C0C0C0  1155 px  0.621%
+  #101010  1116 px  0.600%
+luma_map (# dark, + mid, . light):
+  ++##############################################################################
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMM...MMM...MM...MMM...MMM..MMMM..MMM..MMMMMMMMMM.MMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+
+  +MM+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++M+
+
+[2026-05-24T15:02:09] capture #3
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #D1D2D1  dark: 11.649%  mid: 12.227%  light: 76.124%  luma: 0..255
+colors: raw_unique=315 quantized_unique=30
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  132516 px  71.245%
+  #000000  8525 px  4.583%
+  #303030  7963 px  4.281%
+  #808080  3413 px  1.835%
+  #408050  3092 px  1.662%
+  #F0F0F0  3051 px  1.640%
+  #707070  2814 px  1.513%
+  #C0C0C0  2593 px  1.394%
+  #606060  2562 px  1.377%
+  #A0A0A0  2362 px  1.270%
+  #404040  2264 px  1.217%
+  #101010  2116 px  1.138%
+  #B0B0B0  2060 px  1.108%
+  #909090  2023 px  1.088%
+luma_map (# dark, + mid, . light):
+  ++##############################################################################
+  ++MMMMMMMMMMMMM..MM.....MM.MMMMMM..MM.MMMMMM...........................MMMMMMM.+
+  ++MMMMM.MMMMMMMMMMM.....MMMMMMM.M..MMMMMMMMM...........................MMMMMMMM+
+  ++.............................................................................+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++MM.M.MM.MM..MMM..............................................................+
+  ++MMMMM..MM.MMM................................................................+
+  ++MMMMM..MM.MMMMM..............................................................+
+  ++MM.MMMMMMMM.MMM..............................................................+
+  ++.............................................................................+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMM.........................M..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMM.........................M..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..M..................................MM..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  ++MMM.MMMMMM..MMMM...................M..MMMMMMMMMMMMMMMM....................M..+
+  +++MMM.MMMMM+..M+M...................M..MMMMMMMMMMMMMMMM....................M..+
+  +++MMM..MM.MMMMMMM...................M..MM.M.MMMMMM.M.MM....................M..+
+  ++M..................................M..M..................................MM..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  +++M.M..MM.+.........................M..MMMMMMMM.MMMM+M+....................M..+
+  +++..M.MMM.M.........................M..MMMMMMMM.MMM........................M..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  ++M..................................M.........................................+
+  +++..M.M.M.MMM.M.....................M.........................................+
+  ++++MM.M.M.M+M+M+M...................M.........................................+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.........................................+
+  ++.............................................................................+
+  ++.............................................................................+
+  ++.............................................................................+
+  ++.............................................................................+
+  ++.............................................................................+
+
+[2026-05-24T15:02:13] capture #4
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #D1D2D1  dark: 11.939%  mid: 11.937%  light: 76.124%  luma: 0..255
+colors: raw_unique=269 quantized_unique=23
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  132516 px  71.245%
+  #303030  8605 px  4.626%
+  #000000  8525 px  4.583%
+  #808080  3413 px  1.835%
+  #408050  3092 px  1.662%
+  #F0F0F0  3051 px  1.640%
+  #707070  3012 px  1.619%
+  #C0C0C0  2593 px  1.394%
+  #606060  2548 px  1.370%
+  #A0A0A0  2362 px  1.270%
+  #404040  2264 px  1.217%
+  #101010  2116 px  1.138%
+  #B0B0B0  2060 px  1.108%
+  #909090  2023 px  1.088%
+luma_map (# dark, + mid, . light):
+  ++##############################################################################
+  ++MMMMMMMMMMMMM..MM.....MM.MMMMMM..MM.MMMMMM...........................MMMMMMM.+
+  ++MMMMM.MMMMMMMMMMM.....MMMMMMM.M..MMMMMMMMM...........................MMMMMMMM+
+  ++.............................................................................+
+  +MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++MM.M.MM.MM..MMM..............................................................+
+  ++MMMMM..MM.MMM................................................................+
+  ++MMMMM..MM.MMMMM..............................................................+
+  ++MM.MMMMMMMM.MMM..............................................................+
+  ++.............................................................................+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMM.........................M..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMM.........................M..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..M..................................MM..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  ++MMM.MMMMMM..MMMM...................M..MMMMMMMMMMMMMMMM....................M..+
+  +++MMM.MMMMM+..M+M...................M..MMMMMMMMMMMMMMMM....................M..+
+  +++MMM..MM.MMMMMMM...................M..MM.M.MMMMMM.M.MM....................M..+
+  ++M..................................M..M..................................MM..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  +++M.M..MM.+.........................M..MMMMMMMM.MMMM+M+....................M..+
+  +++..M.MMM.M.........................M..MMMMMMMM.MMM........................M..+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..+
+  ++M..................................M.........................................+
+  +++..M.M.M.MMM.M.....................M.........................................+
+  ++++MM.M.M.M+M+M+M...................M.........................................+
+  ++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.........................................+
+  ++.............................................................................+
+  ++.............................................................................+
+  ++.............................................................................+
+  ++.............................................................................+
+  ++.............................................................................+
+
+[2026-05-24T15:02:13] capture #5
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #9FA29E  dark: 34.547%  mid: 14.586%  light: 50.867%  luma: 0..255
+colors: raw_unique=892 quantized_unique=165
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  87186 px  46.874%
+  #303030  53603 px  28.819%
+  #408050  9359 px  5.032%
+  #000000  6177 px  3.321%
+  #F0F0F0  2417 px  1.299%
+  #909090  2252 px  1.211%
+  #101010  2171 px  1.167%
+  #707070  2021 px  1.087%
+  #D0D0D0  2019 px  1.085%
+  #606060  1843 px  0.991%
+  #C0C0C0  1766 px  0.949%
+  #A0A0A0  1757 px  0.945%
+  #808080  1679 px  0.903%
+  #404040  1611 px  0.866%
 luma_map (# dark, + mid, . light):
   ################################################################################
-  +..MM...MM...M....M....M....M....M..M.M....M..MMM....M...MM....M.M.MM...MM.M..M#
-  +.....M..M.M......M..M.MM........M..M.........M.M..M....M.M..M.MM.M......M.MM.M#
-  +..M..M....MM.....M..M...........M..M.........M....M.....M...M..........M..M..+#
-  +.......M.............M..............M........................M..............M+#
-  +....MM....M.........M........MM....M........MM....M.........M...M....M....M..+#
-  +M.M.......M.M..M.M...MM..MMM.M.MM.M.MM.M..M......M....M.M.......M....M.M..M..+#
-  +..MM....M..MM....M...MMM..M....MM...MMM...M....MM...M....M....MM........M....M#
-  +MMMMMM....M..MM..M..MMMM.MM.MMM.MMMMMM.MM.M.MM.M..M.M.M.MM.MM...M..M.MMM..M..+#
-  +MM.MMM..M.MM..MM.M.MM.M..MM..MM.M..M.M.M..M.MM.M..M...M..M.MM.M.MM...MM.M.MM.M#
-  +MM.M....MM.M.M..M.M.M..M.MM......MMMM.M...MMM...M...MM...MM.M..M...MM.M....M.+#
-  +...M....MM.M.MM..MMM..MMM....M..MMMM.MM...MMM..MMMM..MM..MMM..MMMM.MMM..M..M.M#
-  +......MMMM.M..M.MM.M.MM......MMMM.MMMMM..MMMMMMMM.MMM.M..M.MMMM...M.MM..M..MMM#
-  +....M.MMM...M.M.MM.M.MM.M..M...MM.M..M.M..M...M..M.MM...MM.MMMM.M.MM...MMM.MMM#
-  +MM...MM...MMM..MMM..MM...M.M..M.M..M..MMM.M...M.........M.....M....M.........M#
-  +MMM.MMM..MMMM.MMMM.MMM.MMM.M.MM..M.M..MMM...............MM....M....M.........M#
-  +M..MMM..MM...MM..MMM..MMMM..MMM.MM.M..M.M..M.M.MM....M..MMM...MM....MMM.MM...M#
-  +..M.MM.MMMMMMMM..MMMMMMMMMMMMMMMMM.MMMM..MMM.MMMM.MM.M..MMM.MMMM.MM.MMMMMMMMMM#
-  +.MM.MMMMM.MMM...MM..MMM...MM.MMMMM.MMM...MM.MMM.M.MM....M...MM.M..M..M.M..M.M+#
-  +M.M..M.MM.MMMMMM.M..MMMM.MMM.MMMMMMMMMMMMMM.MMM.MMMM.MM.M..MMM.MMMM..M.M..MMM+#
-  +M..M.M..MMM..MMM.M.MM.MMMM...MM.M.MM.MMMM...MM.MMMMM.MM..M.MM.MMM.M..M..M.M..M#
-  +M..MMM.MM.M..MM...MMM.MM.M..MMM..MMM..M.M...MM..M.MMMMM..MMMMMMMM...MM..MMM.M+#
-  +MM.M.MMMM..MMMMMMMM..MMM.M.MM.MMMM.MMMM..MMMM.MMM.MMMM..MMM...MMMM.MMM..MM.M.M#
-  +MM...M..M.MM...MM...MMM.M.M..M.MM..MM.MMMM...MMMM.MM.M..MM..MM.MMMM...MM.MM.M+#
-  +MMMM.MMMM.MMMM.MMM..MMMMMMM.M.MMMM.MMMMMMMM..MMM.MMMM..MMM..MMMMMMMM..MMMMMMMM#
-  +.MMMMMMMMMMM.MM..MMM..MMM.MMMM.MMMM.MMMMM.MMM.MMMMM.MMM..MMMM.MMM..MMMMMMMM..M#
-  +.MMMMMM.MMMM.MMMMMMMMMMMMM..MMMMMMMM.MMMM.M.MM.MMMM..MM..MMMM.MMMM..MMMMMMMM.M#
-  +............M.MMMM...MMM.MMMM.MMM..MMM..MMM..MMMMMMMMM...M..MMM.MMMM.MMMMMMMMM#
-  +............M.MMMM..MMMMMMMMMMM.MM.MMMM.MMM..MMMMMMMMM...M..MMM..MMMM.M.MMMMMM#
-  +..M........MM.M..M..MM...M.M.MM......M........M.....M...M....................+#
-  +M....+....+....M.M..+....M.M.MM.+....M....+....M....M....+...................+#
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++++++#########################################################################
+  R++++.++M.MM..M.M....M.....M.MMMM.M.....MMMM.........................M.MMMM.####
+  R+++++++M.+M..MMM.MMMM......MMMMM.M..MM.M.MMM........................MMMMM..####
+  R++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM####
+  R+++++++....................................................................####
+  R+++++++.MMMMMMMMM.MMM......................................................####
+  R+++++++.MMMM.MM.MMMM.......................................................####
+  R+++++++.M.MMMMMMM.MMM......................................................####
+  R+++++++....................................................................####
+  R+++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..####
+  R+++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMM......................M..####
+  R++++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MM..MM.M.......................M..####
+  R++++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..####
+  R++++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..####
+  R++++.++MMMMMMMM.M.MMM.................M..MMMMMMMMMMMMMM.................M..####
+  R++++.++M..M..M..M.M...................M..M.....MM..MM...................M..####
+  R++++.++M..............................M..M..............................M..####
+  R++++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..####
+  R++++.++MMMM..MMMM.....................M..MM.MMMMM.MMMMM.................M..####
+  R+++++++MM.MMMMMM......................M..M.MMMMMMMMMMMM.................M..####
+  R+++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM....................................####
+  R+++++++MMMMMMMMMM.MMM.................M....................................####
+  R+++++++MMMMM.M.MMMMMM.................M....................................####
+  R+++++++M..............................M....................................####
+  R+++++++....................................................................####
+
+[2026-05-24T15:02:14] capture #6
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #333333  dark: 100.000%  mid: 0.000%  light: 0.000%  luma: 51..51
+colors: raw_unique=1 quantized_unique=1
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  186000 px  100.000%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
   ################################################################################
 
-[2026-05-24T12:59:02] capture #3
-source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
-captured_size: 620x334 pixels
-avg: #CFD0CF  dark: 13.765%  mid: 11.904%  light: 74.331%  luma: 0..255
-colors: raw_unique=308 quantized_unique=27
+[2026-05-24T15:02:18] capture #7
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #5D5F5C  dark: 73.005%  mid: 7.346%  light: 19.649%  luma: 0..255
+colors: raw_unique=757 quantized_unique=153
 latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
 top_quantized:
-  #FFFFFF  134681 px  65.038%
-  #303030  21061 px  10.170%
-  #F0F0F0  7149 px  3.452%
-  #E0E0E0  5665 px  2.736%
-  #D0D0D0  4663 px  2.252%
-  #000000  4157 px  2.007%
-  #A0A0A0  3991 px  1.927%
-  #C0C0C0  3894 px  1.880%
-  #B0B0B0  3424 px  1.653%
-  #909090  2832 px  1.368%
-  #808080  2795 px  1.350%
-  #408050  2557 px  1.235%
-  #707070  2319 px  1.120%
-  #606060  2139 px  1.033%
+  #303030  130676 px  70.256%
+  #FFFFFF  33529 px  18.026%
+  #408050  5738 px  3.085%
+  #000000  2653 px  1.426%
+  #909090  1081 px  0.581%
+  #404040  950 px  0.511%
+  #505050  931 px  0.501%
+  #707070  918 px  0.494%
+  #808080  880 px  0.473%
+  #F0F0F0  822 px  0.442%
+  #E0E0E0  789 px  0.424%
+  #202020  731 px  0.393%
+  #606060  709 px  0.381%
+  #C0C0C0  695 px  0.374%
 luma_map (# dark, + mid, . light):
   ################################################################################
-  +M....MM...M....M....M....M....M....+....M....M....M....M....M....M....M....M.+#
-  +.M....M....M.........M...M.........M....M.........M.....M...M....M.........M.+#
-  +....M.............M..............MM........M....MM........M.....M........M...+#
-  +..M......M....M....M.........M....M...M..............MM.............MM...M...+#
-  +M...MMM...MMM..MM...M.M..M.M..M....M.M..M.M.MM...MM...M....MM.M..M.........M.+#
-  +M..MMMM.M.MMMMMMM.M..M.M.M..M..MMM..MMMMMMMM..M.M...MM..MMM.M.MMMM.M.MM.M.MM.+#
-  +M..MM...M....M.........M....M...MM....M.M.......M....M.M....M..M......M.M....+#
-  +.MMMMMMMM....M.MMMM.MM...M.MM..MMM.MM.M.MMM..MM...MMM..MMM..M......M..MMM.MMM+#
-  +...M...MM..MMM....M..M.M..M.M..M.M..M.M.MMM...M.M..MMM...M.....M...MM..M.M.MM+#
-  +.MM.MMMMMM.MM.M.M.MMM.MMM.MM..MM.MMM.MM.MMMM..M.MM.M.M..M..MM..MM.M..MMMMMM.MM#
-  +MM..MMM...M...MMM..M.M...MM..MMM..MMM..M.M....M.........M..MM..MM.M.MMM...MM.+#
-  +MMMMMM.MMMMMMMMMMM.M..MM.MMMMM.M..M.M..M.M..M...MM.MMMM.MMMMM.M.M.MM.M.MMMM.MM#
-  +...MM...M....M.........M....MM..M...........M.MMM...MM...MM....M....MM..MM...M#
-  +MM...MM.....M..MM..................MM...MM...M....M.M..M....M...MM....M....M.+#
-  +.MM..MMMM..MM...M...M........................M.M..MM...MM...MM..M.M...MM...MMM#
-  +M...MM..M....M.M..M....M.M..MMM..M....M.M..MMM..M....MMM.MMM...M.M.MMMM..MM..+#
-  +.M..M..MM..MMMM.MMM..MM.MM.MMM..MMMMMM.MM.MM..MMMMMMMMM.MMMMMMMMMM.M.MM..MMMM+#
-  +....M...M...M...MMM...M...MMM...MM...M...MMM...MM..MM...MMM...M....MM..MMM...M#
-  +MMM.MM.M..M.MMMMMMM.MMMMMM.MMMM.MMMM.MM.MMMMMMMM.MMMMMMMMM...MMM..MMM..MM....M#
-  +.M...MMM..MMM..M.M..MM...M...MM....MM...M...MMM...MM...M...MMM...M...MM.....M+#
-  +MMMMMMM.MM.M.MM.MMMMMM.MMMM.M.MMMM.MM.M.MMMM.MM.M.M..M.MMMMMM....M...MMM..M..+#
-  +M...M...MM...M....MM...MM...M....MM...MM....M...MM...M.....M.................+#
-  +...MM....M....M....M....M...MM....M...MM..MMM....M........MM...M.MMM..MM...MM+#
-  +........M.........M....M..............M....M....M....M.........M..MM...MM...MM#
-  +.M....MM........M....M.........M....M....M....M.........M...M.....MM..MMM..MMM#
-  +.MM........M....M.........M....M....M....M.........M....M.........M....M....M+#
-  +MMMMM....MMMMMM....M....M....M....M....M....M....M.........M....M....M...M...+#
-  +MMMMM....MMMMMM....M....MM...M....M....M....M....MM...M....M....M....M....M..+#
-  +...M........M.........M....M....M....M....M...MM....M.........MMMMMM....MMMMMM#
-  ++..M....M........M....M....M....M....M....M+...M+...M....M....MMMMMM....MMMMMM#
   ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ###################M+R+++++++++++++++++++++++++++++++++++++++++++++++++#########
+  ##################+M+R+++++MMMMMMMMM....MMM.MMMM.MM...............MMMMM+########
+  ##################+M+R++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM########
+  ##################+M+R+++++MMMMMMMMM...................................+########
+  ##################+M+R+++++MMMMMMMMM...................................+########
+  ##################+M+R+++++MMMMMMMMM...................................+########
+  ##################+M+R+++++MMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMMMMM.+########
+  ##################+M+R+++++M.MMMMMMM...........M..MMMMM................+########
+  ##################+M+R+++++MMMMMMMMMMMMMMMMMMMMM.......................+########
+  ##################+M+R+++++MMMMMMMMMMMMMMMMMMMMM.MM.+MMMMM.............+########
+  ##################+M+R+++++MMMMMMMMMMMMMMMMMMMMM.......................+########
+  ##################+M+R+++++M.MMM...............M..M.+..................+########
+  ##################+M+R+++++M.MM................M.MMM..M..M.............+########
+  ##################+M+R+++++MMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMMMMM.+########
+  ##################+M+R+++++MM.MMMMMM...................................+########
 
-[2026-05-24T12:59:05] capture #4
-source: region (x=-1123 y=403 w=310 h=167 scale=1.33)
-captured_size: 620x334 pixels
-avg: #C7C8C8  dark: 15.007%  mid: 15.278%  light: 69.715%  luma: 0..255
-colors: raw_unique=310 quantized_unique=28
+[2026-05-24T15:02:19] capture #8
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #75736E  dark: 57.950%  mid: 12.677%  light: 29.373%  luma: 0..255
+colors: raw_unique=731 quantized_unique=181
 latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
 top_quantized:
-  #FFFFFF  120689 px  58.281%
-  #303030  21724 px  10.491%
-  #F0F0F0  8727 px  4.214%
-  #E0E0E0  6869 px  3.317%
-  #D0D0D0  5809 px  2.805%
-  #C0C0C0  5075 px  2.451%
-  #A0A0A0  4737 px  2.288%
-  #B0B0B0  4399 px  2.124%
-  #000000  4203 px  2.030%
-  #808080  3802 px  1.836%
-  #909090  3635 px  1.755%
-  #707070  3181 px  1.536%
-  #606060  2786 px  1.345%
-  #505050  2576 px  1.244%
+  #303030  92874 px  49.932%
+  #FFFFFF  40862 px  21.969%
+  #404040  11811 px  6.350%
+  #D0D0D0  10166 px  5.466%
+  #408050  7696 px  4.138%
+  #F03020  3223 px  1.733%
+  #808080  2481 px  1.334%
+  #606060  2195 px  1.180%
+  #909090  1577 px  0.848%
+  #FFFF50  1220 px  0.656%
+  #202020  1201 px  0.646%
+  #000000  1019 px  0.548%
+  #101010  1001 px  0.538%
+  #F0B040  931 px  0.501%
+luma_map (# dark, + mid, . light):
+  ###++M++R++++.++.MMMMMMMMM.......................M.MMMMMMMMMMMMMMM..............
+  ###++M++R+++++++.MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ###++M++R+++++++.M...............................M..............................
+  ###++M++R+++++++.MMMMMMMMM.MMMM..................M..............................
+  ###++M++R+++++++.MMMMM.M.MMMMMM..................M..............................
+  ###++M++R+++++++.MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM..............................
+  ###++M++R+++++++................................................................
+  ###++M++R+++++++................................................................
+  ###++M++R+++++++................................................................
+  ###++M++R+++++++................................................................
+  ###++M++R++++.++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #####M##R##+#++#################################################################
+  #####M##R##+#+##################################################################
+  #####M##R##+#+##################################################################
+  #####M##R##+#+##################################################################
+  #####M##R##+#+##################################################################
+  #####M##R##+#+#MMMMMMMMMMMMMMMMMMMMMM###########################################
+  #####M##R##+#+#M#+##########+##+####M###########################################
+  #####M##R##+#+#M#+##########+##+####M###########################################
+  #####M##R##+#+#M#+#############+####M###########################################
+  #####M##R##+#+#M###############+####M###########################################
+  #####MM#R##MMMMMMMMMMMMMMMMMMMMMMMMMMMMM########################################
+  #####MMMRMMMMRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+  #####+##R##M#++#+.................+##+#M########################################
+  #####+##R##M+.+++.................+++.+M########################################
+  #####+##R##M#++#+.................+##++M########################################
+  #####+##R##M+.+++.......++++......+++++M########################################
+  #####+##R##M+++#+......++++++.....+##++M########################################
+  #####+##R##M+++#+.....++++++++....+##++M########################################
+  #####+##R##M+++#+......++++++.....+##++M########################################
+  #####+##R#+M+++#+.....+++++++.....+##++M########################################
+  ########R##M+++#+.......++++......+##++M########################################
+
+[2026-05-24T15:02:19] capture #9
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #848580  dark: 47.340%  mid: 15.820%  light: 36.840%  luma: 0..255
+colors: raw_unique=1066 quantized_unique=283
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  72427 px  38.939%
+  #FFFFFF  60670 px  32.618%
+  #408050  10994 px  5.911%
+  #404040  7096 px  3.815%
+  #000000  5421 px  2.915%
+  #D0D0D0  3605 px  1.938%
+  #606060  2274 px  1.223%
+  #202020  1625 px  0.874%
+  #E0E0E0  1608 px  0.865%
+  #F03020  1553 px  0.835%
+  #808080  1547 px  0.832%
+  #909090  1477 px  0.794%
+  #101010  1378 px  0.741%
+  #C0C0C0  1318 px  0.709%
+luma_map (# dark, + mid, . light):
+  ########++M+RR++++++MMMMMMMMMMMMM...............................................
+  ########++M+RR++++++M...........................M..M...........................M
+  ########++M+RR++++++.MMMMMMMMMMM...................MMMMMMMM.....................
+  ########++M+RR+++.++.M.MMMMMMMMM...................MMMMMMMM.....................
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..M.MMM+MMMMMM.................
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..M.MMMMMMMM.M................M
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR+++.++.M.M.M.........................M.MMMM..MM.M.................
+  ########++M+RR++++++.M.MMMMMM......................MMMMMMM.MMMM.................
+  ########++M+RR++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR++++++MMMMMMMMMMMMM...............M...............................
+  ########++M+RR++++++.MM.M.MMMMMM................................................
+  ########++M+RR++++++MMMMM.MMMMMMM...............M...............................
+  ########++M+RR++++++............................................................
+  ########++M+RR++++++............................................................
+  ########++M+RR++++++............................................................
+  ########++M+RR+++.++............................................................
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+MMMMMMMMMMMMMMMMMMMM##########################################
+  ##########M#RR#+#+M##################M##########################################
+  ##########M#RR#+#+M###########+######M##########################################
+  ##########M#RR#+#+M##################M##########################################
+  ##########M#RR#+#+M##################M##########################################
+  ##########M#RR#MMMMMMMMMMMMMMMMMMMMMMMMM########################################
+  ##########MMRRMMMRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+  ##########+#RR#M#+##+..............+##+M########################################
+  ##########+#RR#M+.+++..............+++.M########################################
+
+[2026-05-24T15:02:20] capture #10
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #848580  dark: 47.366%  mid: 15.634%  light: 37.001%  luma: 0..255
+colors: raw_unique=837 quantized_unique=200
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  73009 px  39.252%
+  #FFFFFF  60683 px  32.625%
+  #408050  11489 px  6.177%
+  #404040  7181 px  3.861%
+  #000000  5661 px  3.044%
+  #D0D0D0  3721 px  2.001%
+  #F03020  2333 px  1.254%
+  #606060  2275 px  1.223%
+  #202020  1627 px  0.875%
+  #E0E0E0  1609 px  0.865%
+  #808080  1550 px  0.833%
+  #909090  1478 px  0.795%
+  #101010  1339 px  0.720%
+  #C0C0C0  1325 px  0.712%
+luma_map (# dark, + mid, . light):
+  ########++M+RR++++++MMMMMMMMMMMMM...............................................
+  ########++M+RR++++++M...........................M..M...........................M
+  ########++M+RR++++++.MMMMMMMMMMM...................MMMMMMMM.....................
+  ########++M+RR++++++.M.MMMMMMMMM...................MMMMMMMM.....................
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..M.MMM+MMMMMM.................
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..M.MMMMMMMM.M................M
+  ########++M+RR+++.++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR+++.++.M.M.M.........................M.MMMM..MM.M.................
+  ########++M+RR++++++.M.MMMMMM......................MMMMMMM.MMMM.................
+  ########++M+RR++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM..MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########++M+RR++++++MMMMMMMMMMMMM...............M...............................
+  ########++M+RR++++++.MM.M.MMMMMM................................................
+  ########++M+RR++++++MMMMM.MMMMMMM...............M...............................
+  ########++M+RR++++++............................................................
+  ########++M+RR++++++............................................................
+  ########++M+RR++++++............................................................
+  ########++M+RR+++.++............................................................
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+##############################################################
+  ##########M#RR#+#+MMMMMMMMMMMMMMMMMMMM##########################################
+  ##########M#RR#+#+M##################M##########################################
+  ##########M#RR#+#+M###########+######M##########################################
+  ##########M#RR#+#+M##################M##########################################
+  ##########M#RR#+#+M##################M##########################################
+  ##########M#RR#MMMMMMMMMMMMMMMMMMMMMMMMM########################################
+  ##########MMRRMMMRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+  ##########+#RR#M#+##+..............+##+M########################################
+  ##########+#RR#M+.+++..............+++.M########################################
+
+[2026-05-24T15:02:21] capture #11
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #353535  dark: 98.181%  mid: 0.658%  light: 1.161%  luma: 0..255
+colors: raw_unique=334 quantized_unique=81
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  182511 px  98.124%
+  #FFFFFF  1938 px  1.042%
+  #408050  458 px  0.246%
+  #707070  262 px  0.141%
+  #505050  75 px  0.040%
+  #C0C0C0  69 px  0.037%
+  #A0A0A0  67 px  0.036%
+  #404040  65 px  0.035%
+  #B0B0B0  63 px  0.034%
+  #D0D0D0  53 px  0.028%
+  #F0F0F0  42 px  0.023%
+  #909090  32 px  0.017%
+  #E0E0E0  32 px  0.017%
+  #606060  28 px  0.015%
 luma_map (# dark, + mid, . light):
   ################################################################################
-  +..MM...MM...M....M....M....M..M.M....M....M...MM..M.M...MM....M.M.MM...MM....M#
-  +.....M..M.M......M..M.MM......M.M..M.........M.M..M......M..M.MM.M...MM.M.M..M#
-  +..M..M....MM.....M..M...........M..M.........M....M.....M...M..........M..M..+#
-  +.......M.............M..............M........................M..............M+#
-  +....MM....M.........M........MM....M........MM....M.........M...M....M....M..+#
-  +M.M.......M.M..M.M...MM..MMM.M.MM.M.MM.M..M......M....M.M.......M....M.M..M..+#
-  +..MM....M..MM....M...MMM..M....MM...MMM...M....MM...M....M....MM........M....M#
-  +MMMMMM....M..MM..M..MMMM.MM.MMM.MMMMMM.MM.M.MM.M..M.M.M.MM.MM...M..M.MMM..M..+#
-  +MM.MMM..M.MM..MM.M.MM.M..MM..MM.M..M.M.M..M.MM.M..M...M..M.MM.M.MM...MM.M.MM.M#
-  +MM.M....MM.M.M..M.M.M..M.MM......MMMM.M...MMM...M...MM...MM.M..M...MM.M....M.+#
-  +...M....MM.M.MM..MMM..MMM....M..MMMM.MM...MMM..MMMM..MM..MMM..MMMM.MMM..M..M.M#
-  +......MMMM.M..M.MM.M.MM......MMMM.MMMMM..MMMMMMMM.MMM.M..M.MMMM...M.MM..M..MMM#
-  +....M.MMM...M.M.MM.M.MM.M..M...MM.M..M.M..M...M..M.MM...MM.MMMM.M.MM...MMM.MMM#
-  +MM...MM...MMM..MMM..MM...M.M..M.M..M..MMM.M...M.........M.....M....M.........M#
-  +MMM.MMM..MMMM.MMMM.MMM.MMM.M.MM..M.M..MMM...............MM....M....M.........M#
-  +M..MMM..MM...MM..MMM..MMMM..MMM.MM.M..M.M..M.M.MM....M..MMM...MM....MMM.MM...M#
-  +..M.MM.MMMMMMMM..MMMMMMMMMMMMMMMMM.MMMM..MMM.MMMM.MM.M..MMM.MMMM.MM.MMMMMMMMMM#
-  +.MM.MMMMM.MMM...MM..MMM...MM.MMMMM.MMM...MM.MMM.M.MM....M...MM.M..M..M.M..M.M+#
-  +M.M..M.MM.MMMMMM.M..MMMM.MMM.MMMMMMMMMMMMMM.MMM.MMMM.MM.M..MMM.MMMM..M.M..MMM+#
-  +M..M.M..MMM..MMM.M.MM.MMMM...MM.M.MM.MMMM...MM.MMMMM.MM..M.MM.MMM.M..M..M.M..M#
-  +M..MMM.MM.M..MM...MMM.MM.M..MMM..MMM..M.M...MM..M.MMMMM..MMMMMMMM...MM..MMM.M+#
-  +MM.M.MMMM..MMMMMMMM..MMM.M.MM.MMMM.MMMM..MMMM.MMM.MMMM..MMM...MMMM.MMM..MM.M.M#
-  +MM...M..M.MM...MM...MMM.M.M..M.MM..MM.MMMM...MMMM.MM.M..MM..MM.MMMM...MM.MM.M+#
-  +MMMM.MMMM.MMMM.MMM..MMMMMMM.M.MMMM.MMMMMMMM..MMM.MMMM..MMM..MMMMMMMM..MMMMMMMM#
-  +.MMMMMMMMMMM.MM..MMM..MMM.MMMM.MMMM.MMMMM.MMM.MMMMM.MMM..MMMM.MMM..MMMMMMMM..M#
-  +.MMMMMM.MMMM.MMMMMMMMMMMMM..MMMMMMMM.MMMM.M.MM.MMMM..MM..MMMM.MMMM..MMMMMMMM.M#
-  +............M.MMMM...MMM.MMMM.MMM..MMM..MMM..MMMMMMMMM...M..MMM.MMMM.MMMMMMMMM#
-  +............M.MMMM..MMMMMMMMMMM.MM.MMMM.MMM..MMMMMMMMM...M..MMM..MMMM.M.MMMMMM#
-  +..M........MM.M.....MM...M...MM..............................................+#
-  +M.M..+.M..+.M..M....+....M...MM..............................................+#
   ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ###########################################+++++################################
+  ###########################################MRR+++MMM.M....MMMMMMMMMM...........M
+
+[2026-05-24T15:02:22] capture #12
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #484445  dark: 86.127%  mid: 5.223%  light: 8.650%  luma: 8..255
+colors: raw_unique=246 quantized_unique=72
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  147761 px  79.441%
+  #D0D0D0  9129 px  4.908%
+  #404040  9087 px  4.885%
+  #FFFFFF  5830 px  3.134%
+  #F03020  2400 px  1.290%
+  #F0B040  2045 px  1.099%
+  #0000F0  2022 px  1.087%
+  #FFE050  1056 px  0.568%
+  #202090  984 px  0.529%
+  #606060  918 px  0.494%
+  #808080  878 px  0.472%
+  #707070  598 px  0.322%
+  #C09040  494 px  0.266%
+  #603030  492 px  0.265%
+luma_map (# dark, + mid, . light):
+  ......................................................................##########
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++##########
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ##########M#####################################################################
+  ##########M#####################################################################
+  ##+##+##+#M#####################################################################
+  ##+##+##+#M#####################################################################
+  #####+##+#M#####################################################################
+  #####+##+#M#####################################################################
+  MMMMMMMMMMMMMMM#################################################################
+  +++++++++###++M#################################################################
+  RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+  .........#####M#################################################################
+  .........#++.+M#################################################################
+  .........###++M#################################################################
+  +........###++M#################################################################
+  ++.......+++..M#################################################################
+  +++......#####M#################################################################
+  +++......#++..M#################################################################
+  +++......###++M#################################################################
+  +++......#++++M#################################################################
+  +........#++.+M#################################################################
+  .........#####M#################################################################
+  .........+++.+M#################################################################
+  .........###+#M#################################################################
+  .........#++++M+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  .........#++++M#################################################################
+  +++++++++###++M#################################################################
+
+[2026-05-24T15:02:24] capture #13
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #565655  dark: 78.756%  mid: 4.661%  light: 16.583%  luma: 0..255
+colors: raw_unique=514 quantized_unique=96
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142284 px  76.497%
+  #FFFFFF  28448 px  15.295%
+  #000000  2855 px  1.535%
+  #408050  2101 px  1.130%
+  #606060  1130 px  0.608%
+  #808080  1099 px  0.591%
+  #A0A0A0  852 px  0.458%
+  #C0C0C0  818 px  0.440%
+  #505050  809 px  0.435%
+  #D0D0D0  781 px  0.420%
+  #404040  762 px  0.410%
+  #707070  737 px  0.396%
+  #202020  674 px  0.362%
+  #E0E0E0  447 px  0.240%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++M+M.MMMMMM...........MM+MMMMM..............M.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMM.............################################
+  +++MMMMMMMMMMMMMMMMMMMMMMM....................M.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++M.MMMMM..............M.MMMMMMMMM...........M.################################
+
+[2026-05-24T15:02:26] capture #14
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #565655  dark: 78.756%  mid: 4.661%  light: 16.583%  luma: 0..255
+colors: raw_unique=460 quantized_unique=90
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142284 px  76.497%
+  #FFFFFF  28452 px  15.297%
+  #000000  2855 px  1.535%
+  #408050  2101 px  1.130%
+  #606060  1130 px  0.608%
+  #808080  1099 px  0.591%
+  #A0A0A0  852 px  0.458%
+  #C0C0C0  818 px  0.440%
+  #505050  809 px  0.435%
+  #D0D0D0  781 px  0.420%
+  #404040  762 px  0.410%
+  #707070  737 px  0.396%
+  #202020  674 px  0.362%
+  #E0E0E0  447 px  0.240%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++M+M.MMMMMM...........MM+MMMMM..............M.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMM.............################################
+  +++MMMMMMMMMMMMMMMMMMMMMMM....................M.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++M.MMMMM..............M.MMMMMMMMM...........M.################################
+
+[2026-05-24T15:02:26] capture #15
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #595A58  dark: 77.926%  mid: 3.915%  light: 18.159%  luma: 0..255
+colors: raw_unique=459 quantized_unique=90
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142214 px  76.459%
+  #FFFFFF  31478 px  16.924%
+  #408050  2101 px  1.130%
+  #000000  1303 px  0.701%
+  #D0D0D0  1038 px  0.558%
+  #A0A0A0  815 px  0.438%
+  #808080  761 px  0.409%
+  #505050  705 px  0.379%
+  #202020  677 px  0.364%
+  #707070  658 px  0.354%
+  #404040  580 px  0.312%
+  #101010  566 px  0.304%
+  #606060  531 px  0.285%
+  #E0E0E0  448 px  0.241%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++M+M.MMMMMM...........MM+MMMMM..............M.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM################################
+  +++.............................................################################
+  +.+.MMMMMMMMMMMMM.MMMM..........................################################
+  +++.............................................################################
+
+[2026-05-24T15:02:29] capture #16
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #565655  dark: 78.756%  mid: 4.661%  light: 16.583%  luma: 0..255
+colors: raw_unique=460 quantized_unique=90
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142284 px  76.497%
+  #FFFFFF  28452 px  15.297%
+  #000000  2855 px  1.535%
+  #408050  2101 px  1.130%
+  #606060  1130 px  0.608%
+  #808080  1099 px  0.591%
+  #A0A0A0  852 px  0.458%
+  #C0C0C0  818 px  0.440%
+  #505050  809 px  0.435%
+  #D0D0D0  781 px  0.420%
+  #404040  762 px  0.410%
+  #707070  737 px  0.396%
+  #202020  674 px  0.362%
+  #E0E0E0  447 px  0.240%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++M+M.MMMMMM...........MM+MMMMM..............M.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMM.MMMMMMMMM.............################################
+  +++MMMMMMMMMMMMMMMMMMMMMMM....................M.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++M.MMMMM..............M.MMMMMMMMM...........M.################################
+
+[2026-05-24T15:02:31] capture #17
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #555655  dark: 78.898%  mid: 4.580%  light: 16.522%  luma: 0..255
+colors: raw_unique=460 quantized_unique=90
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142202 px  76.453%
+  #FFFFFF  28299 px  15.215%
+  #000000  3022 px  1.625%
+  #408050  2101 px  1.130%
+  #606060  1116 px  0.600%
+  #808080  1099 px  0.591%
+  #A0A0A0  867 px  0.466%
+  #C0C0C0  827 px  0.445%
+  #505050  776 px  0.417%
+  #404040  768 px  0.413%
+  #707070  731 px  0.393%
+  #D0D0D0  697 px  0.375%
+  #202020  674 px  0.362%
+  #E0E0E0  599 px  0.322%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++M+M.MMMMMM...........MMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.++MMMMMMMMM.............MMMMMMMMM.............################################
+  +++M....................MM....................M.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++M.MMMMM..............M.MMMMMMMMM...........M.################################
+
+[2026-05-24T15:02:32] capture #18
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #565655  dark: 78.805%  mid: 4.578%  light: 16.617%  luma: 0..255
+colors: raw_unique=460 quantized_unique=90
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142230 px  76.468%
+  #FFFFFF  28477 px  15.310%
+  #000000  2829 px  1.521%
+  #408050  2101 px  1.130%
+  #606060  1126 px  0.605%
+  #808080  1099 px  0.591%
+  #A0A0A0  857 px  0.461%
+  #C0C0C0  822 px  0.442%
+  #505050  794 px  0.427%
+  #707070  768 px  0.413%
+  #404040  758 px  0.408%
+  #D0D0D0  684 px  0.368%
+  #202020  679 px  0.365%
+  #E0E0E0  593 px  0.319%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++MMMMMMMMMMMMMMMMMMMMMMM+MMMMM..............M.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.++MMMMMMMMM.............MMMMMMMMM.............################################
+  +++M....................MM....................M.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++M.MMMMM..............M.MMMMMMMMM...........M.################################
+
+[2026-05-24T15:02:32] capture #19
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #575857  dark: 78.594%  mid: 3.887%  light: 17.519%  luma: 0..255
+colors: raw_unique=459 quantized_unique=90
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142200 px  76.452%
+  #FFFFFF  30289 px  16.284%
+  #000000  2551 px  1.372%
+  #408050  2101 px  1.130%
+  #D0D0D0  900 px  0.484%
+  #A0A0A0  822 px  0.442%
+  #808080  762 px  0.410%
+  #505050  704 px  0.378%
+  #202020  692 px  0.372%
+  #707070  678 px  0.365%
+  #E0E0E0  584 px  0.314%
+  #101010  573 px  0.308%
+  #606060  526 px  0.283%
+  #B0B0B0  483 px  0.260%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++MMMMMMMMMMMMMMMMMMMMMMM+MMMMM..............M.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.+.MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM################################
+  +++.............................................################################
+  +.+.MMMMMMMMMMMMM.MMMM..........................################################
+  +++.............................................################################
+
+[2026-05-24T15:02:35] capture #20
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #565655  dark: 78.805%  mid: 4.578%  light: 16.617%  luma: 0..255
+colors: raw_unique=460 quantized_unique=90
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #303030  142230 px  76.468%
+  #FFFFFF  28477 px  15.310%
+  #000000  2829 px  1.521%
+  #408050  2101 px  1.130%
+  #606060  1126 px  0.605%
+  #808080  1099 px  0.591%
+  #A0A0A0  857 px  0.461%
+  #C0C0C0  822 px  0.442%
+  #505050  794 px  0.427%
+  #707070  768 px  0.413%
+  #404040  758 px  0.408%
+  #D0D0D0  684 px  0.368%
+  #202020  679 px  0.365%
+  #E0E0E0  593 px  0.319%
+luma_map (# dark, + mid, . light):
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  ################################################################################
+  +++M+M+M++++++++++MMM+++M++++++++++++++++++M++M+################################
+  +++M.MMMMMMMM....MMMM.MMMMMM...............MMMM.################################
+  +++.............................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++.MMMMMMMMM...................................################################
+  +++MMMMMMMMMMMMMMMMMMMMMMM+MMMMM..............M.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +.++MMMMMMMMM.............MMMMMMMMM.............################################
+  +++M....................MM....................M.################################
+  +.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.################################
+  +++M.MMMMM..............M.MMMMMMMMM...........M.################################
+
+[2026-05-24T15:02:36] capture #21
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #595858  dark: 67.976%  mid: 7.587%  light: 24.437%  luma: 0..255
+colors: raw_unique=3878 quantized_unique=249
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  104589 px  56.231%
+  #FFFFFF  35337 px  18.998%
+  #303030  7912 px  4.254%
+  #101010  6423 px  3.453%
+  #F0F0F0  4570 px  2.457%
+  #E0E0E0  3696 px  1.987%
+  #404040  2709 px  1.456%
+  #102020  2083 px  1.120%
+  #A03020  1665 px  0.895%
+  #909090  1412 px  0.759%
+  #D0D0D0  1405 px  0.755%
+  #808080  1292 px  0.695%
+  #707070  1237 px  0.665%
+  #101020  1035 px  0.556%
+luma_map (# dark, + mid, . light):
+  ........RRRRR.RR.RRRRRRR..........RRMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ........RRRR..RRRRRRRR.RR........+#RMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  .........RRR..RRRR.RRRRRR........RR+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  .........RRRRRR..................RRRMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  .........RRRRRR...................R+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ..........RR........................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ..........RR........................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ...........R........................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ....................................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ....................................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ....................................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ....................................MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ....................................MMMMMMMMMMMMMMMMMMMMRRMMMMMMMMMMMMMMMMMMMMMM
+  ....................................MMMMMMMMMMMMMMMMMRRMMMMMMMMMMMMMMMMMMMMMMMMM
+  .....................+#.............MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ...............M#....##.............MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ...............M#+..+#+.............MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ........+M....MMM#..MM+............+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMRMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMRMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMRMM############
+  ++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMRRM#++++++#+++#
+  ++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMRMRMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ########################################MMMMMMMMMMMMMMMMMMMMM.MMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:37] capture #22
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #EEF2E7  dark: 2.189%  mid: 6.978%  light: 90.833%  luma: 3..255
+colors: raw_unique=3339 quantized_unique=176
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  156917 px  84.364%
+  #FFF0A0  9323 px  5.012%
+  #50C040  6264 px  3.368%
+  #101010  2400 px  1.290%
+  #100040  1342 px  0.722%
+  #A03020  1246 px  0.670%
+  #50B040  923 px  0.496%
+  #60C050  614 px  0.330%
+  #C0C0C0  610 px  0.328%
+  #80D080  587 px  0.316%
+  #B0E0B0  487 px  0.262%
+  #70D070  438 px  0.235%
+  #D0F0D0  335 px  0.180%
+  #50C030  332 px  0.178%
+luma_map (# dark, + mid, . light):
+  ................................................................................
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  RR..........RR..................................................................
+  RR..........RR..................................................................
+  RRRRRR.RR..RRR..................................................................
+  R.RRRRRRRRRRRR..................................................................
+  R.R.RRRRRRRRRRRRR...............................................................
+  RR.....R.RRRRRRRR.RR.............................+..............................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  .M..............................................................................
+  .+..............................................................+...............
+  .M..............................................................................
+  .M..............................................................................
+  .+..............................................................................
+  .M..............................................................................
+  ................................................................................
+  .......M........+............................................+..................
+  ......+...#......+..............................................................
+  ......+..+#...M..+.................................++.......+........+..........
+  .....+....+...+..+............................................+........+........
+  ++...M........M..+..............................................................
+  .M...+....#...M..+................+++.....................+.....................
+  .....+....M...+..+................................+.......+.....................
+  .....+.............................................................+.+.+........
+
+[2026-05-24T15:02:37] capture #23
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #EFF3E8  dark: 2.125%  mid: 6.497%  light: 91.378%  luma: 2..255
+colors: raw_unique=3162 quantized_unique=179
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #FFFFFF  158579 px  85.258%
+  #FFF0A0  9138 px  4.913%
+  #50C040  5580 px  3.000%
+  #101010  2400 px  1.290%
+  #100040  1228 px  0.660%
+  #A03020  1124 px  0.604%
+  #50B040  942 px  0.506%
+  #80D070  748 px  0.402%
+  #707070  600 px  0.323%
+  #80D080  437 px  0.235%
+  #70D060  429 px  0.231%
+  #50C030  338 px  0.182%
+  #D0F0D0  299 px  0.161%
+  #F0FFF0  290 px  0.156%
+luma_map (# dark, + mid, . light):
+  ................................................................................
+  ................................................................................
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  RR..............................................................................
+  RR.........RRR..................................................................
+  R.R........RRR..................................................................
+  RRRRRRRR.RRRR...................................................................
+  RRRRRRRRRRRRR...................................................................
+  RRRRRRRRRRRRR.RRRRR....................+........................................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  ................................................................................
+  M...............................................................................
+  .+..............................................................................
+  .M..............................................................................
+  .M..............................................................................
+  .+..............................................................................
+  M+..............................................................................
+  +...............................................................................
+  ................................................................................
+  ......+...+.....+...........................................+...................
+  .....+..+#+..++.M.....................++.........+.+................+...........
+  .....+..M.+...+.+.........................................+.++......+.+.........
+  +....+..........+...............................................................
+  +M..+....++..++.+................++...+..................+......................
+  ....+....++..+..+.....................+..........+.......+......................
+
+[2026-05-24T15:02:38] capture #24
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #18191A  dark: 98.684%  mid: 1.316%  light: 0.000%  luma: 18..191
+colors: raw_unique=322 quantized_unique=42
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  129263 px  69.496%
+  #101010  53326 px  28.670%
+  #909090  781 px  0.420%
+  #303030  777 px  0.418%
+  #809090  415 px  0.223%
+  #705040  240 px  0.129%
+  #808080  163 px  0.088%
+  #505050  155 px  0.083%
+  #706040  140 px  0.075%
+  #707070  131 px  0.070%
+  #C0C0C0  131 px  0.070%
+  #404040  113 px  0.061%
+  #606060  97 px  0.052%
+  #203030  46 px  0.025%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:39] capture #25
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #18191A  dark: 98.684%  mid: 1.316%  light: 0.000%  luma: 18..191
+colors: raw_unique=322 quantized_unique=42
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  129263 px  69.496%
+  #101010  53326 px  28.670%
+  #909090  781 px  0.420%
+  #303030  777 px  0.418%
+  #809090  415 px  0.223%
+  #705040  240 px  0.129%
+  #808080  163 px  0.088%
+  #505050  155 px  0.083%
+  #706040  140 px  0.075%
+  #707070  131 px  0.070%
+  #C0C0C0  131 px  0.070%
+  #404040  113 px  0.061%
+  #606060  97 px  0.052%
+  #203030  46 px  0.025%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:39] capture #26
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #21282E  dark: 83.940%  mid: 15.621%  light: 0.439%  luma: 18..255
+colors: raw_unique=836 quantized_unique=116
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  97728 px  52.542%
+  #101010  53326 px  28.670%
+  #4080A0  18149 px  9.758%
+  #303030  4570 px  2.457%
+  #507090  1670 px  0.898%
+  #909090  1417 px  0.762%
+  #70A0F0  1233 px  0.663%
+  #5090B0  1166 px  0.627%
+  #607070  949 px  0.510%
+  #606060  776 px  0.417%
+  #808080  558 px  0.300%
+  #FFFFFF  544 px  0.292%
+  #809090  433 px  0.233%
+  #A080D0  386 px  0.208%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++.++.++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:40] capture #27
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #21282E  dark: 83.940%  mid: 15.621%  light: 0.439%  luma: 18..255
+colors: raw_unique=836 quantized_unique=116
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  97728 px  52.542%
+  #101010  53326 px  28.670%
+  #4080A0  18149 px  9.758%
+  #303030  4570 px  2.457%
+  #507090  1670 px  0.898%
+  #909090  1417 px  0.762%
+  #70A0F0  1233 px  0.663%
+  #5090B0  1166 px  0.627%
+  #607070  949 px  0.510%
+  #606060  776 px  0.417%
+  #808080  558 px  0.300%
+  #FFFFFF  544 px  0.292%
+  #809090  433 px  0.233%
+  #A080D0  386 px  0.208%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++.++.++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:40] capture #28
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #20282D  dark: 84.876%  mid: 14.685%  light: 0.439%  luma: 18..255
+colors: raw_unique=832 quantized_unique=115
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  99724 px  53.615%
+  #101010  53326 px  28.670%
+  #4080A0  18149 px  9.758%
+  #303030  4427 px  2.380%
+  #507090  1670 px  0.898%
+  #909090  1425 px  0.766%
+  #70A0F0  1233 px  0.663%
+  #5090B0  1166 px  0.627%
+  #808080  557 px  0.299%
+  #FFFFFF  544 px  0.292%
+  #809090  420 px  0.226%
+  #A080D0  386 px  0.208%
+  #707070  365 px  0.196%
+  #606060  330 px  0.177%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++.++.++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:42] capture #29
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #20282D  dark: 84.790%  mid: 14.771%  light: 0.439%  luma: 18..255
+colors: raw_unique=833 quantized_unique=115
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  99564 px  53.529%
+  #101010  53326 px  28.670%
+  #4080A0  18149 px  9.758%
+  #303030  4427 px  2.380%
+  #507090  1670 px  0.898%
+  #909090  1425 px  0.766%
+  #70A0F0  1233 px  0.663%
+  #5090B0  1166 px  0.627%
+  #808080  557 px  0.299%
+  #FFFFFF  544 px  0.292%
+  #C0C0C0  449 px  0.241%
+  #809090  420 px  0.226%
+  #A080D0  386 px  0.208%
+  #707070  365 px  0.196%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++.++.++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:42] capture #30
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #20282D  dark: 84.871%  mid: 14.690%  light: 0.439%  luma: 18..255
+colors: raw_unique=832 quantized_unique=115
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  99713 px  53.609%
+  #101010  53326 px  28.670%
+  #4080A0  18149 px  9.758%
+  #303030  4428 px  2.381%
+  #507090  1670 px  0.898%
+  #909090  1425 px  0.766%
+  #70A0F0  1233 px  0.663%
+  #5090B0  1166 px  0.627%
+  #808080  557 px  0.299%
+  #FFFFFF  544 px  0.292%
+  #809090  420 px  0.226%
+  #A080D0  386 px  0.208%
+  #707070  365 px  0.196%
+  #606060  334 px  0.180%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM##MMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++.++.++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+.+++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:43] capture #31
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #20272D  dark: 84.900%  mid: 14.661%  light: 0.439%  luma: 18..255
+colors: raw_unique=831 quantized_unique=115
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #202020  100162 px  53.851%
+  #101010  53946 px  29.003%
+  #4080A0  18053 px  9.706%
+  #303030  3415 px  1.836%
+  #507090  1662 px  0.894%
+  #909090  1422 px  0.765%
+  #70A0F0  1233 px  0.663%
+  #5090B0  1166 px  0.627%
+  #808080  556 px  0.299%
+  #FFFFFF  544 px  0.292%
+  #809090  420 px  0.226%
+  #A080D0  386 px  0.208%
+  #C0C0C0  365 px  0.196%
+  #707070  364 px  0.196%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++.+++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++++++MMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM++MMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:43] capture #32
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #1E2126  dark: 90.999%  mid: 4.998%  light: 4.003%  luma: 18..255
+colors: raw_unique=751 quantized_unique=126
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  139357 px  74.923%
+  #202020  27984 px  15.045%
+  #B0D0FF  6822 px  3.668%
+  #4080A0  1514 px  0.814%
+  #303030  1184 px  0.637%
+  #5090B0  1163 px  0.625%
+  #70A0F0  1103 px  0.593%
+  #809090  906 px  0.487%
+  #A080D0  766 px  0.412%
+  #B09070  398 px  0.214%
+  #B0D0F0  367 px  0.197%
+  #A0C0E0  356 px  0.191%
+  #90B0D0  240 px  0.129%
+  #C0C0C0  213 px  0.115%
+luma_map (# dark, + mid, . light):
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM+++.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM+++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++M++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:44] capture #33
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #1E2226  dark: 90.930%  mid: 5.067%  light: 4.003%  luma: 18..255
+colors: raw_unique=811 quantized_unique=130
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  139357 px  74.923%
+  #202020  27780 px  14.935%
+  #B0D0FF  6822 px  3.668%
+  #4080A0  1514 px  0.814%
+  #303030  1231 px  0.662%
+  #5090B0  1163 px  0.625%
+  #70A0F0  1103 px  0.593%
+  #809090  906 px  0.487%
+  #A080D0  766 px  0.412%
+  #B09070  415 px  0.223%
+  #B0D0F0  367 px  0.197%
+  #A0C0E0  356 px  0.191%
+  #90B0D0  240 px  0.129%
+  #C0C0C0  213 px  0.115%
+luma_map (# dark, + mid, . light):
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM+++.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM+++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++M++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:45] capture #34
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #1E2126  dark: 90.999%  mid: 4.998%  light: 4.003%  luma: 18..255
+colors: raw_unique=751 quantized_unique=126
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  139357 px  74.923%
+  #202020  27984 px  15.045%
+  #B0D0FF  6822 px  3.668%
+  #4080A0  1514 px  0.814%
+  #303030  1184 px  0.637%
+  #5090B0  1163 px  0.625%
+  #70A0F0  1103 px  0.593%
+  #809090  906 px  0.487%
+  #A080D0  766 px  0.412%
+  #B09070  398 px  0.214%
+  #B0D0F0  367 px  0.197%
+  #A0C0E0  356 px  0.191%
+  #90B0D0  240 px  0.129%
+  #C0C0C0  213 px  0.115%
+luma_map (# dark, + mid, . light):
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM+++.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM+++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++M++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:46] capture #35
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #1E2226  dark: 90.930%  mid: 5.067%  light: 4.003%  luma: 18..255
+colors: raw_unique=814 quantized_unique=130
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  139357 px  74.923%
+  #202020  27781 px  14.936%
+  #B0D0FF  6822 px  3.668%
+  #4080A0  1514 px  0.814%
+  #303030  1231 px  0.662%
+  #5090B0  1163 px  0.625%
+  #70A0F0  1103 px  0.593%
+  #809090  906 px  0.487%
+  #A080D0  766 px  0.412%
+  #B09070  415 px  0.223%
+  #B0D0F0  367 px  0.197%
+  #A0C0E0  356 px  0.191%
+  #90B0D0  240 px  0.129%
+  #C0C0C0  213 px  0.115%
+luma_map (# dark, + mid, . light):
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM+++.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM+++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++M++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:46] capture #36
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #1E2126  dark: 90.999%  mid: 4.998%  light: 4.003%  luma: 18..255
+colors: raw_unique=751 quantized_unique=126
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  139357 px  74.923%
+  #202020  27984 px  15.045%
+  #B0D0FF  6822 px  3.668%
+  #4080A0  1514 px  0.814%
+  #303030  1184 px  0.637%
+  #5090B0  1163 px  0.625%
+  #70A0F0  1103 px  0.593%
+  #809090  906 px  0.487%
+  #A080D0  766 px  0.412%
+  #B09070  398 px  0.214%
+  #B0D0F0  367 px  0.197%
+  #A0C0E0  356 px  0.191%
+  #90B0D0  240 px  0.129%
+  #C0C0C0  213 px  0.115%
+luma_map (# dark, + mid, . light):
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM+++.+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM+++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++M++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:50] capture #37
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #1E2327  dark: 89.701%  mid: 6.265%  light: 4.034%  luma: 18..255
+colors: raw_unique=773 quantized_unique=128
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  139357 px  74.923%
+  #202020  25359 px  13.634%
+  #B0D0FF  6822 px  3.668%
+  #4080A0  3944 px  2.120%
+  #303030  1409 px  0.758%
+  #5090B0  1163 px  0.625%
+  #70A0F0  1103 px  0.593%
+  #809090  906 px  0.487%
+  #A080D0  766 px  0.412%
+  #B0D0F0  367 px  0.197%
+  #A0C0E0  356 px  0.191%
+  #B09070  280 px  0.151%
+  #90B0D0  240 px  0.129%
+  #C0C0C0  213 px  0.115%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM+++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM+++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++M++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:51] capture #38
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #1E2327  dark: 89.701%  mid: 6.265%  light: 4.034%  luma: 18..255
+colors: raw_unique=774 quantized_unique=128
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  139357 px  74.923%
+  #202020  25359 px  13.634%
+  #B0D0FF  6822 px  3.668%
+  #4080A0  3944 px  2.120%
+  #303030  1409 px  0.758%
+  #5090B0  1163 px  0.625%
+  #70A0F0  1103 px  0.593%
+  #809090  906 px  0.487%
+  #A080D0  766 px  0.412%
+  #B0D0F0  367 px  0.197%
+  #A0C0E0  356 px  0.191%
+  #B09070  280 px  0.151%
+  #90B0D0  240 px  0.129%
+  #C0C0C0  213 px  0.115%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  +++++++++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM+++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM+++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM++++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ++M++MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+[2026-05-24T15:02:51] capture #39
+source: region (x=-1221 y=420 w=300 h=155 scale=10)
+captured_size: 600x310 pixels
+avg: #181A1B  dark: 93.359%  mid: 6.641%  light: 0.000%  luma: 17..114
+colors: raw_unique=649 quantized_unique=39
+latest_crop_png: /Users/m1-max/Documents/ESP32Calc/ESP32Calc/Firmware/tools/screen_color_probe_latest_crop.png
+top_quantized:
+  #101010  164530 px  88.457%
+  #506070  7375 px  3.965%
+  #204050  3948 px  2.123%
+  #202020  2112 px  1.135%
+  #304050  1299 px  0.698%
+  #404040  1235 px  0.664%
+  #305070  1111 px  0.597%
+  #504060  778 px  0.418%
+  #405060  430 px  0.231%
+  #303030  376 px  0.202%
+  #504030  334 px  0.180%
+  #303040  244 px  0.131%
+  #404050  243 px  0.131%
+  #505060  214 px  0.115%
+luma_map (# dark, + mid, . light):
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ###########MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ###########MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ###########MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ###########MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM###MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMM#####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMM####MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  ##M##MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMM#MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+  MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 

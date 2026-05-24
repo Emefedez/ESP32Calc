@@ -1,7 +1,7 @@
 #include "wireless/wireless_service.h"
 
 #include "app_config.h"
-#include "app_log.h"
+#include "esp_log.h"
 #include "freertos/task.h"
 
 namespace esp32calc {
@@ -27,7 +27,7 @@ void WirelessService::task_trampoline(void* arg) {
 }
 
 void WirelessService::task() {
-  ESP32CALC_LOGI(TAG, "wireless reserved, not started yet");
+  ESP_LOGI(TAG, "wireless reserved, not started yet");
   while (true) {
     vTaskDelay(pdMS_TO_TICKS(5000));
   }
