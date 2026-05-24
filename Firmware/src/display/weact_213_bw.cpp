@@ -317,6 +317,7 @@ esp_err_t Weact213BwDisplay::write_red_buffer(const uint8_t* buffer, size_t len)
 esp_err_t Weact213BwDisplay::full_refresh() {
   initial_full_refresh_done_ = true;
   using_partial_mode_ = false;
+  partial_updates_since_full_ = 0;
   const uint8_t mode[] = {flag::kDisplayMode1};
   ESP_RETURN_ON_ERROR(command_with_data(cmd::kUpdateDisplayCtrl2, mode, sizeof(mode)),
                       TAG,
@@ -398,101 +399,127 @@ esp_err_t Weact213BwDisplay::fast_partial_update(
   return write_partial_bw_buffer(buffer, len, x, y, width, height);
 }
 
+esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas) {
+  const CanvasUpdateHint& hint = canvas.update_hint();
+  return update_canvas(canvas,
+                       hint.kind == CanvasRefreshKind::Full ? RefreshMode::Full
+                                                            : RefreshMode::Partial);
+}
+
 esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode mode) {
   if (!ready_) {
     return ESP_ERR_INVALID_STATE;
   }
 
   int64_t t0 = esp_timer_get_time();
+  const CanvasUpdateHint& hint = canvas.update_hint();
 
-  // Quick skip: canvas byte-identical to previous → nothing changed
-  if (std::memcmp(canvas.data(), previous_canvas_.data(), canvas.size()) == 0) {
-    return ESP_OK;
-  }
-  int64_t t_memcmp = esp_timer_get_time();
-
-  // Find changed canvas bytes
-  size_t first_cb = canvas.size(), last_cb = 0;
-  for (size_t i = 0; i < canvas.size(); i++) {
-    if (canvas.data()[i] != previous_canvas_.data()[i]) {
-      if (i < first_cb) first_cb = i;
-      if (i > last_cb) last_cb = i;
-    }
-  }
-  int64_t t_canvas_diff = esp_timer_get_time();
-
-  // Start from previous native state and patch only changed canvas bytes
   constexpr size_t kCpr = (MonoCanvas::kWidth + 7) / 8;
   constexpr size_t kNpr = config::kDisplayNativeWidth / 8;
-  previous_ = packed_;
-  for (size_t idx = first_cb; idx <= last_cb; ++idx) {
-    const uint8_t new_b = canvas.data()[idx];
-    const uint8_t old_b = previous_canvas_.data()[idx];
-    if (new_b == old_b) continue;
 
-    const uint16_t ly = static_cast<uint16_t>(idx / kCpr);
-    const uint16_t bx = static_cast<uint16_t>(idx % kCpr);
-    const uint16_t native_x = static_cast<uint16_t>(config::kDisplayNativeWidth - 1 - ly);
-    const uint16_t byte_col = native_x >> 3;
-    const uint8_t clr_mask = static_cast<uint8_t>(~(0x80 >> (native_x & 7)));
+  int scan_y0 = 0;
+  int scan_y1 = MonoCanvas::kHeight;
+  int scan_bx0 = 0;
+  int scan_bx1 = kCpr;
 
-    for (int b = 0; b < 8; ++b) {
-      const uint8_t bit = 0x80 >> b;
-      if ((new_b & bit) == (old_b & bit)) continue;
-      size_t ni = static_cast<size_t>(bx * 8 + b) * kNpr + byte_col;
-      if (new_b & bit) {
-        packed_[ni] |= static_cast<uint8_t>(~clr_mask);
-      } else {
-        packed_[ni] &= clr_mask;
+  if (mode == RefreshMode::Partial && hint.has_region()) {
+    const int x0 = std::max(0, hint.x);
+    const int y0 = std::max(0, hint.y);
+    const int x1 = std::min<int>(MonoCanvas::kWidth, hint.x + hint.width);
+    const int y1 = std::min<int>(MonoCanvas::kHeight, hint.y + hint.height);
+    if (x0 < x1 && y0 < y1) {
+      scan_y0 = y0;
+      scan_y1 = y1;
+      scan_bx0 = x0 >> 3;
+      scan_bx1 = (x1 + 7) >> 3;
+    }
+  }
+
+  uint16_t first_native_byte_col = 0xFFFF;
+  uint16_t last_native_byte_col = 0;
+  uint16_t first_native_y = 0xFFFF;
+  uint16_t last_native_y = 0;
+  bool changed = false;
+
+  for (int ly = scan_y0; ly < scan_y1; ++ly) {
+    for (int bx = scan_bx0; bx < scan_bx1; ++bx) {
+      const size_t idx = static_cast<size_t>(ly) * kCpr + bx;
+      const uint8_t new_b = canvas.data()[idx];
+      const uint8_t old_b = previous_canvas_.data()[idx];
+      if (new_b == old_b) {
+        continue;
       }
-    }
-  }
-  previous_canvas_ = canvas;
-  int64_t t_native_patch = esp_timer_get_time();
 
-  // Find dirty bytes in native buffer for partial update positioning
-  size_t first = 0, last = 0;
-  for (size_t i = 0; i < packed_.size(); i++) {
-    if (packed_[i] != previous_[i]) {
-      first = i;
-      break;
+      const uint16_t native_x = static_cast<uint16_t>(config::kDisplayNativeWidth - 1 - ly);
+      const uint16_t byte_col = native_x >> 3;
+      const uint8_t clr_mask = static_cast<uint8_t>(~(0x80 >> (native_x & 7)));
+
+      for (int b = 0; b < 8; ++b) {
+        const uint16_t native_y = static_cast<uint16_t>(bx * 8 + b);
+        if (native_y >= config::kDisplayNativeHeight) {
+          continue;
+        }
+
+        const uint8_t bit = 0x80 >> b;
+        if ((new_b & bit) == (old_b & bit)) {
+          continue;
+        }
+
+        changed = true;
+        const size_t ni = static_cast<size_t>(native_y) * kNpr + byte_col;
+        if (new_b & bit) {
+          packed_[ni] |= static_cast<uint8_t>(~clr_mask);
+        } else {
+          packed_[ni] &= clr_mask;
+        }
+        first_native_byte_col = std::min(first_native_byte_col, byte_col);
+        last_native_byte_col = std::max(last_native_byte_col, byte_col);
+        first_native_y = std::min(first_native_y, native_y);
+        last_native_y = std::max(last_native_y, native_y);
+      }
+      previous_canvas_.data()[idx] = new_b;
     }
   }
-  for (size_t i = packed_.size(); i > 0; i--) {
-    if (packed_[i - 1] != previous_[i - 1]) {
-      last = i - 1;
-      break;
+  int64_t t_scan_patch = esp_timer_get_time();
+
+  if (!changed) {
+    if (mode == RefreshMode::Full) {
+      esp_err_t ret = full_update(packed_.data(), packed_.size());
+      int64_t t_end = esp_timer_get_time();
+      ESP_LOGI(TAG, "update_canvas(FULL): scan_patch=%lldus send=%lldus total=%lldus",
+               t_scan_patch - t0, t_end - t_scan_patch, t_end - t0);
+      return ret;
     }
-  }
-  if (last < first) {
     return ESP_OK;
   }
-  int64_t t_dirty = esp_timer_get_time();
 
-  const uint16_t sb = first % 16;
-  const uint16_t eb = last % 16;
-  const uint16_t sy = first / 16;
-  const uint16_t ey = last / 16;
+  const uint16_t sb = first_native_byte_col;
+  const uint16_t eb = last_native_byte_col;
+  const uint16_t sy = first_native_y;
+  const uint16_t ey = last_native_y;
   const uint16_t dirty_w2 = (eb - sb + 1) * 8;
   const uint16_t dirty_h2 = ey - sy + 1;
   const uint16_t dirty_bytes = (eb - sb + 1) * dirty_h2;
 
-  if (dirty_bytes > packed_.size() * 3 / 4 && mode == RefreshMode::Full) {
-    // Very large change on a full-required frame: slow full refresh
+  const bool periodic_full_refresh =
+      mode == RefreshMode::Partial &&
+      config::kEpdFullRefreshInterval > 0 &&
+      partial_updates_since_full_ >= config::kEpdFullRefreshInterval;
+
+  if (mode == RefreshMode::Full || periodic_full_refresh) {
     esp_err_t ret = full_update(packed_.data(), packed_.size());
     int64_t t_end = esp_timer_get_time();
-    ESP_LOGI(TAG, "update_canvas(FULL): memcmp=%lldus diff=%lldus patch=%lldus scan=%lldus send=%lldus total=%lldus",
-                   t_memcmp - t0, t_canvas_diff - t_memcmp,
-                   t_native_patch - t_canvas_diff, t_dirty - t_native_patch,
-                   t_end - t_dirty, t_end - t0);
+    ESP_LOGI(TAG, "update_canvas(FULL): scan_patch=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u)%s",
+             t_scan_patch - t0, t_end - t_scan_patch, t_end - t0,
+             dirty_w2, dirty_h2, sb * 8, sy,
+             periodic_full_refresh ? " periodic=1" : "");
     return ret;
   }
 
-  uint8_t partial[4000];
   size_t pidx = 0;
   for (uint16_t r = sy; r <= ey; r++) {
     for (uint16_t bc = sb; bc <= eb; bc++) {
-      partial[pidx++] = packed_[r * 16 + bc];
+      partial_[pidx++] = packed_[r * 16 + bc];
     }
   }
 
@@ -501,14 +528,15 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
   if (dirty_bytes > packed_.size() / 2) {
     ret = fast_update(packed_.data(), packed_.size());
   } else {
-    ret = fast_partial_update(partial, pidx, sb * 8, sy, dirty_w2, dirty_h2);
+    ret = fast_partial_update(partial_.data(), pidx, sb * 8, sy, dirty_w2, dirty_h2);
   }
   int64_t t_end = esp_timer_get_time();
-  ESP_LOGI(TAG, "update_canvas(PARTIAL): memcmp=%lldus diff=%lldus patch=%lldus scan=%lldus copy=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u)",
-                 t_memcmp - t0, t_canvas_diff - t_memcmp,
-                 t_native_patch - t_canvas_diff, t_dirty - t_native_patch,
-                 t_copy - t_dirty, t_end - t_copy, t_end - t0,
-                 dirty_w2, dirty_h2, sb * 8, sy);
+  if (ret == ESP_OK) {
+    ++partial_updates_since_full_;
+  }
+  ESP_LOGI(TAG, "update_canvas(PARTIAL): scan_patch=%lldus copy=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u) partial_count=%u",
+           t_scan_patch - t0, t_copy - t_scan_patch, t_end - t_copy, t_end - t0,
+           dirty_w2, dirty_h2, sb * 8, sy, partial_updates_since_full_);
   return ret;
 }
 
@@ -523,46 +551,71 @@ esp_err_t Weact213BwDisplay::update_native_buffer(
   packed_ = buffer;
   previous_canvas_.clear(true);  // invalidate canvas cache for next update_canvas
 
-  size_t first = 0, last = 0;
-  for (size_t i = 0; i < packed_.size(); i++) {
-    if (packed_[i] != previous_[i]) {
-      first = i;
-      break;
-    }
-  }
-  for (size_t i = packed_.size(); i > 0; i--) {
-    if (packed_[i - 1] != previous_[i - 1]) {
-      last = i - 1;
-      break;
+  uint16_t first_byte_col = 0xFFFF;
+  uint16_t last_byte_col = 0;
+  uint16_t first_y = 0xFFFF;
+  uint16_t last_y = 0;
+  bool changed = false;
+  constexpr uint16_t kBytesPerRow = config::kDisplayNativeWidth / 8;
+
+  for (uint16_t y = 0; y < config::kDisplayNativeHeight; ++y) {
+    for (uint16_t bc = 0; bc < kBytesPerRow; ++bc) {
+      const size_t idx = static_cast<size_t>(y) * kBytesPerRow + bc;
+      if (packed_[idx] == previous_[idx]) {
+        continue;
+      }
+
+      changed = true;
+      first_byte_col = std::min(first_byte_col, bc);
+      last_byte_col = std::max(last_byte_col, bc);
+      first_y = std::min(first_y, y);
+      last_y = std::max(last_y, y);
     }
   }
 
-  if (last < first) {
+  if (!changed) {
+    if (mode == RefreshMode::Full) {
+      return full_update(packed_.data(), packed_.size());
+    }
     return ESP_OK;
   }
 
-  const uint16_t sb = first % 16;
-  const uint16_t eb = last % 16;
-  const uint16_t sy = first / 16;
-  const uint16_t ey = last / 16;
+  const uint16_t sb = first_byte_col;
+  const uint16_t eb = last_byte_col;
+  const uint16_t sy = first_y;
+  const uint16_t ey = last_y;
   const uint16_t dirty_w = (eb - sb + 1) * 8;
   const uint16_t dirty_h = ey - sy + 1;
   const uint16_t dirty_bytes = (eb - sb + 1) * dirty_h;
 
-  if (mode == RefreshMode::Full || dirty_bytes > packed_.size() / 2) {
-    return mode == RefreshMode::Full
-               ? full_update(packed_.data(), packed_.size())
-               : fast_update(packed_.data(), packed_.size());
+  const bool periodic_full_refresh =
+      mode == RefreshMode::Partial &&
+      config::kEpdFullRefreshInterval > 0 &&
+      partial_updates_since_full_ >= config::kEpdFullRefreshInterval;
+
+  if (mode == RefreshMode::Full || periodic_full_refresh) {
+    return full_update(packed_.data(), packed_.size());
   }
 
-  uint8_t partial[4000];
+  if (dirty_bytes > packed_.size() / 2) {
+    esp_err_t ret = fast_update(packed_.data(), packed_.size());
+    if (ret == ESP_OK) {
+      ++partial_updates_since_full_;
+    }
+    return ret;
+  }
+
   size_t idx = 0;
   for (uint16_t r = sy; r <= ey; r++) {
     for (uint16_t bc = sb; bc <= eb; bc++) {
-      partial[idx++] = packed_[r * 16 + bc];
+      partial_[idx++] = packed_[r * 16 + bc];
     }
   }
-  return fast_partial_update(partial, idx, sb * 8, sy, dirty_w, dirty_h);
+  esp_err_t ret = fast_partial_update(partial_.data(), idx, sb * 8, sy, dirty_w, dirty_h);
+  if (ret == ESP_OK) {
+    ++partial_updates_since_full_;
+  }
+  return ret;
 }
 
 esp_err_t Weact213BwDisplay::sleep() {

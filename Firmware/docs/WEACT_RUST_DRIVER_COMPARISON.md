@@ -21,8 +21,8 @@ Compared against the current `master` branch on 2026-05-24.
 - Rust's framebuffer for the 2.13 inch display is 128x250 even though only 122
   controller columns are visible. The firmware now uses a 250x128 landscape
   framebuffer and accepts that 250x122 pixels are physically visible.
-- Rust examples use conservative SPI speeds during bring-up. The firmware now
-  uses 100 kHz instead of 4 MHz while the real panel output is being validated.
+- Rust examples use conservative SPI speeds during bring-up. The firmware uses
+  4 MHz now that the panel mapping and partial refresh path are working.
 - The Rust driver assumes panel VCC is already stable before reset. Because this
   hardware list routes display VCC through GPIO17, the firmware now waits 250 ms
   after enabling GPIO17 before reset and sets that GPIO to maximum drive.
@@ -33,7 +33,7 @@ Compared against the current `master` branch on 2026-05-24.
   or load switch, the GPIO may not be able to supply e-paper refresh current
   reliably. That can look like random flashing or a small partial line even when
   the command sequence is correct.
-- The firmware now renders a raw native-buffer diagnostic before the canvas and
-  raylib paths. If that still appears only as a bottom-left line at 100 kHz, the
-  remaining suspicion shifts below graphics conversion: display power/current,
-  wiring, SPI transaction timing, or a pin mismatch.
+- The firmware can render a raw native-buffer diagnostic before the normal
+  canvas path. If that still appears only as a bottom-left line, the remaining
+  suspicion shifts below graphics conversion: display power/current, wiring,
+  SPI transaction timing, or a pin mismatch.

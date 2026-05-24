@@ -25,10 +25,11 @@ class MenuUi {
 
   void apply_key(const KeyEvent& key);
   void update_state(const AppEvent& event);
-  void render(RefreshMode mode);
+  void render();
 
   void render_status_bar();
   void render_menu();
+  void render_graph();
   void render_content();
   void render_placeholder(const char* title, const char* subtitle);
 
@@ -47,6 +48,7 @@ class MenuUi {
   bool shift_ = false;
   bool alpha_ = false;
   bool first_render_done_ = false;
+  bool full_refresh_pending_ = true;
 };
 
 }  // namespace esp32calc

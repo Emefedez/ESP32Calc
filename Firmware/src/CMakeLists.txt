@@ -5,7 +5,6 @@ idf_component_register(
     "keypad_matrix.cpp"
     "display/weact_213_bw.cpp"
     "graphics/mono_canvas.cpp"
-    "graphics/raylib_epaper_port.cpp"
     "battery/battery_monitor.cpp"
     "storage/sd_storage.cpp"
     "calc/calc_engine.cpp"
@@ -24,6 +23,4 @@ idf_component_register(
     "ui"
   REQUIRES
     esp_lcd
-    esp_raylib_port
-    raylib
 )

@@ -12,8 +12,8 @@
 namespace esp32calc {
 
 enum class RefreshMode : uint8_t {
+  Partial,
   Full,
-  Fast,
 };
 
 class Weact213BwDisplay {
@@ -26,6 +26,7 @@ class Weact213BwDisplay {
   esp_err_t fast_partial_update(const uint8_t* buffer, size_t len,
                                 uint16_t x, uint16_t y,
                                 uint16_t width, uint16_t height);
+  esp_err_t update_canvas(const MonoCanvas& canvas);
   esp_err_t update_canvas(const MonoCanvas& canvas, RefreshMode mode);
   esp_err_t update_native_buffer(const std::array<uint8_t, config::kDisplayNativeBufferSize>& buffer,
                                  RefreshMode mode);
@@ -56,8 +57,10 @@ class Weact213BwDisplay {
   bool ready_ = false;
   bool using_partial_mode_ = false;
   bool initial_full_refresh_done_ = false;
+  uint16_t partial_updates_since_full_ = 0;
   std::array<uint8_t, config::kDisplayNativeBufferSize> packed_ {};
   std::array<uint8_t, config::kDisplayNativeBufferSize> previous_ {};
+  std::array<uint8_t, config::kDisplayNativeBufferSize> partial_ {};
   MonoCanvas previous_canvas_ {};
 };
 

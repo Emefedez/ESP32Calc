@@ -30,11 +30,7 @@ esp32calc::CalcEngine g_calc;
 esp32calc::WirelessService g_wireless;
 esp32calc::MonoCanvas g_boot_canvas;
 
-#if ESP32CALC_USE_RAYLIB
-constexpr uint32_t kUiTaskStackBytes = 128 * 1024;
-#else
-constexpr uint32_t kUiTaskStackBytes = 8192;
-#endif
+constexpr uint32_t kUiTaskStackBytes = 24 * 1024;
 
 void ui_task(void*) {
   esp32calc::MenuUi ui(g_app_events, g_display);
@@ -157,9 +153,9 @@ static void render_boot_splash() {
   g_boot_canvas.hline(44, 47, 162, true);
   g_boot_canvas.hline(44, 48, 162, true);
 
-  g_boot_canvas.draw_text(68, 58, "Scientific Calculator", 1, true);
+  g_boot_canvas.draw_text(68, 58, " by Emefedez", 1, true);
 
-  g_boot_canvas.draw_text(10, 110, "v0.1.0", 1, true);
+  g_boot_canvas.draw_text(10, 110, "v0.1.1", 1, true);
   g_boot_canvas.draw_text(180, 110, "Booting...", 1, true);
 
   ESP_LOGI(TAG, "rendering boot splash");

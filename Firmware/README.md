@@ -27,9 +27,12 @@ pio device monitor -e esp32-s3-n16r16
 
 ```bash
 cd Firmware
-pio run -e esp32-s3-wokwi
+pio run -e esp32-s3-n16r16
 wokwi-cli .
 ```
+
+`wokwi.toml` points at the default PlatformIO firmware output so Wokwi can be
+launched after a normal `pio run`.
 
 The Wokwi diagram uses `board-epaper-2in9` as a simulator stand-in. The firmware
 itself targets the real WeAct 2.13 inch B/W module with the Rust driver's
@@ -38,14 +41,21 @@ itself targets the real WeAct 2.13 inch B/W module with the Rust driver's
 
 ## Notes
 
-- The current firmware forces full e-paper refreshes
-  (`ESP32CALC_FORCE_FULL_REFRESH=1`) and shows a boot self-test pattern before
-  the menu. This is intentional while the panel mapping is being validated.
-- Display SPI is set to 100 kHz for bring-up, matching the conservative speed
-  used by the Rust examples more closely than the earlier 4 MHz setting.
-- Raylib is enabled with `georgik/raylib` 5.6.0. The UI renders through raylib's
-  software path into RGB565 chunks, then `graphics/raylib_epaper_port.cpp`
-  downconverts the frame to 1-bit and sends it through the WeAct e-paper driver.
+- The UI is rendered through `MonoCanvas`, a 1-bit framebuffer with native
+  drawing primitives and familiar convenience methods such as `DrawLine`,
+  `DrawLineStrip`, `DrawRectangleLines`, and `DrawText`.
+- Drawing calls update a `CanvasUpdateHint` with either `Partial` or `Full`
+  refresh intent plus a logical dirty rectangle. `Weact213BwDisplay` consumes
+  that hint, patches its cached native controller buffer, and sends only the
+  changed e-paper window when possible.
+- Full e-paper refreshes are still requested for boot and screen transitions.
+  During normal partial operation the driver forces one full refresh every
+  `ESP32CALC_EPD_FULL_REFRESH_INTERVAL` partial updates to limit ghosting.
+- Display SPI is set to 4 MHz for both hardware and Wokwi builds. The e-paper
+  controller latency dominates after removing the old RGB565 renderer path.
+- Raylib was removed from the firmware. The ESP32-S3 software renderer path was
+  measured at roughly 0.9 s per simple graph frame before the e-paper update,
+  so interactive graph/UI drawing uses `MonoCanvas` primitives instead.
 - `tools/screen_color_probe.py` can capture a small macOS screen region and list
   dominant colors for Wokwi/camera-preview debugging.
 - `GPIO0`, `GPIO45`, and `GPIO8` are involved in boot/serial edge cases on this

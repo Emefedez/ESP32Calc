@@ -3,14 +3,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#ifndef ESP32CALC_USE_RAYLIB
-#define ESP32CALC_USE_RAYLIB 0
-#endif
-
-#ifndef ESP32CALC_FORCE_FULL_REFRESH
-#define ESP32CALC_FORCE_FULL_REFRESH 1
-#endif
-
 #ifndef ESP32CALC_BOOT_DISPLAY_TEST
 #define ESP32CALC_BOOT_DISPLAY_TEST 0
 #endif
@@ -27,6 +19,10 @@
 #define ESP32CALC_EPD_POWER_SETTLE_MS 250
 #endif
 
+#ifndef ESP32CALC_EPD_FULL_REFRESH_INTERVAL
+#define ESP32CALC_EPD_FULL_REFRESH_INTERVAL 24
+#endif
+
 namespace esp32calc::config {
 
 constexpr uint16_t kDisplayLogicalWidth = 250;
@@ -41,6 +37,7 @@ constexpr size_t kDisplayNativeBufferSize =
 constexpr uint32_t kInputScanPeriodMs = 5;
 constexpr uint8_t kInputDebounceSamples = 4;
 constexpr uint32_t kBatteryPollPeriodMs = 30'000;
+constexpr uint16_t kEpdFullRefreshInterval = ESP32CALC_EPD_FULL_REFRESH_INTERVAL;
 
 constexpr uint8_t kCoreServicesCore = 0;
 constexpr uint8_t kUiCore = 1;

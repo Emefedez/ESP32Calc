@@ -5,7 +5,7 @@
 The base is ESP-IDF C++ rather than MicroPython or Rust. Rust would let us use
 `weact-studio-epd` directly, but the rest of the requested stack is easier to
 stage in ESP-IDF today: dual-core FreeRTOS pinning, SDSPI, ADC, Wi-Fi/BLE, and
-the ESP Component Registry Raylib component.
+the existing PlatformIO/ESP-IDF toolchain.
 
 The display layer keeps the key part of the Rust driver: SSD1680 init, 128x250
 RAM layout, full refresh, fast refresh, and the partial LUT. That avoids the
@@ -41,21 +41,37 @@ open-drain columns and pulled-up rows, debounces transitions, then publishes
 press/release events. `SHIFT` and `ALPHA` are UI booleans. `MODE` always returns
 to the menu.
 
-## Raylib Bridge
+## Drawing And Refresh
 
-`georgik/raylib` 5.6.0 is designed for ESP-IDF LCD panels with RGB565 buffers.
-For e-paper, the firmware keeps the known WeAct command sequence and presents a
-small fake `esp_lcd` panel to the raylib port:
+`MonoCanvas` is the primary drawing API. It stores a 250x128 logical 1-bit
+framebuffer and provides both low-level primitives (`set_pixel`, `line`,
+`rect`, `circle`, `triangle`, `draw_text`) and familiar convenience methods
+(`DrawLine`, `DrawLineStrip`, `DrawRectangleLines`, `DrawText`, and related
+helpers). The graph screen uses this path directly; it does not initialize
+an intermediate RGB565 renderer.
 
-- `Weact213BwDisplay` remains the only hardware display driver.
-- Raylib draws 250x122 RGB565 chunks through `esp_raylib_port`.
-- `RaylibEpaperPort` converts those chunks to `MonoCanvas`.
-- The completed frame is sent as a full e-paper refresh while panel mapping is
-  being validated.
+Every drawing operation updates a `CanvasUpdateHint`. The hint has two refresh
+levels:
 
-This gives the UI raylib drawing APIs without replacing the display driver with
-a generic LCD path. Partial refresh should stay disabled until full-frame output
-is visibly correct on hardware.
+- `Partial`: the normal interactive mode. Drawing operations merge their touched
+  logical rectangle into the hint.
+- `Full`: used by callers before whole-screen transitions or boot screens.
+
+`Weact213BwDisplay::update_canvas(canvas)` reads the hint, compares only the
+hinted canvas bytes when possible, patches the cached native 128x250 controller
+buffer, and sends a byte-aligned partial e-paper window. If the hint requests
+`Full`, or if the partial update counter reaches
+`ESP32CALC_EPD_FULL_REFRESH_INTERVAL`, the driver performs a full e-paper
+refresh and resets the counter. This keeps the UI simple while still giving the
+driver enough information to avoid unnecessary full-screen transfers.
+
+## Removed RGB565 Renderer
+
+Raylib and the previous e-paper bridge were removed from the firmware. On the
+ESP32-S3 software-rendered RGB565 path, even a simple graph frame measured about
+0.9 s before the e-paper transfer. That made the bridge slower than the display
+refresh itself, so interactive calculator screens now draw directly into the
+1-bit `MonoCanvas`.
 
 ## Calculation / Programs
 

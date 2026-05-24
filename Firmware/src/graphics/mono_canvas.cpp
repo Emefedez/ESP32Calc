@@ -4,6 +4,7 @@
 #include "esp_timer.h"
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <cstring>
 
 namespace esp32calc {
@@ -100,11 +101,63 @@ void glyph_for(char in, uint8_t (&out)[5]) {
 
 }  // namespace
 
-void MonoCanvas::clear(bool white) {
-  std::fill(buffer_.begin(), buffer_.end(), white ? 0xFF : 0x00);
+void MonoCanvas::begin_frame(CanvasRefreshKind kind) {
+  update_hint_ = {};
+  update_hint_.kind = kind;
+  if (kind == CanvasRefreshKind::Full) {
+    request_full_refresh();
+  }
 }
 
-void MonoCanvas::set_pixel(int x, int y, bool black) {
+void MonoCanvas::request_full_refresh() {
+  update_hint_.kind = CanvasRefreshKind::Full;
+  update_hint_.x = 0;
+  update_hint_.y = 0;
+  update_hint_.width = kWidth;
+  update_hint_.height = kHeight;
+}
+
+void MonoCanvas::request_partial_refresh(int x, int y, int width, int height) {
+  mark_dirty(x, y, width, height);
+}
+
+void MonoCanvas::mark_dirty(int x, int y, int width, int height) {
+  if (width <= 0 || height <= 0 || update_hint_.kind == CanvasRefreshKind::Full) {
+    return;
+  }
+
+  const int x0 = std::max(0, x);
+  const int y0 = std::max(0, y);
+  const int x1 = std::min<int>(kWidth, x + width);
+  const int y1 = std::min<int>(kHeight, y + height);
+  if (x0 >= x1 || y0 >= y1) {
+    return;
+  }
+
+  if (!update_hint_.has_region()) {
+    update_hint_.x = x0;
+    update_hint_.y = y0;
+    update_hint_.width = x1 - x0;
+    update_hint_.height = y1 - y0;
+    return;
+  }
+
+  const int ux0 = std::min(update_hint_.x, x0);
+  const int uy0 = std::min(update_hint_.y, y0);
+  const int ux1 = std::max(update_hint_.x + update_hint_.width, x1);
+  const int uy1 = std::max(update_hint_.y + update_hint_.height, y1);
+  update_hint_.x = ux0;
+  update_hint_.y = uy0;
+  update_hint_.width = ux1 - ux0;
+  update_hint_.height = uy1 - uy0;
+}
+
+void MonoCanvas::clear(bool white) {
+  std::fill(buffer_.begin(), buffer_.end(), white ? 0xFF : 0x00);
+  mark_dirty(0, 0, kWidth, kHeight);
+}
+
+void MonoCanvas::set_pixel_raw(int x, int y, bool black) {
   if (x < 0 || y < 0 || x >= kWidth || y >= kHeight) {
     return;
   }
@@ -117,6 +170,11 @@ void MonoCanvas::set_pixel(int x, int y, bool black) {
   }
 }
 
+void MonoCanvas::set_pixel(int x, int y, bool black) {
+  set_pixel_raw(x, y, black);
+  mark_dirty(x, y, 1, 1);
+}
+
 bool MonoCanvas::pixel(int x, int y) const {
   if (x < 0 || y < 0 || x >= kWidth || y >= kHeight) {
     return false;
@@ -127,18 +185,68 @@ bool MonoCanvas::pixel(int x, int y) const {
 }
 
 void MonoCanvas::hline(int x, int y, int width, bool black) {
-  for (int i = 0; i < width; ++i) {
-    set_pixel(x + i, y, black);
+  if (width <= 0) {
+    return;
   }
+  for (int i = 0; i < width; ++i) {
+    set_pixel_raw(x + i, y, black);
+  }
+  mark_dirty(x, y, width, 1);
 }
 
 void MonoCanvas::vline(int x, int y, int height, bool black) {
+  if (height <= 0) {
+    return;
+  }
   for (int i = 0; i < height; ++i) {
-    set_pixel(x, y + i, black);
+    set_pixel_raw(x, y + i, black);
+  }
+  mark_dirty(x, y, 1, height);
+}
+
+void MonoCanvas::line(int x0, int y0, int x1, int y1, bool black) {
+  const int dirty_x = std::min(x0, x1);
+  const int dirty_y = std::min(y0, y1);
+  const int dirty_w = std::abs(x1 - x0) + 1;
+  const int dirty_h = std::abs(y1 - y0) + 1;
+
+  const int dx = std::abs(x1 - x0);
+  const int sx = x0 < x1 ? 1 : -1;
+  const int dy = -std::abs(y1 - y0);
+  const int sy = y0 < y1 ? 1 : -1;
+  int err = dx + dy;
+
+  while (true) {
+    set_pixel_raw(x0, y0, black);
+    if (x0 == x1 && y0 == y1) {
+      break;
+    }
+    const int e2 = 2 * err;
+    if (e2 >= dy) {
+      err += dy;
+      x0 += sx;
+    }
+    if (e2 <= dx) {
+      err += dx;
+      y0 += sy;
+    }
+  }
+  mark_dirty(dirty_x, dirty_y, dirty_w, dirty_h);
+}
+
+void MonoCanvas::draw_line_strip(const MonoPoint* points, size_t count, bool black) {
+  if (points == nullptr || count < 2) {
+    return;
+  }
+  for (size_t i = 1; i < count; ++i) {
+    line(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y, black);
   }
 }
 
 void MonoCanvas::rect(int x, int y, int width, int height, bool black) {
+  if (width <= 0 || height <= 0) {
+    return;
+  }
   hline(x, y, width, black);
   hline(x, y + height - 1, width, black);
   vline(x, y, height, black);
@@ -146,8 +254,97 @@ void MonoCanvas::rect(int x, int y, int width, int height, bool black) {
 }
 
 void MonoCanvas::fill_rect(int x, int y, int width, int height, bool black) {
+  if (width <= 0 || height <= 0) {
+    return;
+  }
   for (int yy = 0; yy < height; ++yy) {
-    hline(x, y + yy, width, black);
+    for (int xx = 0; xx < width; ++xx) {
+      set_pixel_raw(x + xx, y + yy, black);
+    }
+  }
+  mark_dirty(x, y, width, height);
+}
+
+void MonoCanvas::circle(int center_x, int center_y, int radius, bool black) {
+  if (radius < 0) {
+    return;
+  }
+
+  int x = radius;
+  int y = 0;
+  int err = 0;
+
+  while (x >= y) {
+    set_pixel_raw(center_x + x, center_y + y, black);
+    set_pixel_raw(center_x + y, center_y + x, black);
+    set_pixel_raw(center_x - y, center_y + x, black);
+    set_pixel_raw(center_x - x, center_y + y, black);
+    set_pixel_raw(center_x - x, center_y - y, black);
+    set_pixel_raw(center_x - y, center_y - x, black);
+    set_pixel_raw(center_x + y, center_y - x, black);
+    set_pixel_raw(center_x + x, center_y - y, black);
+
+    if (err <= 0) {
+      ++y;
+      err += 2 * y + 1;
+    }
+    if (err > 0) {
+      --x;
+      err -= 2 * x + 1;
+    }
+  }
+  mark_dirty(center_x - radius, center_y - radius, radius * 2 + 1, radius * 2 + 1);
+}
+
+void MonoCanvas::fill_circle(int center_x, int center_y, int radius, bool black) {
+  if (radius < 0) {
+    return;
+  }
+
+  int x = radius;
+  int y = 0;
+  int err = 0;
+
+  while (x >= y) {
+    hline(center_x - x, center_y + y, x * 2 + 1, black);
+    hline(center_x - x, center_y - y, x * 2 + 1, black);
+    hline(center_x - y, center_y + x, y * 2 + 1, black);
+    hline(center_x - y, center_y - x, y * 2 + 1, black);
+
+    if (err <= 0) {
+      ++y;
+      err += 2 * y + 1;
+    }
+    if (err > 0) {
+      --x;
+      err -= 2 * x + 1;
+    }
+  }
+}
+
+void MonoCanvas::triangle(MonoPoint a, MonoPoint b, MonoPoint c, bool black) {
+  line(a.x, a.y, b.x, b.y, black);
+  line(b.x, b.y, c.x, c.y, black);
+  line(c.x, c.y, a.x, a.y, black);
+}
+
+void MonoCanvas::fill_triangle(MonoPoint a, MonoPoint b, MonoPoint c, bool black) {
+  if (b.y < a.y) std::swap(a, b);
+  if (c.y < a.y) std::swap(a, c);
+  if (c.y < b.y) std::swap(b, c);
+
+  auto edge_x = [](MonoPoint p0, MonoPoint p1, int y) {
+    if (p0.y == p1.y) {
+      return p0.x;
+    }
+    return p0.x + static_cast<int>((static_cast<int64_t>(p1.x - p0.x) * (y - p0.y)) /
+                                   (p1.y - p0.y));
+  };
+
+  for (int y = a.y; y <= c.y; ++y) {
+    const int x0 = edge_x(a, c, y);
+    const int x1 = y < b.y ? edge_x(a, b, y) : edge_x(b, c, y);
+    hline(std::min(x0, x1), y, std::abs(x1 - x0) + 1, black);
   }
 }
 
@@ -175,52 +372,6 @@ void MonoCanvas::draw_text(int x, int y, const char* text, uint8_t scale, bool b
     draw_char(cursor, y, *text, s, black);
     cursor += 6 * s;
     ++text;
-  }
-}
-
-void MonoCanvas::blit_rgb565(const uint16_t* pixels, int src_w, int src_h,
-                              int dx, int dy, int w, int h) {
-  if (!pixels) return;
-  if (w < 0) w = src_w;
-  if (h < 0) h = src_h;
-  constexpr int kBpr = (kWidth + 7) / 8;
-
-  for (int row = 0; row < h; ++row) {
-    const int cy = dy + row;
-    if (cy < 0 || cy >= kHeight) continue;
-    const uint16_t* src = pixels + row * src_w;
-
-    for (int bx = 0; bx < w; bx += 8) {
-      const int cx = dx + bx;
-      if (cx >= kWidth) break;
-      const int bits = std::min(8, w - bx);
-      int byte_col = cx / 8;
-      int bit_shift = cx % 8;
-
-      uint8_t byte = 0xFF;
-      for (int b = 0; b < bits; ++b) {
-        if ((cx + b) < 0) continue;
-        const uint16_t p = src[bx + b];
-        if (p == 0xFFFF) continue;  // pure white
-        const uint32_t r5 = (p >> 11) & 0x1F;
-        const uint32_t g6 = (p >> 5) & 0x3F;
-        const uint32_t b5 = p & 0x1F;
-        if (r5 * 77 + g6 * 150 + b5 * 29 < 2400) {  // ~50% luminance threshold
-          byte &= static_cast<uint8_t>(~(0x80 >> b));
-        }
-      }
-
-      size_t idx = static_cast<size_t>(cy) * kBpr + byte_col;
-      if (bit_shift == 0) {
-        buffer_[idx] = byte;
-      } else {
-        buffer_[idx] = (buffer_[idx] & (0xFFu >> (8 - bit_shift))) | (byte << bit_shift);
-        int next_bits = bits - (8 - bit_shift);
-        if (next_bits > 0 && byte_col + 1 < kBpr) {
-          buffer_[idx + 1] = (buffer_[idx + 1] & (0xFFu << next_bits)) | (byte >> (8 - bit_shift));
-        }
-      }
-    }
   }
 }
 

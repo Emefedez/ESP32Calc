@@ -1,17 +1,12 @@
 #include "ui/menu.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 
 #include "esp_log.h"
 #include "freertos/task.h"
 #include "keymap.h"
-
-#if ESP32CALC_USE_RAYLIB
-#include <cmath>
-#include "graphics/raylib_epaper_port.h"
-#include "raylib.h"
-#endif
 
 namespace esp32calc {
 namespace {
@@ -22,38 +17,6 @@ constexpr std::array<const char*, 7> kModes = {
     "PROGRAMS", "FILES", "WIRELESS", "SETTINGS",
 };
 
-#if ESP32CALC_USE_RAYLIB
-bool g_raylib_ready = false;
-
-void graph_draw_fn(void* ctx) {
-  (void)ctx;
-  constexpr int gw = MonoCanvas::kWidth;
-  constexpr int kSbH = 14;
-  constexpr int gh = MonoCanvas::kHeight - kSbH;
-
-  ClearBackground(WHITE);
-  DrawLine(0, gh / 2, gw, gh / 2, BLACK);
-  DrawLine(20, 0, 20, gh, BLACK);
-
-  Vector2 prev = {0, (float)(gh / 2 - 30 * sinf((0 - 20) / 30.0f))};
-  for (int x = 1; x < gw; ++x) {
-    float fx = (float)(x - 20) / 30.0f;
-    float y = (float)(gh / 2 - 30 * sinf(fx));
-    Vector2 cur = {(float)x, y};
-    DrawLineV(prev, cur, BLACK);
-    prev = cur;
-  }
-}
-
-void ensure_raylib(Weact213BwDisplay& display) {
-  if (!g_raylib_ready) {
-    RaylibEpaperPort rp;
-    rp.init(display);
-    g_raylib_ready = true;
-  }
-}
-#endif
-
 }  // namespace
 
 MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display)
@@ -61,7 +24,7 @@ MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display)
 
 void MenuUi::run() {
   ESP_LOGI(TAG, "starting menu");
-  render(RefreshMode::Full);
+  render();
 
   while (true) {
     AppEvent event {};
@@ -70,7 +33,7 @@ void MenuUi::run() {
       while (xQueueReceive(app_events_, &event, 0) == pdTRUE) {
         update_state(event);
       }
-      render(RefreshMode::Fast);
+      render();
     }
   }
 }
@@ -103,7 +66,10 @@ void MenuUi::apply_key(const KeyEvent& key) {
       ESP_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
       return;
     case KeyRole::Mode:
-      screen_ = Screen::Menu;
+      if (screen_ != Screen::Menu) {
+        screen_ = Screen::Menu;
+        full_refresh_pending_ = true;
+      }
       return;
     default:
       break;
@@ -127,6 +93,7 @@ void MenuUi::apply_key(const KeyEvent& key) {
     }
   } else if (def.role == KeyRole::Clear) {
     screen_ = Screen::Menu;
+    full_refresh_pending_ = true;
   }
 }
 
@@ -140,6 +107,7 @@ void MenuUi::move_selection(int delta) {
 
 void MenuUi::open_selected_mode() {
   screen_ = screen_for_index(selected_);
+  full_refresh_pending_ = true;
   ESP_LOGI(TAG, "open mode: %s", kModes[selected_]);
 }
 
@@ -154,7 +122,11 @@ MenuUi::Screen MenuUi::screen_for_index(uint8_t index) const {
   }
 }
 
-void MenuUi::render(RefreshMode mode) {
+void MenuUi::render() {
+  canvas_.begin_frame();
+  if (!first_render_done_ || full_refresh_pending_) {
+    canvas_.request_full_refresh();
+  }
   canvas_.clear(true);
   render_status_bar();
 
@@ -164,31 +136,19 @@ void MenuUi::render(RefreshMode mode) {
     render_content();
   }
 
-  RefreshMode actual = RefreshMode::Full;
-#if !ESP32CALC_FORCE_FULL_REFRESH
-  actual = first_render_done_ ? mode : RefreshMode::Full;
-#else
-  (void)mode;
-#endif
-  esp_err_t err = display_.update_canvas(canvas_, actual);
+  esp_err_t err = display_.update_canvas(canvas_);
   if (err != ESP_OK) {
     ESP_LOGW(TAG, "display update skipped: %s", esp_err_to_name(err));
   } else {
     first_render_done_ = true;
+    full_refresh_pending_ = false;
   }
 }
 
 void MenuUi::render_content() {
   switch (screen_) {
     case Screen::Graph:
-#if ESP32CALC_USE_RAYLIB
-      ensure_raylib(display_);
-      draw_raylib_region(canvas_, 0, kStatusBarHeight,
-                         MonoCanvas::kWidth, MonoCanvas::kHeight - kStatusBarHeight,
-                         graph_draw_fn, nullptr);
-#else
-      render_placeholder("GRAPH", "RAYLIB DISABLED");
-#endif
+      render_graph();
       return;
     case Screen::Standard:
     case Screen::Symbolic:
@@ -201,6 +161,35 @@ void MenuUi::render_content() {
     case Screen::Menu:
       return;
   }
+}
+
+void MenuUi::render_graph() {
+  canvas_.draw_text(4, 19, "GRAPH", 2, true);
+
+  constexpr int gx = 8;
+  constexpr int gy = 43;
+  constexpr int gw = MonoCanvas::kWidth - gx * 2;
+  constexpr int gh = 75;
+  constexpr int x_axis = gy + gh / 2;
+  constexpr int y_axis = gx + 24;
+
+  canvas_.rect(gx, gy, gw, gh, true);
+  canvas_.hline(gx, x_axis, gw, true);
+  canvas_.vline(y_axis, gy, gh, true);
+
+  constexpr int kGraphPoints = 96;
+  int prev_x = gx + 1;
+  float prev_fx = static_cast<float>(prev_x - y_axis) / 25.0f;
+  int prev_y = x_axis - static_cast<int>(30.0f * std::sin(prev_fx));
+  for (int i = 1; i < kGraphPoints; ++i) {
+    const int x = gx + 1 + i * (gw - 3) / (kGraphPoints - 1);
+    const float fx = static_cast<float>(x - y_axis) / 25.0f;
+    const int y = x_axis - static_cast<int>(30.0f * std::sin(fx));
+    canvas_.DrawLine(prev_x, prev_y, x, y, true);
+    prev_x = x;
+    prev_y = y;
+  }
+  canvas_.draw_text(190, 31, "SIN(X)", 1, true);
 }
 
 void MenuUi::render_status_bar() {
