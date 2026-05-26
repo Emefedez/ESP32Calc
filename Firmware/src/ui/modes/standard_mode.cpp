@@ -2,10 +2,15 @@
 
 #include <cstring>
 
+#include "calc/calc_engine.h"
+#include "esp_log.h"
 #include "ui/modes/mode_common.h"
+
+extern esp32calc::CalcEngine g_calc;
 
 namespace {
 
+constexpr const char* TAG = "standard";
 constexpr esp32calc::ModeMenuItem kItems[] = {
     {"CALCULATE", "READY"},
     {"HISTORY", "EMPTY"},
@@ -36,6 +41,7 @@ class StandardMode final : public UiMode {
   bool detail_open_ = false;
   char expression_[kExpressionCapacity] {};
   size_t expression_len_ = 0;
+  const char* status_ = "ENTER SENDS";
 
   bool append_expression(const char* token);
   void delete_expression_char();
@@ -55,6 +61,7 @@ const char* StandardMode::name() const {
 void StandardMode::on_open() {
   detail_open_ = false;
   clear_expression();
+  status_ = "ENTER SENDS";
 }
 
 ModeResult StandardMode::handle_key(const KeyEvent& key, const KeyDef& def) {
@@ -62,6 +69,7 @@ ModeResult StandardMode::handle_key(const KeyEvent& key, const KeyDef& def) {
     if (def.role == KeyRole::Clear) {
       if (selected_ == 0 && expression_len_ > 0) {
         clear_expression();
+        status_ = "ENTER SENDS";
         return ModeResult::Redraw;
       } else {
         detail_open_ = false;
@@ -72,11 +80,29 @@ ModeResult StandardMode::handle_key(const KeyEvent& key, const KeyDef& def) {
     if (selected_ == 0) {
       if (def.role == KeyRole::Delete) {
         delete_expression_char();
+        status_ = "ENTER SENDS";
+        return ModeResult::Redraw;
+      }
+
+      if (def.role == KeyRole::Enter) {
+        if (expression_len_ == 0) {
+          status_ = "EMPTY EXPR";
+          return ModeResult::Redraw;
+        }
+
+        const bool submitted = g_calc.submit_expression(expression_);
+        status_ = submitted ? "QUEUED" : "QUEUE FULL";
+        if (submitted) {
+          ESP_LOGI(TAG, "queued expression: %s", expression_);
+        } else {
+          ESP_LOGW(TAG, "failed to queue expression: %s", expression_);
+        }
         return ModeResult::Redraw;
       }
 
       const char* token = key_input(def, key.shift, key.alpha);
       if (token != nullptr && append_expression(token)) {
+        status_ = "ENTER SENDS";
         return ModeResult::Redraw;
       }
     }
@@ -90,6 +116,7 @@ ModeResult StandardMode::handle_key(const KeyEvent& key, const KeyDef& def) {
 
   if (def.role == KeyRole::Enter) {
     detail_open_ = true;
+    status_ = "ENTER SENDS";
     return ModeResult::FullRefresh;
   }
   return ModeResult::None;
@@ -145,7 +172,8 @@ void StandardMode::render_calculate(MonoCanvas& canvas) {
   canvas.draw_text(10, 64, expression_len_ == 0 ? "0" : visible, 1, true);
 
   canvas.hline(5, 91, 240, true);
-  canvas.draw_text(6, 101, "DEL ERASES  AC RETURNS", 1, true);
+  canvas.draw_text(6, 101, status_, 1, true);
+  canvas.draw_text(126, 101, "DEL/AC EDIT", 1, true);
 }
 
 }  // namespace esp32calc
