@@ -14,6 +14,7 @@ struct ModeMenuItem {
   const char* hint;
 };
 
+// to select mode
 uint8_t move_selection_wrapped(uint8_t selected, int delta, size_t count);
 ModeResult handle_menu_navigation(const KeyDef& def, uint8_t& selected, size_t count);
 

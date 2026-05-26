@@ -22,6 +22,8 @@ struct KeyEvent {
   uint8_t col = 0;
   const char* label = "";
   KeyPhase phase = KeyPhase::Pressed;
+  bool shift = false;
+  bool alpha = false;
 };
 
 struct BatterySnapshot {
@@ -37,4 +39,3 @@ struct AppEvent {
 };
 
 }  // namespace esp32calc
-

@@ -1,5 +1,7 @@
 #include "ui/modes/mode_common.h"
 
+#include <cstdio>
+
 namespace esp32calc {
 
 uint8_t move_selection_wrapped(uint8_t selected, int delta, size_t count) {
@@ -18,6 +20,12 @@ uint8_t move_selection_wrapped(uint8_t selected, int delta, size_t count) {
 }
 
 ModeResult handle_menu_navigation(const KeyDef& def, uint8_t& selected, size_t count) {
+  const int digit = key_digit(def);
+  if (digit >= 0 && static_cast<size_t>(digit) < count) {
+    selected = static_cast<uint8_t>(digit);
+    return ModeResult::Redraw;
+  }
+
   switch (def.role) {
     case KeyRole::Up:
     case KeyRole::Left:
@@ -62,7 +70,10 @@ void render_mode_menu(MonoCanvas& canvas,
       canvas.rect(kX - 2, y - 3, kRowWidth, 14, true);
     }
 
-    canvas.draw_text(kX + 4, y, items[i].label, 1, !is_selected);
+    char indexed_label[40] {};
+    std::snprintf(indexed_label, sizeof(indexed_label), "%u %s",
+                  static_cast<unsigned>(i), items[i].label);
+    canvas.draw_text(kX + 4, y, indexed_label, 1, !is_selected);
     if (items[i].hint != nullptr) {
       canvas.draw_text(145, y, items[i].hint, 1, !is_selected);
     }

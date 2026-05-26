@@ -77,6 +77,12 @@ void MenuUi::apply_key(const KeyEvent& key) {
 
   // a bit finicky but easy to implement. The main options are treating up/left and right/down the same way, have "weird" interactions around the borders, or have more complicated logic. 
   if (screen_ == Screen::Menu) {
+    const int digit = key_digit(def);
+    if (digit >= 0 && static_cast<size_t>(digit) < modes_.size()) {
+      selected_ = static_cast<uint8_t>(digit);
+      return;
+    }
+
     switch (def.role) {
       case KeyRole::Up:
         move_selection(-2);
@@ -106,7 +112,10 @@ void MenuUi::apply_key(const KeyEvent& key) {
     return;
   }
 
-  const ModeResult result = active_mode_->handle_key(key, def);
+  KeyEvent mode_key = key;
+  mode_key.shift = shift_;
+  mode_key.alpha = alpha_;
+  const ModeResult result = active_mode_->handle_key(mode_key, def);
   switch (result) {
     case ModeResult::ExitToMainMenu:
       close_active_mode();
@@ -144,7 +153,7 @@ void MenuUi::open_selected_mode() {
   ESP_LOGI(TAG, "open mode: %s", modes_[selected_].label);
 }
 
-void MenuUi::close_active_mode() {
+void MenuUi::close_active_mode() { //if mode is not being destroyed and this has been called, destroy so it returns to menu
   if (active_mode_ != nullptr && active_mode_destroy_ != nullptr) {
     active_mode_destroy_(active_mode_);
   }
@@ -214,10 +223,16 @@ void MenuUi::render_menu() {
     const int y = 43 + (i / 2) * 18;
     if (i == selected_) {
       canvas_.fill_rect(x - 3, y - 3, 115, 14, true);
-      canvas_.draw_text(x, y, modes_[i].label, 1, false);
+      char indexed_label[32] {};
+      std::snprintf(indexed_label, sizeof(indexed_label), "%u %s",
+                    static_cast<unsigned>(i), modes_[i].label);
+      canvas_.draw_text(x, y, indexed_label, 1, false);
     } else {
       canvas_.rect(x - 3, y - 3, 115, 14, true);
-      canvas_.draw_text(x, y, modes_[i].label, 1, true);
+      char indexed_label[32] {};
+      std::snprintf(indexed_label, sizeof(indexed_label), "%u %s",
+                    static_cast<unsigned>(i), modes_[i].label);
+      canvas_.draw_text(x, y, indexed_label, 1, true);
     }
   }
 }

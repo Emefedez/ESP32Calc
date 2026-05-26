@@ -6,6 +6,7 @@
 #include "graphics/mono_canvas.h"
 #include "hardware/keymap.h"
 
+
 namespace esp32calc {
 
 enum class ModeResult : uint8_t {
@@ -15,6 +16,7 @@ enum class ModeResult : uint8_t {
   ExitToMainMenu,
 };
 
+// used to define accessed mode
 class UiMode {
  public:
   virtual ~UiMode() = default;

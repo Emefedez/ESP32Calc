@@ -39,7 +39,7 @@ class GraphMode final : public UiMode {
   uint8_t selected_ = 0;
 
   void open_selected_screen();
-  void render_plot(MonoCanvas& canvas);
+  void render_plot(MonoCanvas& canvas, int gx, int gy);
   void render_table(MonoCanvas& canvas);
   void render_window(MonoCanvas& canvas);
   void render_trace(MonoCanvas& canvas);
@@ -88,7 +88,7 @@ void GraphMode::render(MonoCanvas& canvas) {
       render_mode_menu(canvas, name(), kItems, kItemCount, selected_);
       return;
     case Screen::Plot:
-      render_plot(canvas);
+      render_plot(canvas, 10, 30);
       return;
     case Screen::Table:
       render_table(canvas);
@@ -119,15 +119,13 @@ void GraphMode::open_selected_screen() {
   }
 }
 
-void GraphMode::render_plot(MonoCanvas& canvas) {
+void GraphMode::render_plot(MonoCanvas& canvas, int gx, int gy) {
   canvas.draw_text(4, 19, "GRAPH", 2, true);
 
-  constexpr int gx = 8;
-  constexpr int gy = 43;
-  constexpr int gw = MonoCanvas::kWidth - gx * 2;
-  constexpr int gh = 75;
-  constexpr int x_axis = gy + gh / 2;
-  constexpr int y_axis = gx + 24;
+  const int gw = MonoCanvas::kWidth - gx * 2;
+  const int gh = MonoCanvas::kHeight - gy * 2;
+  const int x_axis = gy + gh / 2;
+  const int y_axis = gx + 24;
 
   canvas.rect(gx, gy, gw, gh, true);
   canvas.hline(gx, x_axis, gw, true);

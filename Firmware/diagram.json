@@ -31,22 +31,19 @@
       "id": "sense",
       "top": -92,
       "left": 121,
-      "attrs": {
-        "travelLength": "60",
-        "value": "796"
-      }
+      "attrs": { "travelLength": "60", "value": "796" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_0",
-      "top": 227,
+      "top": 236.6,
       "left": -201.6,
       "attrs": { "label": "SHIFT", "key": "s" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_1",
-      "top": 227,
+      "top": 236.6,
       "left": -144,
       "attrs": { "label": "ALPHA", "key": "a" }
     },
@@ -60,23 +57,23 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_3",
-      "top": 227,
+      "top": 236.6,
       "left": -86.4,
       "attrs": { "label": "MODE", "key": "m" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_4",
-      "top": 227,
+      "top": 236.6,
       "left": -268.8,
       "attrs": { "label": "INT" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_5",
-      "top": 227,
+      "top": 236.6,
       "left": -326.4,
-      "attrs": { "label": "CALC" }
+      "attrs": { "label": "CALC", "key": "c" }
     },
     {
       "type": "wokwi-pushbutton",
@@ -102,268 +99,268 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_1_3",
-      "top": 313.4,
-      "left": 19.2,
-      "attrs": { "label": "dx" }
+      "top": 524.6,
+      "left": -220.8,
+      "attrs": { "label": "dx", "key": "d", "color": "yellow" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_1_4",
-      "top": 313.4,
-      "left": 76.8,
+      "top": 476.6,
+      "left": -451.2,
       "attrs": { "label": "'''" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_1_5",
-      "top": 313.4,
-      "left": 134.4,
-      "attrs": { "label": "sqrt" }
+      "top": 467,
+      "left": -220.8,
+      "attrs": { "label": "sqrt", "color": "yellow", "key": "q" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_2_0",
-      "top": 354,
-      "left": -150,
-      "attrs": { "label": "xyz" }
+      "top": 342.2,
+      "left": -153.6,
+      "attrs": { "label": "xyz", "key": "x", "color": "yellow" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_2_1",
-      "top": 354,
-      "left": -92,
-      "attrs": { "label": "xyz^2" }
+      "top": 342.2,
+      "left": -220.8,
+      "attrs": { "label": "xyz^2", "color": "grey" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_2_2",
-      "top": 354,
-      "left": -34,
-      "attrs": { "label": "xyz^a" }
+      "top": 342.2,
+      "left": -288,
+      "attrs": { "label": "xyz^a", "color": "grey" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_2_3",
-      "top": 354,
-      "left": 24,
+      "top": 409.4,
+      "left": -451.2,
       "attrs": { "label": "(/)v" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_2_4",
-      "top": 354,
-      "left": 82,
+      "top": 342.2,
+      "left": -451.2,
       "attrs": { "label": "(/)" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_2_5",
-      "top": 354,
-      "left": 140,
-      "attrs": { "label": "log" }
+      "top": 409.4,
+      "left": -220.8,
+      "attrs": { "label": "log", "key": "o", "color": "yellow" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_3_0",
-      "top": 396,
-      "left": -150,
-      "attrs": { "label": "ln" }
+      "top": 409.4,
+      "left": -153.6,
+      "attrs": { "label": "ln", "color": "yellow", "key": "l" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_3_1",
-      "top": 396,
-      "left": -92,
-      "attrs": { "label": "logab" }
+      "top": 409.4,
+      "left": -278.4,
+      "attrs": { "label": "logab", "color": "yellow" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_3_2",
-      "top": 396,
-      "left": -34,
-      "attrs": { "label": "rcl" }
+      "top": 323,
+      "left": 393.6,
+      "attrs": { "label": "rcl", "color": "grey" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_3_3",
-      "top": 396,
-      "left": 24,
-      "attrs": { "label": "eng" }
+      "top": 323,
+      "left": 460.8,
+      "attrs": { "label": "eng", "color": "grey" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_3_4",
-      "top": 396,
-      "left": 82,
+      "top": 342.2,
+      "left": -384,
       "attrs": { "label": "()" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_3_5",
-      "top": 396,
-      "left": 140,
-      "attrs": { "label": "S<>D" }
+      "top": 323,
+      "left": 259.2,
+      "attrs": { "label": "S<>D", "color": "grey" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_4_0",
-      "top": 438,
-      "left": -150,
-      "attrs": { "label": "M+-" }
+      "top": 323,
+      "left": 326.4,
+      "attrs": { "label": "M+-", "color": "grey" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_4_1",
-      "top": 438,
-      "left": -92,
-      "attrs": { "label": "7" }
+      "top": 390.2,
+      "left": -28.8,
+      "attrs": { "label": "7", "key": "7", "color": "green" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_4_2",
-      "top": 438,
-      "left": -34,
-      "attrs": { "label": "8" }
+      "top": 390.2,
+      "left": 28.8,
+      "attrs": { "label": "8", "key": "8", "color": "green" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_4_3",
-      "top": 438,
-      "left": 24,
-      "attrs": { "label": "9" }
+      "top": 390.2,
+      "left": 86.4,
+      "attrs": { "label": "9", "color": "green", "key": "9" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_4_4",
-      "top": 438,
-      "left": 82,
+      "top": 236.6,
+      "left": -384,
       "attrs": { "label": "DEL" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_4_5",
-      "top": 438,
-      "left": 140,
-      "attrs": { "label": "AC" }
+      "top": 390.2,
+      "left": 326.4,
+      "attrs": { "label": "AC", "color": "black" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_0",
-      "top": 480,
-      "left": -150,
-      "attrs": { "label": "sen" }
+      "top": 467,
+      "left": -153.6,
+      "attrs": { "label": "sen", "key": "s", "color": "yellow" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_1",
-      "top": 480,
-      "left": -92,
-      "attrs": { "label": "4" }
+      "top": 457.4,
+      "left": -28.8,
+      "attrs": { "label": "4", "key": "4", "color": "green" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_2",
-      "top": 480,
-      "left": -34,
-      "attrs": { "label": "5" }
+      "top": 457.4,
+      "left": 28.8,
+      "attrs": { "label": "5", "color": "green", "key": "5" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_3",
-      "top": 480,
-      "left": 24,
-      "attrs": { "label": "6" }
+      "top": 457.4,
+      "left": 86.4,
+      "attrs": { "label": "6", "color": "green", "key": "5" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_4",
-      "top": 480,
-      "left": 82,
-      "attrs": { "label": "x" }
+      "top": 342.2,
+      "left": -96,
+      "attrs": { "label": "x", "color": "yellow" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_5",
-      "top": 480,
-      "left": 140,
-      "attrs": { "label": "/" }
+      "top": 457.4,
+      "left": 326.4,
+      "attrs": { "label": "/", "color": "black", "bounce": "1", "key": "Control" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_0",
-      "top": 522,
-      "left": -150,
-      "attrs": { "label": "cos" }
+      "top": 524.6,
+      "left": -153.6,
+      "attrs": { "label": "cos", "key": "c", "color": "yellow" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_1",
-      "top": 522,
-      "left": -92,
-      "attrs": { "label": "1" }
+      "top": 515,
+      "left": -28.8,
+      "attrs": { "label": "1", "color": "green", "key": "1" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_2",
-      "top": 522,
-      "left": -34,
-      "attrs": { "label": "2" }
+      "top": 515,
+      "left": 28.8,
+      "attrs": { "label": "2", "color": "green", "key": "2" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_3",
-      "top": 522,
-      "left": 24,
-      "attrs": { "label": "3" }
+      "top": 515,
+      "left": 86.4,
+      "attrs": { "label": "3", "color": "green", "key": "3" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_4",
-      "top": 522,
-      "left": 82,
-      "attrs": { "label": "+" }
+      "top": 524.6,
+      "left": 259.2,
+      "attrs": { "label": "+", "key": "p", "color": "black" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_5",
-      "top": 522,
-      "left": 140,
-      "attrs": { "label": "-" }
+      "top": 524.6,
+      "left": 326.4,
+      "attrs": { "label": "-", "color": "black" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_7_0",
-      "top": 564,
-      "left": -150,
-      "attrs": { "label": "tan" }
+      "top": 582.2,
+      "left": -153.6,
+      "attrs": { "label": "tan", "color": "yellow", "key": "t" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_7_1",
-      "top": 564,
-      "left": -92,
-      "attrs": { "label": "0" }
+      "top": 582.2,
+      "left": -28.8,
+      "attrs": { "label": "0", "color": "green", "key": "0" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_7_2",
-      "top": 564,
-      "left": -34,
-      "attrs": { "label": "." }
+      "top": 582.2,
+      "left": 28.8,
+      "attrs": { "label": ".", "color": "green" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_7_3",
-      "top": 564,
-      "left": 24,
-      "attrs": { "label": "x10" }
+      "top": 582.2,
+      "left": 86.4,
+      "attrs": { "label": "x10", "color": "green" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_7_4",
-      "top": 564,
-      "left": 82,
-      "attrs": { "label": "ANS" }
+      "top": 582.2,
+      "left": 326.4,
+      "attrs": { "label": "ANS", "color": "black" }
     },
     {
       "type": "wokwi-pushbutton",
@@ -375,43 +372,43 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_8_0",
-      "top": 606,
-      "left": -150,
+      "top": 639.8,
+      "left": -153.6,
       "attrs": { "label": "hyp" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_8_1",
-      "top": 606,
-      "left": -92,
+      "top": 735.8,
+      "left": -96,
       "attrs": { "label": "" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_8_2",
-      "top": 606,
-      "left": -34,
+      "top": 735.8,
+      "left": -38.4,
       "attrs": { "label": "" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_8_3",
-      "top": 606,
-      "left": 24,
+      "top": 735.8,
+      "left": 19.2,
       "attrs": { "label": "" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_8_4",
-      "top": 606,
-      "left": 82,
+      "top": 735.8,
+      "left": 76.8,
       "attrs": { "label": "" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_8_5",
-      "top": 606,
-      "left": 140,
+      "top": 735.8,
+      "left": 134.4,
       "attrs": { "label": "" }
     }
   ],
