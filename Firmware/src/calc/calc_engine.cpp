@@ -9,7 +9,7 @@ namespace {
 constexpr const char* TAG = "calc";
 }
 
-esp_err_t CalcEngine::start(QueueHandle_t app_events) {
+esp_err_t CalcEngine::start(QueueHandle_t app_events) { //adds the calculator engine to a specific core
   app_events_ = app_events;
   BaseType_t ok = xTaskCreatePinnedToCore(
       &CalcEngine::task_trampoline,

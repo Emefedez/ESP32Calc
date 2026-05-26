@@ -88,7 +88,7 @@ BatterySnapshot BatteryMonitor::sample() {
   }
 
   const uint16_t adc_mv = static_cast<uint16_t>((raw * 3300) / 4095);
-#if ESP32CALC_WOKWI
+#if ESP32CALC_WOKWI // for slider
   const uint16_t pack_mv = static_cast<uint16_t>(
       config::kBatteryEmptyMv +
       ((static_cast<uint32_t>(std::clamp(raw, 0, 4095)) *

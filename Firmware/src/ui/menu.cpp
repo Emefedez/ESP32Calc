@@ -80,6 +80,7 @@ void MenuUi::apply_key(const KeyEvent& key) {
     const int digit = key_digit(def);
     if (digit >= 0 && static_cast<size_t>(digit) < modes_.size()) {
       selected_ = static_cast<uint8_t>(digit);
+      open_selected_mode();
       return;
     }
 
