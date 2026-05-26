@@ -27,12 +27,16 @@ pio device monitor -e esp32-s3-n16r16
 
 ```bash
 cd Firmware
-pio run -e esp32-s3-n16r16
+pio run -e esp32-s3-wokwi
 wokwi-cli .
 ```
 
-`wokwi.toml` points at the default PlatformIO firmware output so Wokwi can be
-launched after a normal `pio run`.
+`wokwi.toml` points at the Wokwi PlatformIO firmware output so Wokwi can be
+launched after `pio run -e esp32-s3-wokwi`.
+
+The battery sense input is modeled with a slide potentiometer on GPIO3. In the
+Wokwi build, the full slider travel maps to the configured empty-to-full battery
+range and updates once per second.
 
 The Wokwi diagram uses `board-epaper-2in9` as a simulator stand-in. The firmware
 itself targets the real WeAct 2.13 inch B/W module with the Rust driver's

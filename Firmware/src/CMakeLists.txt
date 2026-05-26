@@ -1,8 +1,8 @@
 idf_component_register(
   SRCS
     "main.cpp"
-    "keymap.cpp"
-    "keypad_matrix.cpp"
+    "hardware/keymap.cpp"
+    "hardware/keypad_matrix.cpp"
     "display/weact_213_bw.cpp"
     "graphics/mono_canvas.cpp"
     "battery/battery_monitor.cpp"
@@ -11,6 +11,15 @@ idf_component_register(
     "programs/program_loader.cpp"
     "wireless/wireless_service.cpp"
     "ui/menu.cpp"
+    "ui/modes/mode_common.cpp"
+    "ui/modes/mode_registry.cpp"
+    "ui/modes/standard_mode.cpp"
+    "ui/modes/graph_mode.cpp"
+    "ui/modes/symbolic_mode.cpp"
+    "ui/modes/programs_mode.cpp"
+    "ui/modes/files_mode.cpp"
+    "ui/modes/wireless_mode.cpp"
+    "ui/modes/settings_mode.cpp"
   INCLUDE_DIRS
     "."
     "display"
@@ -21,6 +30,8 @@ idf_component_register(
     "programs"
     "wireless"
     "ui"
+    "ui/modes"
+    "hardware"
   REQUIRES
     esp_lcd
 )

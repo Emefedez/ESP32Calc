@@ -9,7 +9,7 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "pins.h"
+#include "hardware/pins.h"
 
 namespace esp32calc {
 namespace {

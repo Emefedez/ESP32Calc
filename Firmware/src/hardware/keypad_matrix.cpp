@@ -1,4 +1,4 @@
-#include "keypad_matrix.h"
+#include "hardware/keypad_matrix.h"
 
 #include "app_config.h"
 #include "driver/gpio.h"
@@ -6,8 +6,8 @@
 #include "esp_log.h"
 #include "esp_rom_sys.h"
 #include "freertos/task.h"
-#include "keymap.h"
-#include "pins.h"
+#include "hardware/keymap.h"
+#include "hardware/pins.h"
 
 namespace esp32calc {
 namespace {

@@ -10,7 +10,7 @@
 #include "freertos/queue.h"
 #include "freertos/task.h"
 #include "graphics/mono_canvas.h"
-#include "keypad_matrix.h"
+#include "hardware/keypad_matrix.h"
 #include "nvs_flash.h"
 #include "storage/sd_storage.h"
 #include "ui/menu.h"
@@ -37,6 +37,7 @@ void ui_task(void*) {
   ui.run();
 }
 
+// ============ logging ============
 static void log_startup_memory() {
   ESP_LOGI(TAG, "heap internal=%u psram=%u",
            heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
@@ -48,87 +49,9 @@ static void log_if_error(const char* action, esp_err_t err) {
     ESP_LOGE(TAG, "%s failed: %s (0x%x)", action, esp_err_to_name(err), err);
   }
 }
+// =================================
 
-static void render_native_display_test() {
-#if ESP32CALC_BOOT_NATIVE_TEST
-  if (!g_display.ready()) {
-    return;
-  }
 
-  using NativeBuf = std::array<uint8_t, esp32calc::config::kDisplayNativeBufferSize>;
-  NativeBuf& native_test = *new NativeBuf();
-  native_test.fill(0xFF);
-  constexpr uint16_t bytes_per_row = esp32calc::config::kDisplayNativeWidth / 8;
-  for (uint16_t y = 0; y < esp32calc::config::kDisplayNativeHeight; ++y) {
-    uint8_t* row = &native_test[static_cast<size_t>(y) * bytes_per_row];
-
-    row[0] = 0x00;
-    row[bytes_per_row - 1] = 0x00;
-
-    if (y < 18 || y >= esp32calc::config::kDisplayNativeHeight - 18 ||
-        (y >= 116 && y < 134)) {
-      std::fill(row, row + bytes_per_row, 0x00);
-    }
-
-    if ((y / 25) % 2 == 0) {
-      row[3] = 0x00;
-      row[7] = 0x00;
-      row[11] = 0x00;
-    }
-  }
-
-  ESP_LOGI(TAG, "rendering raw native EPD diagnostic");
-  log_if_error("native display test",
-               g_display.update_native_buffer(native_test, esp32calc::RefreshMode::Full));
-  vTaskDelay(pdMS_TO_TICKS(1600));
-#endif
-}
-
-static void render_display_self_test() {
-#if ESP32CALC_BOOT_DISPLAY_TEST
-  if (!g_display.ready()) {
-    return;
-  }
-
-  g_boot_canvas.clear(true);
-  g_boot_canvas.rect(0, 0, esp32calc::MonoCanvas::kWidth, esp32calc::MonoCanvas::kHeight, true);
-  g_boot_canvas.hline(0, esp32calc::MonoCanvas::kHeight / 2, esp32calc::MonoCanvas::kWidth, true);
-  g_boot_canvas.vline(esp32calc::MonoCanvas::kWidth / 2, 0, esp32calc::MonoCanvas::kHeight, true);
-
-  g_boot_canvas.fill_rect(0, 0, 18, 18, true);
-  g_boot_canvas.draw_text(3, 5, "TL", 1, false);
-  g_boot_canvas.fill_rect(esp32calc::MonoCanvas::kWidth - 18, 0, 18, 18, true);
-  g_boot_canvas.draw_text(esp32calc::MonoCanvas::kWidth - 15, 5, "TR", 1, false);
-  g_boot_canvas.fill_rect(0, esp32calc::MonoCanvas::kHeight - 18, 18, 18, true);
-  g_boot_canvas.draw_text(3, esp32calc::MonoCanvas::kHeight - 13, "BL", 1, false);
-  g_boot_canvas.fill_rect(esp32calc::MonoCanvas::kWidth - 18,
-                          esp32calc::MonoCanvas::kHeight - 18,
-                          18,
-                          18,
-                          true);
-  g_boot_canvas.draw_text(esp32calc::MonoCanvas::kWidth - 15,
-                          esp32calc::MonoCanvas::kHeight - 13,
-                          "BR",
-                          1,
-                          false);
-
-  for (int x = 0; x < esp32calc::MonoCanvas::kWidth; ++x) {
-    const int y = x * esp32calc::MonoCanvas::kHeight / esp32calc::MonoCanvas::kWidth;
-    g_boot_canvas.set_pixel(x, y, true);
-    g_boot_canvas.set_pixel(esp32calc::MonoCanvas::kWidth - 1 - x, y, true);
-  }
-
-  g_boot_canvas.draw_text(35, 18, "EPD SELF TEST", 1, true);
-  g_boot_canvas.draw_text(35, 34, "FULL REFRESH ONLY", 1, true);
-  g_boot_canvas.draw_text(35, 50, "ROT90 250X122", 1, true);
-  g_boot_canvas.draw_text(35, 74, "MODE MENU NEXT", 1, true);
-
-  ESP_LOGI(TAG, "rendering boot display self-test");
-  log_if_error("display self-test",
-               g_display.update_canvas(g_boot_canvas, esp32calc::RefreshMode::Full));
-  vTaskDelay(pdMS_TO_TICKS(1200));
-#endif
-}
 static void render_boot_splash() {
   if (!g_display.ready()) {
     return;
@@ -156,9 +79,11 @@ static void render_boot_splash() {
   g_boot_canvas.draw_text(68, 58, " by Emefedez", 1, true);
 
   g_boot_canvas.draw_text(10, 110, "v0.1.1", 1, true);
-  g_boot_canvas.draw_text(180, 110, "Booting...", 1, true);
+  g_boot_canvas.draw_text(180, 110, "FOSS <3", 1, true);
 
   ESP_LOGI(TAG, "rendering boot splash");
+  vTaskDelay(1000);
+
   log_if_error("boot splash",
                g_display.update_canvas(g_boot_canvas, esp32calc::RefreshMode::Full));
 }
@@ -186,9 +111,9 @@ extern "C" void app_main(void) {
   if (err != ESP_OK) {
     ESP_LOGE(TAG, "display init failed: %s (0x%x)", esp_err_to_name(err), err);
   }
+
   render_boot_splash();
-  render_native_display_test();
-  render_display_self_test();
+  
 
   err = g_keypad.init();
   if (err == ESP_OK) {

@@ -27,18 +27,28 @@
       "attrs": {}
     },
     {
+      "type": "wokwi-slide-potentiometer",
+      "id": "sense",
+      "top": -92,
+      "left": 121,
+      "attrs": {
+        "travelLength": "60",
+        "value": "796"
+      }
+    },
+    {
       "type": "wokwi-pushbutton",
       "id": "btn_0_0",
       "top": 227,
       "left": -201.6,
-      "attrs": { "label": "SHIFT" }
+      "attrs": { "label": "SHIFT", "key": "s" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_1",
       "top": 227,
       "left": -144,
-      "attrs": { "label": "ALPHA" }
+      "attrs": { "label": "ALPHA", "key": "a" }
     },
     {
       "type": "wokwi-pushbutton",
@@ -52,7 +62,7 @@
       "id": "btn_0_3",
       "top": 227,
       "left": -86.4,
-      "attrs": { "label": "MODE" }
+      "attrs": { "label": "MODE", "key": "m" }
     },
     {
       "type": "wokwi-pushbutton",
@@ -420,6 +430,9 @@
     [ "esp:39", "sd:DO", "cyan", [] ],
     [ "esp:3V3.1", "sd:VCC", "red", [] ],
     [ "esp:GND.1", "sd:GND", "black", [] ],
+    [ "esp:3", "sense:SIG", "orange", [] ],
+    [ "esp:3V3.2", "sense:VCC", "red", [] ],
+    [ "esp:GND.3", "sense:GND", "black", [] ],
     [ "btn_0_0:1.l", "btn_0_1:1.l", "gray", [ "h45" ] ],
     [ "btn_0_1:1.l", "btn_0_2:1.l", "gray", [ "h45" ] ],
     [ "btn_0_2:1.l", "btn_0_3:1.l", "gray", [ "h45" ] ],

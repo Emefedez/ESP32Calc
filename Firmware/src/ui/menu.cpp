@@ -1,26 +1,24 @@
 #include "ui/menu.h"
 
-#include <algorithm>
-#include <cmath>
 #include <cstdio>
 
 #include "esp_log.h"
 #include "freertos/task.h"
-#include "keymap.h"
+#include "hardware/keymap.h"
 
 namespace esp32calc {
 namespace {
 constexpr const char* TAG = "ui";
-
-constexpr std::array<const char*, 7> kModes = {
-    "STANDARD", "GRAPH", "SYMBOLIC",
-    "PROGRAMS", "FILES", "WIRELESS", "SETTINGS",
-};
-
 }  // namespace
 
 MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display)
-    : app_events_(app_events), display_(display) {}
+    : app_events_(app_events),
+      display_(display),
+      modes_(builtin_modes()) {}
+
+MenuUi::~MenuUi() {
+  close_active_mode();
+}
 
 void MenuUi::run() {
   ESP_LOGI(TAG, "starting menu");
@@ -56,8 +54,9 @@ void MenuUi::apply_key(const KeyEvent& key) {
 
   const KeyDef& def = key_at(key.row, key.col);
 
+  // what do these keys do
   switch (def.role) {
-    case KeyRole::Shift:
+    case KeyRole::Shift: //if pressed "Shift", shift_ boolean is flipped
       shift_ = !shift_;
       ESP_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
       return;
@@ -67,6 +66,7 @@ void MenuUi::apply_key(const KeyEvent& key) {
       return;
     case KeyRole::Mode:
       if (screen_ != Screen::Menu) {
+        close_active_mode();
         screen_ = Screen::Menu;
         full_refresh_pending_ = true;
       }
@@ -75,13 +75,18 @@ void MenuUi::apply_key(const KeyEvent& key) {
       break;
   }
 
+  // a bit finicky but easy to implement. The main options are treating up/left and right/down the same way, have "weird" interactions around the borders, or have more complicated logic. 
   if (screen_ == Screen::Menu) {
     switch (def.role) {
       case KeyRole::Up:
+        move_selection(-2);
+        return;
       case KeyRole::Left:
         move_selection(-1);
         return;
       case KeyRole::Down:
+        move_selection(2);
+        return;
       case KeyRole::Right:
         move_selection(1);
         return;
@@ -91,35 +96,60 @@ void MenuUi::apply_key(const KeyEvent& key) {
       default:
         return;
     }
-  } else if (def.role == KeyRole::Clear) {
+
+    return;
+  }
+
+  if (active_mode_ == nullptr) { // if there is no mode, we need to be in the menu
     screen_ = Screen::Menu;
     full_refresh_pending_ = true;
+    return;
+  }
+
+  const ModeResult result = active_mode_->handle_key(key, def);
+  switch (result) {
+    case ModeResult::ExitToMainMenu:
+      close_active_mode();
+      screen_ = Screen::Menu;
+      full_refresh_pending_ = true;
+      return;
+    case ModeResult::FullRefresh:
+      full_refresh_pending_ = true;
+      return;
+    case ModeResult::Redraw:
+    case ModeResult::None:
+      return;
   }
 }
 
-void MenuUi::move_selection(int delta) {
-  const int count = static_cast<int>(kModes.size());
-  int next = static_cast<int>(selected_) + delta;
-  if (next < 0) next = count - 1;
+void MenuUi::move_selection(int delta) { // here is where the "up/down/left/right" logic would live
+  const int count = static_cast<int>(modes_.size()); // we take the amount of modes
+  int next = static_cast<int>(selected_) + delta; // we pass what the key press tells us
+  //rollover checks
+  if (next < 0) next = count - 1; 
   else if (next >= count) next = 0;
   selected_ = static_cast<uint8_t>(next);
 }
 
 void MenuUi::open_selected_mode() {
-  screen_ = screen_for_index(selected_);
+  close_active_mode();
+  const ModeDescriptor& entry = modes_[selected_];
+  active_mode_ = entry.construct(mode_storage_);
+  active_mode_destroy_ = entry.destroy;
+  if (active_mode_ != nullptr) {
+    active_mode_->on_open();
+  }
+  screen_ = Screen::Mode;
   full_refresh_pending_ = true;
-  ESP_LOGI(TAG, "open mode: %s", kModes[selected_]);
+  ESP_LOGI(TAG, "open mode: %s", modes_[selected_].label);
 }
 
-MenuUi::Screen MenuUi::screen_for_index(uint8_t index) const {
-  switch (index) {
-    case 0: return Screen::Standard;
-    case 1: return Screen::Graph;
-    case 2: return Screen::Symbolic;
-    case 3: return Screen::Programs;
-    case 4: return Screen::Files;
-    default: return Screen::Settings;
+void MenuUi::close_active_mode() {
+  if (active_mode_ != nullptr && active_mode_destroy_ != nullptr) {
+    active_mode_destroy_(active_mode_);
   }
+  active_mode_ = nullptr;
+  active_mode_destroy_ = nullptr;
 }
 
 void MenuUi::render() {
@@ -146,50 +176,11 @@ void MenuUi::render() {
 }
 
 void MenuUi::render_content() {
-  switch (screen_) {
-    case Screen::Graph:
-      render_graph();
-      return;
-    case Screen::Standard:
-    case Screen::Symbolic:
-    case Screen::Programs:
-    case Screen::Files:
-    case Screen::Wireless:
-    case Screen::Settings:
-      render_placeholder("MODE", "SELECT FROM MENU");
-      return;
-    case Screen::Menu:
-      return;
+  if (active_mode_ != nullptr) {
+    active_mode_->render(canvas_);
+  } else {
+    render_menu();
   }
-}
-
-void MenuUi::render_graph() {
-  canvas_.draw_text(4, 19, "GRAPH", 2, true);
-
-  constexpr int gx = 8;
-  constexpr int gy = 43;
-  constexpr int gw = MonoCanvas::kWidth - gx * 2;
-  constexpr int gh = 75;
-  constexpr int x_axis = gy + gh / 2;
-  constexpr int y_axis = gx + 24;
-
-  canvas_.rect(gx, gy, gw, gh, true);
-  canvas_.hline(gx, x_axis, gw, true);
-  canvas_.vline(y_axis, gy, gh, true);
-
-  constexpr int kGraphPoints = 96;
-  int prev_x = gx + 1;
-  float prev_fx = static_cast<float>(prev_x - y_axis) / 25.0f;
-  int prev_y = x_axis - static_cast<int>(30.0f * std::sin(prev_fx));
-  for (int i = 1; i < kGraphPoints; ++i) {
-    const int x = gx + 1 + i * (gw - 3) / (kGraphPoints - 1);
-    const float fx = static_cast<float>(x - y_axis) / 25.0f;
-    const int y = x_axis - static_cast<int>(30.0f * std::sin(fx));
-    canvas_.DrawLine(prev_x, prev_y, x, y, true);
-    prev_x = x;
-    prev_y = y;
-  }
-  canvas_.draw_text(190, 31, "SIN(X)", 1, true);
 }
 
 void MenuUi::render_status_bar() {
@@ -218,24 +209,17 @@ void MenuUi::render_status_bar() {
 void MenuUi::render_menu() {
   canvas_.draw_text(4, 19, "MODE", 2, true);
 
-  for (uint8_t i = 0; i < kModes.size(); ++i) {
+  for (uint8_t i = 0; i < modes_.size(); ++i) {
     const int x = (i % 2) == 0 ? 5 : 128;
     const int y = 43 + (i / 2) * 18;
     if (i == selected_) {
       canvas_.fill_rect(x - 3, y - 3, 115, 14, true);
-      canvas_.draw_text(x, y, kModes[i], 1, false);
+      canvas_.draw_text(x, y, modes_[i].label, 1, false);
     } else {
       canvas_.rect(x - 3, y - 3, 115, 14, true);
-      canvas_.draw_text(x, y, kModes[i], 1, true);
+      canvas_.draw_text(x, y, modes_[i].label, 1, true);
     }
   }
-}
-
-void MenuUi::render_placeholder(const char* title, const char* subtitle) {
-  canvas_.draw_text(4, 22, title, 2, true);
-  canvas_.draw_text(5, 49, subtitle, 1, true);
-  canvas_.hline(5, 64, 240, true);
-  canvas_.draw_text(5, 76, "MODE RETURNS MENU", 1, true);
 }
 
 }  // namespace esp32calc

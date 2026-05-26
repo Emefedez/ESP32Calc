@@ -1,6 +1,6 @@
 #pragma once
 
-#include <array>
+#include <cstddef>
 #include <cstdint>
 
 #include "app_events.h"
@@ -9,18 +9,20 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "graphics/mono_canvas.h"
+#include "ui/modes/mode_registry.h"
 
 namespace esp32calc {
 
 class MenuUi {
  public:
   MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display);
+  ~MenuUi();
   [[noreturn]] void run();
 
  private:
   enum class Screen : uint8_t {
-    Menu, Standard, Graph, Symbolic,
-    Programs, Files, Wireless, Settings,
+    Menu,
+    Mode,
   };
 
   void apply_key(const KeyEvent& key);
@@ -29,13 +31,11 @@ class MenuUi {
 
   void render_status_bar();
   void render_menu();
-  void render_graph();
   void render_content();
-  void render_placeholder(const char* title, const char* subtitle);
 
   void open_selected_mode();
+  void close_active_mode();
   void move_selection(int delta);
-  Screen screen_for_index(uint8_t index) const;
 
   static constexpr int kStatusBarHeight = 14;
 
@@ -43,6 +43,10 @@ class MenuUi {
   Weact213BwDisplay& display_;
   MonoCanvas canvas_ {};
   BatterySnapshot battery_ {};
+  const ModeDescriptorList& modes_;
+  alignas(kModeStorageAlign) std::byte mode_storage_[kModeStorageSize] {};
+  UiMode* active_mode_ = nullptr;
+  ModeDestroyFn active_mode_destroy_ = nullptr;
   Screen screen_ = Screen::Menu;
   uint8_t selected_ = 0;
   bool shift_ = false;

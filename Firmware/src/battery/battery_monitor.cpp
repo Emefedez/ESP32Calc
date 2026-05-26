@@ -8,7 +8,7 @@
 #include "esp_check.h"
 #include "esp_log.h"
 #include "freertos/task.h"
-#include "pins.h"
+#include "hardware/pins.h"
 
 namespace esp32calc {
 namespace {
@@ -31,7 +31,12 @@ esp_err_t BatteryMonitor::init() {
 
   adc_handle_ = handle;
   latest_ = sample();
-  ESP_LOGI(TAG, "adc ready on GPIO%d, pack=%umV", pins::kBatterySense, latest_.pack_mv);
+  ESP_LOGI(TAG,
+           "adc ready on GPIO%d, adc=%umV pack=%umV charge=%u%%",
+           pins::kBatterySense,
+           latest_.adc_mv,
+           latest_.pack_mv,
+           latest_.percent);
   return ESP_OK;
 }
 
@@ -83,8 +88,16 @@ BatterySnapshot BatteryMonitor::sample() {
   }
 
   const uint16_t adc_mv = static_cast<uint16_t>((raw * 3300) / 4095);
+#if ESP32CALC_WOKWI
+  const uint16_t pack_mv = static_cast<uint16_t>(
+      config::kBatteryEmptyMv +
+      ((static_cast<uint32_t>(std::clamp(raw, 0, 4095)) *
+        (config::kBatteryFullMv - config::kBatteryEmptyMv)) /
+       4095));
+#else
   const uint16_t pack_mv = static_cast<uint16_t>(
       std::lround(static_cast<float>(adc_mv) * config::kBatteryDividerRatio));
+#endif
   const int percent = ((static_cast<int>(pack_mv) - config::kBatteryEmptyMv) * 100) /
                       (config::kBatteryFullMv - config::kBatteryEmptyMv);
 

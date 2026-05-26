@@ -8,14 +8,14 @@
 #include "esp_check.h"
 #include "esp_log.h"
 #include "esp_vfs_fat.h"
-#include "pins.h"
+#include "hardware/pins.h"
 #include "sdmmc_cmd.h"
 
 namespace esp32calc {
 namespace {
 constexpr const char* TAG = "sd";
 }
-
+// represents and defines the SD card so it can be mounted. This starts the SPI bus itself.
 esp_err_t SdStorage::mount() {
   spi_bus_config_t bus_cfg {};
   bus_cfg.mosi_io_num = pins::kSdMosi;
@@ -25,12 +25,14 @@ esp_err_t SdStorage::mount() {
   bus_cfg.quadhd_io_num = -1;
   bus_cfg.max_transfer_sz = 4096;
 
+  // passes the SD config and indicates wether it errors out
   esp_err_t err = spi_bus_initialize(pins::kSdSpiHost, &bus_cfg, SPI_DMA_CH_AUTO);
   if (err != ESP_OK && err != ESP_ERR_INVALID_STATE) {
     ESP_LOGE(TAG, "initialize sd spi failed: %s (0x%x)", esp_err_to_name(err), err);
     return err;
   }
 
+  // pin definition used for host
   sdmmc_host_t host = SDSPI_HOST_DEFAULT();
   host.slot = pins::kSdSpiHost;
 
@@ -43,6 +45,7 @@ esp_err_t SdStorage::mount() {
   mount_config.max_files = 5;
   mount_config.allocation_unit_size = 16 * 1024;
 
+  // based on the previous definitions, tries to mount SD
   sdmmc_card_t* card = nullptr;
   err = esp_vfs_fat_sdspi_mount(config::kSdMountPoint,
                                 &host,
@@ -56,10 +59,9 @@ esp_err_t SdStorage::mount() {
   }
 
   mounted_ = true;
-  mkdir(config::kProgramsPath, 0775);
+  mkdir(config::kProgramsPath, 0777); //basically chmod
   ESP_LOGI(TAG, "mounted at %s", config::kSdMountPoint);
   return ESP_OK;
 }
 
 }  // namespace esp32calc
-

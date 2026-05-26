@@ -23,6 +23,14 @@
 #define ESP32CALC_EPD_FULL_REFRESH_INTERVAL 24
 #endif
 
+#ifndef ESP32CALC_WOKWI
+#define ESP32CALC_WOKWI 0
+#endif
+
+#ifndef ESP32CALC_BATTERY_POLL_PERIOD_MS
+#define ESP32CALC_BATTERY_POLL_PERIOD_MS 30000
+#endif
+
 namespace esp32calc::config {
 
 constexpr uint16_t kDisplayLogicalWidth = 250;
@@ -36,7 +44,7 @@ constexpr size_t kDisplayNativeBufferSize =
 
 constexpr uint32_t kInputScanPeriodMs = 5;
 constexpr uint8_t kInputDebounceSamples = 4;
-constexpr uint32_t kBatteryPollPeriodMs = 30'000;
+constexpr uint32_t kBatteryPollPeriodMs = ESP32CALC_BATTERY_POLL_PERIOD_MS;
 constexpr uint16_t kEpdFullRefreshInterval = ESP32CALC_EPD_FULL_REFRESH_INTERVAL;
 
 constexpr uint8_t kCoreServicesCore = 0;
