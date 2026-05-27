@@ -75,10 +75,12 @@ refresh itself, so interactive calculator screens now draw directly into the
 
 ## Calculation / Programs
 
-`CalcEngine` is a placeholder task for symbolic and numeric work. The intended
-next step is to add a request queue with expression parse/evaluate jobs and
-later a CAS layer. `ProgramLoader` already assumes SD programs live in
-`/sdcard/programs`.
+`CalcEngine` owns a request queue for expression parse/evaluate jobs and later
+CAS work. Results are allocated dynamically and sent back to the UI as
+`CalcResult*` inside `AppEvent`; the UI owns each received result and frees it
+after the active mode has copied what it needs. This keeps FreeRTOS queue copies
+shallow and explicit instead of copying structs that contain owned pointers.
+`ProgramLoader` already assumes SD programs live in `/sdcard/programs`.
 
 Recommended custom program model:
 

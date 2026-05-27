@@ -1,10 +1,12 @@
 #include "ui/menu.h"
 
 #include <cstdio>
+#include <cstring>
 
 #include "esp_log.h"
 #include "freertos/task.h"
 #include "hardware/keymap.h"
+#include "ui/modes/mode_common.h"
 
 namespace esp32calc {
 namespace {
@@ -36,7 +38,7 @@ void MenuUi::run() {
   }
 }
 
-void MenuUi::update_state(const AppEvent& event) {
+void MenuUi::update_state(AppEvent& event) {
   switch (event.type) {
     case AppEventType::Key:
       apply_key(event.key);
@@ -44,9 +46,61 @@ void MenuUi::update_state(const AppEvent& event) {
     case AppEventType::Battery:
       battery_ = event.battery;
       break;
+    case AppEventType::CalcResult:
+      apply_calc_result(event.calc_result);
+      event.calc_result = nullptr;
+      break;
     default:
       break;
   }
+}
+
+void MenuUi::apply_calc_result(CalcResult* result) {
+  if (result == nullptr) {
+    return;
+  }
+
+  if (!result->is_error_ &&
+      result->action == CalcResultAction::OpenGraph &&
+      result->graph_expression != nullptr) {
+    if (open_mode_by_label("GRAPH") && active_mode_ != nullptr) {
+      apply_mode_result(active_mode_->open_graph_expression(result->graph_expression));
+    }
+    destroy_calc_result(result);
+    return;
+  }
+
+  ModeResult mode_result = ModeResult::None;
+  if (screen_ == Screen::Mode && active_mode_ != nullptr) {
+    mode_result = active_mode_->handle_calc_result(*result);
+  }
+  destroy_calc_result(result);
+  apply_mode_result(mode_result);
+}
+
+void MenuUi::apply_mode_result(ModeResult result) {
+  switch (result) {
+    case ModeResult::ExitToMainMenu:
+      close_active_mode();
+      screen_ = Screen::Menu;
+      full_refresh_pending_ = true;
+      return;
+    case ModeResult::FullRefresh:
+      full_refresh_pending_ = true;
+      return;
+    case ModeResult::Redraw:
+    case ModeResult::None:
+      return;
+  }
+}
+
+void MenuUi::consume_input_modifiers() {
+  if (!shift_ && !alpha_) {
+    return;
+  }
+  shift_ = false;
+  alpha_ = false;
+  ESP_LOGI(TAG, "shift=%d alpha=%d", shift_, alpha_);
 }
 
 void MenuUi::apply_key(const KeyEvent& key) {
@@ -81,26 +135,33 @@ void MenuUi::apply_key(const KeyEvent& key) {
     if (digit >= 0 && static_cast<size_t>(digit) < modes_.size()) {
       selected_ = static_cast<uint8_t>(digit);
       open_selected_mode();
+      consume_input_modifiers();
       return;
     }
 
     switch (def.role) {
       case KeyRole::Up:
         move_selection(-2);
+        consume_input_modifiers();
         return;
       case KeyRole::Left:
         move_selection(-1);
+        consume_input_modifiers();
         return;
       case KeyRole::Down:
         move_selection(2);
+        consume_input_modifiers();
         return;
       case KeyRole::Right:
         move_selection(1);
+        consume_input_modifiers();
         return;
       case KeyRole::Enter:
         open_selected_mode();
+        consume_input_modifiers();
         return;
       default:
+        consume_input_modifiers();
         return;
     }
 
@@ -116,29 +177,27 @@ void MenuUi::apply_key(const KeyEvent& key) {
   KeyEvent mode_key = key;
   mode_key.shift = shift_;
   mode_key.alpha = alpha_;
-  const ModeResult result = active_mode_->handle_key(mode_key, def);
-  switch (result) {
-    case ModeResult::ExitToMainMenu:
-      close_active_mode();
-      screen_ = Screen::Menu;
-      full_refresh_pending_ = true;
-      return;
-    case ModeResult::FullRefresh:
-      full_refresh_pending_ = true;
-      return;
-    case ModeResult::Redraw:
-    case ModeResult::None:
-      return;
-  }
+  apply_mode_result(active_mode_->handle_key(mode_key, def));
+  consume_input_modifiers();
 }
 
 void MenuUi::move_selection(int delta) { // here is where the "up/down/left/right" logic would live
-  const int count = static_cast<int>(modes_.size()); // we take the amount of modes
-  int next = static_cast<int>(selected_) + delta; // we pass what the key press tells us
-  //rollover checks
-  if (next < 0) next = count - 1; 
-  else if (next >= count) next = 0;
-  selected_ = static_cast<uint8_t>(next);
+  selected_ = move_selection_wrapped(selected_, delta, modes_.size());
+}
+
+bool MenuUi::open_mode_by_label(const char* label) {
+  if (label == nullptr) {
+    return false;
+  }
+
+  for (uint8_t i = 0; i < modes_.size(); ++i) {
+    if (std::strcmp(modes_[i].label, label) == 0) {
+      selected_ = i;
+      open_selected_mode();
+      return active_mode_ != nullptr;
+    }
+  }
+  return false;
 }
 
 void MenuUi::open_selected_mode() {

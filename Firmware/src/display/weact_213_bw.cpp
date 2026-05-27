@@ -228,7 +228,7 @@ esp_err_t Weact213BwDisplay::data(const uint8_t* bytes, size_t len, bool wait) {
   if (wait) {
     esp_err_t err = wait_until_idle();
     int64_t t2 = esp_timer_get_time();
-    ESP_LOGI(TAG, "data: spi_tx=%lldus busy_wait=%lldus total=%lldus",
+    ESP_LOGD(TAG, "data: spi_tx=%lldus busy_wait=%lldus total=%lldus",
              t1 - t0, t2 - t1, t2 - t0);
     return err;
   }
@@ -349,7 +349,7 @@ esp_err_t Weact213BwDisplay::fast_refresh() {
   vTaskDelay(pdMS_TO_TICKS(10));
   esp_err_t err = wait_until_idle(5'000);
   int64_t t1 = esp_timer_get_time();
-  ESP_LOGI(TAG, "fast_refresh: busy_wait=%lldus (total cmd=%lldus)",
+  ESP_LOGD(TAG, "fast_refresh: busy_wait=%lldus (total cmd=%lldus)",
            t1 - t0, t1 - t0);
   return err;
 }
@@ -486,7 +486,7 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
     if (mode == RefreshMode::Full) {
       esp_err_t ret = full_update(packed_.data(), packed_.size());
       int64_t t_end = esp_timer_get_time();
-      ESP_LOGI(TAG, "update_canvas(FULL): scan_patch=%lldus send=%lldus total=%lldus",
+      ESP_LOGD(TAG, "update_canvas(FULL): scan_patch=%lldus send=%lldus total=%lldus",
                t_scan_patch - t0, t_end - t_scan_patch, t_end - t0);
       return ret;
     }
@@ -509,7 +509,7 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
   if (mode == RefreshMode::Full || periodic_full_refresh) {
     esp_err_t ret = full_update(packed_.data(), packed_.size());
     int64_t t_end = esp_timer_get_time();
-    ESP_LOGI(TAG, "update_canvas(FULL): scan_patch=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u)%s",
+    ESP_LOGD(TAG, "update_canvas(FULL): scan_patch=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u)%s",
              t_scan_patch - t0, t_end - t_scan_patch, t_end - t0,
              dirty_w2, dirty_h2, sb * 8, sy,
              periodic_full_refresh ? " periodic=1" : "");
@@ -534,7 +534,7 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
   if (ret == ESP_OK) {
     ++partial_updates_since_full_;
   }
-  ESP_LOGI(TAG, "update_canvas(PARTIAL): scan_patch=%lldus copy=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u) partial_count=%u",
+  ESP_LOGD(TAG, "update_canvas(PARTIAL): scan_patch=%lldus copy=%lldus send=%lldus total=%lldus dirty=(%ux%u @ %u,%u) partial_count=%u",
            t_scan_patch - t0, t_copy - t_scan_patch, t_end - t_copy, t_end - t0,
            dirty_w2, dirty_h2, sb * 8, sy, partial_updates_since_full_);
   return ret;

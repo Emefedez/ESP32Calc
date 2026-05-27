@@ -11,7 +11,8 @@ namespace esp32calc {
 namespace {
 
 void glyph_for(char in, uint8_t (&out)[5]) {
-  char c = static_cast<char>(std::toupper(static_cast<unsigned char>(in)));
+  const char raw = in;
+  char c = raw;
   const uint8_t* glyph = nullptr;
 
   static constexpr uint8_t space[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
@@ -56,11 +57,40 @@ void glyph_for(char in, uint8_t (&out)[5]) {
       {0x03, 0x04, 0x78, 0x04, 0x03},
       {0x61, 0x51, 0x49, 0x45, 0x43},
   };
+  static constexpr uint8_t lower_letters[26][5] = {
+      {0x20, 0x54, 0x54, 0x54, 0x78},
+      {0x7F, 0x48, 0x44, 0x44, 0x38},
+      {0x38, 0x44, 0x44, 0x44, 0x20},
+      {0x38, 0x44, 0x44, 0x48, 0x7F},
+      {0x38, 0x54, 0x54, 0x54, 0x18},
+      {0x08, 0x7E, 0x09, 0x01, 0x02},
+      {0x0C, 0x52, 0x52, 0x52, 0x3E},
+      {0x7F, 0x08, 0x04, 0x04, 0x78},
+      {0x00, 0x44, 0x7D, 0x40, 0x00},
+      {0x20, 0x40, 0x44, 0x3D, 0x00},
+      {0x7F, 0x10, 0x28, 0x44, 0x00},
+      {0x00, 0x41, 0x7F, 0x40, 0x00},
+      {0x7C, 0x04, 0x18, 0x04, 0x78},
+      {0x7C, 0x08, 0x04, 0x04, 0x78},
+      {0x38, 0x44, 0x44, 0x44, 0x38},
+      {0x7C, 0x14, 0x14, 0x14, 0x08},
+      {0x08, 0x14, 0x14, 0x18, 0x7C},
+      {0x7C, 0x08, 0x04, 0x04, 0x08},
+      {0x48, 0x54, 0x54, 0x54, 0x20},
+      {0x04, 0x3F, 0x44, 0x40, 0x20},
+      {0x3C, 0x40, 0x40, 0x20, 0x7C},
+      {0x1C, 0x20, 0x40, 0x20, 0x1C},
+      {0x3C, 0x40, 0x30, 0x40, 0x3C},
+      {0x44, 0x28, 0x10, 0x28, 0x44},
+      {0x0C, 0x50, 0x50, 0x50, 0x3C},
+      {0x44, 0x64, 0x54, 0x4C, 0x44},
+  };
 
   static constexpr uint8_t colon[5] = {0x00, 0x36, 0x36, 0x00, 0x00};
   static constexpr uint8_t dot[5] = {0x00, 0x60, 0x60, 0x00, 0x00};
   static constexpr uint8_t dash[5] = {0x08, 0x08, 0x08, 0x08, 0x08};
   static constexpr uint8_t plus[5] = {0x08, 0x08, 0x3E, 0x08, 0x08};
+  static constexpr uint8_t asterisk[5] = {0x14, 0x08, 0x3E, 0x08, 0x14};
   static constexpr uint8_t slash[5] = {0x20, 0x10, 0x08, 0x04, 0x02};
   static constexpr uint8_t equals[5] = {0x14, 0x14, 0x14, 0x14, 0x14};
   static constexpr uint8_t percent[5] = {0x23, 0x13, 0x08, 0x64, 0x62};
@@ -71,7 +101,15 @@ void glyph_for(char in, uint8_t (&out)[5]) {
   static constexpr uint8_t greater_than[5] = {0x00, 0x41, 0x22, 0x14, 0x08};
   static constexpr uint8_t apostrophe[5] = {0x00, 0x05, 0x03, 0x00, 0x00};
 
-  if (c == ' ') {
+  if (c >= 'a' && c <= 'z') {
+    glyph = lower_letters[c - 'a'];
+  } else {
+    c = static_cast<char>(std::toupper(static_cast<unsigned char>(raw)));
+  }
+
+  if (glyph != nullptr) {
+    // Lowercase glyph already selected.
+  } else if (c == ' ') {
     glyph = space;
   } else if (c >= '0' && c <= '9') {
     glyph = digits[c - '0'];
@@ -83,6 +121,7 @@ void glyph_for(char in, uint8_t (&out)[5]) {
       case '.': glyph = dot; break;
       case '-': glyph = dash; break;
       case '+': glyph = plus; break;
+      case '*': glyph = asterisk; break;
       case '/': glyph = slash; break;
       case '=': glyph = equals; break;
       case '%': glyph = percent; break;
@@ -346,6 +385,29 @@ void MonoCanvas::fill_triangle(MonoPoint a, MonoPoint b, MonoPoint c, bool black
     const int x1 = y < b.y ? edge_x(a, b, y) : edge_x(b, c, y);
     hline(std::min(x0, x1), y, std::abs(x1 - x0) + 1, black);
   }
+}
+
+void MonoCanvas::plot_graph(int x,
+                            int y,
+                            int width,
+                            int height,
+                            int x_axis,
+                            int y_axis,
+                            const MonoPoint* points,
+                            size_t count,
+                            bool black) {
+  if (width <= 0 || height <= 0) {
+    return;
+  }
+
+  rect(x, y, width, height, black);
+  if (x_axis >= y && x_axis < y + height) {
+    hline(x, x_axis, width, black);
+  }
+  if (y_axis >= x && y_axis < x + width) {
+    vline(y_axis, y, height, black);
+  }
+  draw_line_strip(points, count, black);
 }
 
 void MonoCanvas::draw_char(int x, int y, char c, uint8_t scale, bool black) {

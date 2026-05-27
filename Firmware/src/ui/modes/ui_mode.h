@@ -24,6 +24,14 @@ class UiMode {
   virtual const char* name() const = 0;
   virtual void on_open() {}
   virtual ModeResult handle_key(const KeyEvent& key, const KeyDef& def) = 0;
+  virtual ModeResult handle_calc_result(const CalcResult& result) {
+    (void)result;
+    return ModeResult::None;
+  }
+  virtual ModeResult open_graph_expression(const char* expression) {
+    (void)expression;
+    return ModeResult::None;
+  }
   virtual void render(MonoCanvas& canvas) = 0;
 };
 

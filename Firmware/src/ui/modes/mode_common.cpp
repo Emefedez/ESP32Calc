@@ -19,24 +19,49 @@ uint8_t move_selection_wrapped(uint8_t selected, int delta, size_t count) {
   return static_cast<uint8_t>(next);
 }
 
-ModeResult handle_menu_navigation(const KeyDef& def, uint8_t& selected, size_t count) {
+MenuAction handle_menu_action(const KeyDef& def, uint8_t& selected, size_t count) {
   const int digit = key_digit(def);
   if (digit >= 0 && static_cast<size_t>(digit) < count) {
     selected = static_cast<uint8_t>(digit);
-    return ModeResult::Redraw;
+    return MenuAction::ItemChosen;
   }
 
   switch (def.role) {
     case KeyRole::Up:
     case KeyRole::Left:
       selected = move_selection_wrapped(selected, -1, count);
-      return ModeResult::Redraw;
+      return MenuAction::SelectionChanged;
     case KeyRole::Down:
     case KeyRole::Right:
       selected = move_selection_wrapped(selected, 1, count);
-      return ModeResult::Redraw;
+      return MenuAction::SelectionChanged;
+    case KeyRole::Enter:
+      return MenuAction::ItemChosen;
     case KeyRole::Clear:
+      return MenuAction::Exit;
+    default:
+      return MenuAction::None;
+  }
+}
+
+ModeResult handle_simple_menu_key(const KeyDef& def, SimpleMenuState& state, size_t count) {
+  if (state.detail_open) {
+    if (def.role == KeyRole::Clear) {
+      state.detail_open = false;
+      return ModeResult::FullRefresh;
+    }
+    return ModeResult::None;
+  }
+
+  switch (handle_menu_action(def, state.selected, count)) {
+    case MenuAction::SelectionChanged:
+      return ModeResult::Redraw;
+    case MenuAction::ItemChosen:
+      state.detail_open = true;
+      return ModeResult::FullRefresh;
+    case MenuAction::Exit:
       return ModeResult::ExitToMainMenu;
+    case MenuAction::None:
     default:
       return ModeResult::None;
   }
@@ -78,6 +103,20 @@ void render_mode_menu(MonoCanvas& canvas,
       canvas.draw_text(145, y, items[i].hint, 1, !is_selected);
     }
   }
+}
+
+void render_simple_menu(MonoCanvas& canvas,
+                        const char* title,
+                        const ModeMenuItem* items,
+                        const char* const* messages,
+                        size_t count,
+                        const SimpleMenuState& state) {
+  if (state.detail_open) {
+    render_mode_message(canvas, title, messages[state.selected], "CLR RETURNS MODE MENU");
+    return;
+  }
+
+  render_mode_menu(canvas, title, items, count, state.selected);
 }
 
 void render_mode_message(MonoCanvas& canvas,

@@ -53,6 +53,15 @@ class MonoCanvas {
   void fill_circle(int center_x, int center_y, int radius, bool black = true);
   void triangle(MonoPoint a, MonoPoint b, MonoPoint c, bool black = true);
   void fill_triangle(MonoPoint a, MonoPoint b, MonoPoint c, bool black = true);
+  void plot_graph(int x,
+                  int y,
+                  int width,
+                  int height,
+                  int x_axis,
+                  int y_axis,
+                  const MonoPoint* points,
+                  size_t count,
+                  bool black = true);
   void draw_char(int x, int y, char c, uint8_t scale = 1, bool black = true);
   void draw_text(int x, int y, const char* text, uint8_t scale = 1, bool black = true);
 
@@ -81,6 +90,17 @@ class MonoCanvas {
   }
   void DrawTriangleLines(MonoPoint a, MonoPoint b, MonoPoint c, bool black = true) {
     triangle(a, b, c, black);
+  }
+  void PlotGraph(int x,
+                 int y,
+                 int width,
+                 int height,
+                 int x_axis,
+                 int y_axis,
+                 const MonoPoint* points,
+                 size_t count,
+                 bool black = true) {
+    plot_graph(x, y, width, height, x_axis, y_axis, points, count, black);
   }
   void DrawText(const char* text, int x, int y, uint8_t scale = 1, bool black = true) {
     draw_text(x, y, text, scale, black);

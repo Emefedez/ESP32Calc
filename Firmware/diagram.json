@@ -274,9 +274,9 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_4",
-      "top": 342.2,
-      "left": -96,
-      "attrs": { "label": "x", "color": "yellow" }
+      "top": 524.6,
+      "left": 393.6,
+      "attrs": { "label": "x", "color": "black" }
     },
     {
       "type": "wokwi-pushbutton",

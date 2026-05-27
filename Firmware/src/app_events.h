@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <new>
 
 namespace esp32calc {
 
@@ -49,42 +50,81 @@ struct MathTerm {
 
 };
 
+enum class CalcResultAction : uint8_t {
+  ShowText,
+  OpenGraph,
+};
+
 struct CalcResult {
   bool is_error_;
+  CalcResultAction action;
+  char* display_text;
+  char* graph_expression;
   int num_of_terms;
   MathTerm* terms;
 
   // generic constructor, good to have since it can be called
-  CalcResult() : is_error_(false), num_of_terms(0), terms(nullptr) {}
+  CalcResult()
+      : is_error_(false),
+        action(CalcResultAction::ShowText),
+        display_text(nullptr),
+        graph_expression(nullptr),
+        num_of_terms(0),
+        terms(nullptr) {}
 
   // we can use the good constructor if we did not get an error
-  CalcResult(int num_terms, bool error = false) {
-    this->is_error_ = error;
-    this->num_of_terms = num_terms; 
-
-    if (num_terms > 0) terms = new MathTerm[num_terms];
-    else terms = nullptr;
+  CalcResult(int num_terms, bool error = false)
+      : is_error_(error),
+        action(CalcResultAction::ShowText),
+        display_text(nullptr),
+        graph_expression(nullptr),
+        num_of_terms(num_terms),
+        terms(nullptr) {
+    if (num_terms > 0) {
+      terms = new (std::nothrow) MathTerm[num_terms];
+      if (terms == nullptr) {
+        is_error_ = true;
+        num_of_terms = 0;
+      }
+    }
   }
 
   // now we get rid of the passed terms
   void free_memory() {
     if (terms) {
       for (int i = 0; i < num_of_terms; ++i) {
-      terms[i].free_memory();
+        terms[i].free_memory();
+      }
+      delete[] terms;
+      terms = nullptr;
     }
-    delete[] terms;
-    terms = nullptr;
-    };
     num_of_terms = 0;
+    if (display_text) {
+      delete[] display_text;
+      display_text = nullptr;
+    }
+    if (graph_expression) {
+      delete[] graph_expression;
+      graph_expression = nullptr;
+    }
   }
 
 };
+
+inline void destroy_calc_result(CalcResult* result) {
+  if (result == nullptr) {
+    return;
+  }
+  result->free_memory();
+  delete result;
+}
 
 struct AppEvent {
   AppEventType type = AppEventType::Key;
   KeyEvent key {};
   BatterySnapshot battery {};
-  CalcResult calc {};
+  // Dynamic results travel by pointer because FreeRTOS queues copy event bytes.
+  CalcResult* calc_result = nullptr;
 };
 
 }  // namespace esp32calc

@@ -26,13 +26,17 @@ class MenuUi {
   };
 
   void apply_key(const KeyEvent& key);
-  void update_state(const AppEvent& event);
+  void apply_calc_result(CalcResult* result);
+  void apply_mode_result(ModeResult result);
+  void consume_input_modifiers();
+  void update_state(AppEvent& event);
   void render();
 
   void render_status_bar();
   void render_menu();
   void render_content();
 
+  bool open_mode_by_label(const char* label);
   void open_selected_mode();
   void close_active_mode();
   void move_selection(int delta);

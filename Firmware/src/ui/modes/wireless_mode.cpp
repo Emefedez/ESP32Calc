@@ -8,13 +8,11 @@ constexpr esp32calc::ModeMenuItem kItems[] = {
     {"STATUS", "LINK"},
     {"WIFI SCAN", "NETS"},
     {"BLE", "PAIR"},
-    {"UPDATE", "OTA"},
 };
 constexpr const char* kMessages[] = {
     "WIRELESS STATUS",
     "SCAN NETWORKS",
     "BLE PAIRING",
-    "OTA UPDATE",
 };
 constexpr size_t kItemCount = sizeof(kItems) / sizeof(kItems[0]);
 
@@ -30,8 +28,7 @@ class WirelessMode final : public UiMode {
   void render(MonoCanvas& canvas) override;
 
  private:
-  uint8_t selected_ = 0;
-  bool detail_open_ = false;
+  SimpleMenuState menu_ {};
 };
 
 const ModeDescriptor& wireless_mode_descriptor() {
@@ -44,39 +41,16 @@ const char* WirelessMode::name() const {
 }
 
 void WirelessMode::on_open() {
-  detail_open_ = false;
+  menu_ = {};
 }
 
 ModeResult WirelessMode::handle_key(const KeyEvent& key, const KeyDef& def) {
   (void)key;
-
-  if (detail_open_) {
-    if (def.role == KeyRole::Clear) {
-      detail_open_ = false;
-      return ModeResult::FullRefresh;
-    }
-    return ModeResult::None;
-  }
-
-  const ModeResult nav = handle_menu_navigation(def, selected_, kItemCount);
-  if (nav != ModeResult::None) {
-    return nav;
-  }
-
-  if (def.role == KeyRole::Enter) {
-    detail_open_ = true;
-    return ModeResult::FullRefresh;
-  }
-  return ModeResult::None;
+  return handle_simple_menu_key(def, menu_, kItemCount);
 }
 
 void WirelessMode::render(MonoCanvas& canvas) {
-  if (detail_open_) {
-    render_mode_message(canvas, name(), kMessages[selected_], "CLR RETURNS MODE MENU");
-    return;
-  }
-
-  render_mode_menu(canvas, name(), kItems, kItemCount, selected_);
+  render_simple_menu(canvas, name(), kItems, kMessages, kItemCount, menu_);
 }
 
 }  // namespace esp32calc

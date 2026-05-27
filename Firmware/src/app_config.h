@@ -44,6 +44,9 @@ constexpr size_t kDisplayNativeBufferSize =
 
 constexpr uint32_t kInputScanPeriodMs = 5;
 constexpr uint8_t kInputDebounceSamples = 4;
+
+constexpr uint8_t kWirelessMode = 0;
+
 constexpr uint32_t kBatteryPollPeriodMs = ESP32CALC_BATTERY_POLL_PERIOD_MS;
 constexpr uint16_t kEpdFullRefreshInterval = ESP32CALC_EPD_FULL_REFRESH_INTERVAL;
 
