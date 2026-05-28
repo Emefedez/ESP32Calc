@@ -1,12 +1,6 @@
-# ESP32Calc Firmware Blueprint
+# ESP32Calc Firmware
 
-This firmware is a first working architecture for the ESP32-S3 N16R16 calculator:
-
-- ESP-IDF C++ under PlatformIO for FreeRTOS, SPI, ADC, SDSPI, and later Wi-Fi/BLE.
-- WeAct 2.13 inch B/W e-paper driver adapted from `avsaase/weact-studio-epd`.
-- 9x6 matrix keyboard from `.ignoredList.md`, with `SHIFT`, `ALPHA`, and always-available `MODE`.
-- Boot-to-menu UI with separate FreeRTOS services for UI/input, battery, SD, calculation, and wireless.
-- Debug logs with Unix-style second timestamps from `gettimeofday()`.
+This firmware is designed to run on my custom ESP32-S3 based calculator, this is the model with 16MB of PSRAM and 16MB of flash memory, it is designed to be a replacement/solid alternative to a scientific calculator, hopefully with good enough graphing, integration and maybe matrix solving.
 
 ## Build
 
@@ -22,6 +16,7 @@ cd Firmware
 pio run -e esp32-s3-n16r16 -t upload
 pio device monitor -e esp32-s3-n16r16
 ```
+- Within `/tools`, a MacOS utility for pixel color detection exists, it was used to debug the screen, as it took quite a bit of work to start displaying proper text/graphics instead of random lines.
 
 ## Wokwi
 
@@ -31,43 +26,21 @@ pio run -e esp32-s3-wokwi
 wokwi-cli .
 ```
 
-`wokwi.toml` points at the Wokwi PlatformIO firmware output so Wokwi can be
+- `wokwi.toml` points at the Wokwi PlatformIO firmware output so Wokwi can be
 launched after `pio run -e esp32-s3-wokwi`.
 
-The battery sense input is modeled with a slide potentiometer on GPIO3. In the
-Wokwi build, the full slider travel maps to the configured empty-to-full battery
-range and updates once per second.
+- **On real hardware, the FTDI connector should be used to flash the software.**
 
-The Wokwi diagram uses `board-epaper-2in9` as a simulator stand-in. The firmware
-itself targets the real WeAct 2.13 inch B/W module with the Rust driver's
-128x250 controller buffer, exposed as a 250x128 landscape framebuffer with
-250x122 physically visible pixels.
+- The firmware itself targets the real WeAct 2.13' B/W module with partial refresh, this screen has a different resolution from the 2.9' display that is a default in wokwi and, as such, the display uses a version of [this driver](https://github.com/avsaase/weact-studio-epd) that has been adapted for C++.
 
 ## Notes
 
-- The UI is rendered through `MonoCanvas`, a 1-bit framebuffer with native
-  drawing primitives and familiar convenience methods such as `DrawLine`,
-  `DrawLineStrip`, `DrawRectangleLines`, and `DrawText`.
-- Drawing calls update a `CanvasUpdateHint` with either `Partial` or `Full`
-  refresh intent plus a logical dirty rectangle. `Weact213BwDisplay` consumes
-  that hint, patches its cached native controller buffer, and sends only the
-  changed e-paper window when possible.
-- Full e-paper refreshes are still requested for boot and screen transitions.
-  During normal partial operation the driver forces one full refresh every
-  `ESP32CALC_EPD_FULL_REFRESH_INTERVAL` partial updates to limit ghosting.
-- Display SPI is set to 4 MHz for both hardware and Wokwi builds. The e-paper
-  controller latency dominates after removing the old RGB565 renderer path.
-- Raylib was removed from the firmware. The ESP32-S3 software renderer path was
-  measured at roughly 0.9 s per simple graph frame before the e-paper update,
-  so interactive graph/UI drawing uses `MonoCanvas` primitives instead.
-- `tools/screen_color_probe.py` can capture a small macOS screen region and list
-  dominant colors for Wokwi/camera-preview debugging.
-- `GPIO0`, `GPIO45`, and `GPIO8` are involved in boot/serial edge cases on this
-  board. Avoid holding matrix keys during reset/flashing until the hardware is
-  validated.
-- FTDI flashing is left to the ESP32-S3 ROM bootloader path on UART0. The
-  firmware records the shared RTS/VOUT GPIOs in `pins.h` but does not drive them.
-- `GPIO17` is treated as the e-paper power-enable/VCC pin because that is how it
-  is listed in `.ignoredList.md`.
-- `config::kBatteryDividerRatio` in `src/app_config.h` must match the real VBAT
-  divider before battery percentage can be trusted.
+- The battery sense input is modeled with a slide potentiometer on GPIO3. In the Wokwi build, the full slider travel maps to the configured empty-to-full battery range and updates once per second.
+
+- The UI is rendered through `MonoCanvas` with methods like `DrawLine`, `DrawLineStrip`, `DrawRectangleLines`,  and `DrawText`.
+
+- Drawing calls update a `CanvasUpdateHint` with either `Partial` or `Full` refresh intent plus a logical dirty rectangle; we keep a cache, to force `Full` refreshes after a certain amount of partial `render()` calls, this helps us keep solid performance while we mantain a clean look for the display.
+
+- I intended to use `Raylib` for this project, but rendering was extremely slow, even with the new `rlsb` renderer, most likely my fault, but the input lag was simply too much, about a second of delay was the usual amount. Franquly, this may mostly be the fault of trying to do the boilerplate with AI, but MonoCanvas did not give me this problem so I just decided to pivot.
+
+- `config::kBatteryDividerRatio` in `src/app_config.h` exists since real battery voltages are a much smaller range than what the slider in the simulator provides.

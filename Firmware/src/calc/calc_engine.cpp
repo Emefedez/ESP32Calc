@@ -262,6 +262,22 @@ CalcResult* make_numeric_result(const char* expr) {
   return make_text_result(text, false);
 }
 
+CalcResult* make_symbolic_result(const char* expr) {
+  double value = 0.0;
+  const NumericParseStatus status = evaluate_numeric_expression(expr, value);
+  if (status != NumericParseStatus::Ok) {
+    return make_text_result(numeric_error_text(status), true);
+  }
+
+  if (std::fabs(value) < 0.0000000001) {
+    value = 0.0;
+  }
+
+  char text[32] {};
+  std::snprintf(text, sizeof(text), "%.12g", value);
+  return make_text_result(text, false);
+}
+
 CalcResult* make_placeholder_result(const char* expr, CalcExpressionKind kind) {
   CalcResult* result = new (std::nothrow) CalcResult();
   if (result == nullptr) {
@@ -389,6 +405,8 @@ void CalcEngine::task() {
         publish_result(make_graph_result(parsed.expression));
       } else if (parsed.expression_kind == CalcExpressionKind::Numeric) {
         publish_result(make_numeric_result(parsed.expression));
+      } else if (parsed.expression_kind == CalcExpressionKind::Symbolic) {
+        publish_result(make_symbolic_result(parsed.expression));
       } else {
         publish_result(make_placeholder_result(parsed.expression, parsed.expression_kind));
       }
