@@ -21,8 +21,7 @@
 
 ## FIRMWARE WIP:
 
-
-
+[AdditionDemo.webm](https://github.com/user-attachments/assets/82241925-bb4c-4280-8db8-a6906532ba02)
 
 ## PARTS LIST:
 
