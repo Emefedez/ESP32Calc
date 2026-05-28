@@ -11,6 +11,8 @@
 ![image](/calculator_pcb/ViewFront.jpg)
 ![image](/calculator_pcb/ViewBack.jpg)
 ![image](/CAD/exploded_view.png)
+![image](/poster.png)
+
 
 * Current 3D case: https://a360.co/4ukxaMP
 
