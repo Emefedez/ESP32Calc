@@ -463,7 +463,7 @@ ModeResult GraphMode::open_graph_expression(const char* expression) {
   }
 
   std::snprintf(graph_expression_, sizeof(graph_expression_), "%s", expression);
-  screen_ = Screen::Plot;
+  screen_ = Screen::Menu;
   return ModeResult::FullRefresh;
 }
 

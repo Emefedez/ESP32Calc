@@ -15,7 +15,7 @@ idf_component_register(
     "ui/modes/mode_registry.cpp"
     "ui/modes/standard_mode.cpp"
     "ui/modes/graph_mode.cpp"
-    "ui/modes/symbolic_mode.cpp"
+    "ui/modes/matrix_mode.cpp"
     "ui/modes/programs_mode.cpp"
     "ui/modes/files_mode.cpp"
     "ui/modes/wireless_mode.cpp"

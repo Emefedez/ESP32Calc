@@ -19,7 +19,7 @@ struct ModeDescriptor {
   size_t storage_align;
 };
 
-inline constexpr size_t kModeCount = 7;
+inline constexpr size_t kModeCount = 6;
 inline constexpr size_t kModeStorageSize = 256;
 inline constexpr size_t kModeStorageAlign = alignof(std::max_align_t);
 

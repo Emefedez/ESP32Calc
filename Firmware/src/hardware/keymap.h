@@ -18,6 +18,8 @@ enum class KeyRole : uint8_t {
   Enter,
   Delete,
   Clear,
+  Variable,
+  VariableSquare,
 };
 
 struct KeyInputTokens {

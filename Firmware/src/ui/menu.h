@@ -16,14 +16,16 @@ namespace esp32calc {
 class MenuUi {
  public:
   MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display);
-  ~MenuUi();
-  [[noreturn]] void run();
+  ~MenuUi(); // ~ means destructor, this exists because only one mode needs to be active at a given time, so without it we would be wasting memory
+  [[noreturn]] void run(); // this is in the main loop, thus, [[noreturn]] is used
 
  private:
-  enum class Screen : uint8_t {
+  enum class Screen : uint8_t { // This may be stupid
     Menu,
     Mode,
   };
+
+  // while the inside of most of these functions is kind of spaguetti rn, I like the "make the main loop look as much as pseudo-code as possible" approach, feels quite easy to expand and to read overall, even if diving deeper can suck.
 
   void apply_key(const KeyEvent& key);
   void apply_calc_result(CalcResult* result);
@@ -36,7 +38,8 @@ class MenuUi {
   void render_menu();
   void render_content();
 
-  bool open_mode_by_label(const char* label);
+  bool open_mode_by_label(const char* label); // easier to use from Menu, boolean so it returns false if it fails. 
+  void open_mode(const ModeDescriptor& entry); // easier to use when calling from code itself, this probably should be boolean too.
   void open_selected_mode();
   void close_active_mode();
   void move_selection(int delta);

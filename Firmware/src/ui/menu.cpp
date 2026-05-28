@@ -13,6 +13,8 @@ namespace {
 constexpr const char* TAG = "ui";
 }  // namespace
 
+const ModeDescriptor& graph_mode_descriptor();
+
 MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display)
     : app_events_(app_events),
       display_(display),
@@ -63,7 +65,8 @@ void MenuUi::apply_calc_result(CalcResult* result) {
   if (!result->is_error_ &&
       result->action == CalcResultAction::OpenGraph &&
       result->graph_expression != nullptr) {
-    if (open_mode_by_label("GRAPH") && active_mode_ != nullptr) {
+    open_mode(graph_mode_descriptor());
+    if (active_mode_ != nullptr) {
       apply_mode_result(active_mode_->open_graph_expression(result->graph_expression));
     }
     destroy_calc_result(result);
@@ -200,9 +203,8 @@ bool MenuUi::open_mode_by_label(const char* label) {
   return false;
 }
 
-void MenuUi::open_selected_mode() {
+void MenuUi::open_mode(const ModeDescriptor& entry) {
   close_active_mode();
-  const ModeDescriptor& entry = modes_[selected_];
   active_mode_ = entry.construct(mode_storage_);
   active_mode_destroy_ = entry.destroy;
   if (active_mode_ != nullptr) {
@@ -210,7 +212,11 @@ void MenuUi::open_selected_mode() {
   }
   screen_ = Screen::Mode;
   full_refresh_pending_ = true;
-  ESP_LOGI(TAG, "open mode: %s", modes_[selected_].label);
+  ESP_LOGI(TAG, "open mode: %s", entry.label);
+}
+
+void MenuUi::open_selected_mode() {
+  open_mode(modes_[selected_]);
 }
 
 void MenuUi::close_active_mode() { //if mode is not being destroyed and this has been called, destroy so it returns to menu
@@ -253,7 +259,9 @@ void MenuUi::render_content() {
 }
 
 void MenuUi::render_status_bar() {
-  canvas_.draw_text(2, 2, "ESP32CALC", 1, true);
+  const char* header_label =
+      screen_ == Screen::Mode && active_mode_ != nullptr ? active_mode_->name() : "ESP32CALC";
+  canvas_.draw_text(2, 2, header_label, 1, true);
 
   if (shift_) {
     canvas_.fill_rect(69, 0, 30, 11, true);

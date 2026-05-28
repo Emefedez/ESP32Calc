@@ -1,5 +1,6 @@
 #include "ui/modes/mode_registry.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <new>
@@ -26,7 +27,14 @@ constexpr const char* kMessages[] = {
 constexpr size_t kItemCount = sizeof(kItems) / sizeof(kItems[0]);
 constexpr size_t kExpressionCapacity = 96;
 constexpr size_t kVisibleExpressionChars = 38;
-constexpr size_t kVisibleResultChars = 38;
+constexpr size_t kVisibleResultChars = 36;
+constexpr int kCharWidth = 6;
+constexpr int kInputX = 5;
+constexpr int kInputY = 28;
+constexpr int kInputWidth = 240;
+constexpr int kInputHeight = 31;
+constexpr int kInputTextX = 10;
+constexpr int kInputTextY = 40;
 constexpr const char* kVariableTokens[] = {"x", "y", "z", "a", "b", "c"};
 constexpr size_t kVariableCount = sizeof(kVariableTokens) / sizeof(kVariableTokens[0]);
 
@@ -69,6 +77,7 @@ class StandardMode final : public UiMode {
   bool detail_open_ = false;
   char expression_[kExpressionCapacity] {};
   size_t expression_len_ = 0;
+  size_t cursor_ = 0;
   const char* status_ = "ENTER SENDS";
   char* result_text_ = nullptr;
   bool result_is_error_ = false;
@@ -79,8 +88,10 @@ class StandardMode final : public UiMode {
   void delete_expression_char();
   void clear_expression();
   void clear_result();
+  void move_cursor_left(bool all_the_way);
+  void move_cursor_right(bool all_the_way);
+  size_t expression_visible_start() const;
   bool set_result_text(const char* text);
-  bool is_variable_key(const KeyDef& def) const;
   void open_variable_palette(VariablePalette palette);
   ModeResult handle_variable_palette_key(const KeyDef& def);
   ModeResult choose_selected_variable();
@@ -126,15 +137,43 @@ ModeResult StandardMode::handle_key(const KeyEvent& key, const KeyDef& def) {
     }
 
     if (selected_ == 0) {
-      if (key.shift && is_variable_key(def)) {
-        open_variable_palette(def.row == 2 && def.col == 1 ? VariablePalette::Square
-                                                           : VariablePalette::Plain);
+      if (key.shift && def.role == KeyRole::Variable) {
+        open_variable_palette(VariablePalette::Plain);
+        return ModeResult::Redraw;
+      }
+
+      if (key.shift && def.role == KeyRole::VariableSquare) {
+        open_variable_palette(VariablePalette::Square);
         return ModeResult::Redraw;
       }
 
       if (def.role == KeyRole::Delete) {
         delete_expression_char();
         status_ = "ENTER SENDS";
+        return ModeResult::Redraw;
+      }
+
+      if (def.role == KeyRole::Left) {
+        move_cursor_left(key.shift);
+        status_ = "EDIT";
+        return ModeResult::Redraw;
+      }
+
+      if (def.role == KeyRole::Right) {
+        move_cursor_right(key.shift);
+        status_ = "EDIT";
+        return ModeResult::Redraw;
+      }
+
+      if (def.role == KeyRole::Up) {
+        cursor_ = 0;
+        status_ = "EDIT";
+        return ModeResult::Redraw;
+      }
+
+      if (def.role == KeyRole::Down) {
+        cursor_ = expression_len_;
+        status_ = "EDIT";
         return ModeResult::Redraw;
       }
 
@@ -231,23 +270,38 @@ bool StandardMode::append_expression(const char* token) {
     return false;
   }
 
-  std::memcpy(expression_ + expression_len_, token, token_len);
+  if (cursor_ > expression_len_) {
+    cursor_ = expression_len_;
+  }
+
+  std::memmove(expression_ + cursor_ + token_len,
+               expression_ + cursor_,
+               expression_len_ - cursor_ + 1);
+  std::memcpy(expression_ + cursor_, token, token_len);
   expression_len_ += token_len;
+  cursor_ += token_len;
   expression_[expression_len_] = '\0';
   clear_result();
   return true;
 }
 
 void StandardMode::delete_expression_char() {
-  if (expression_len_ == 0) {
+  if (expression_len_ == 0 || cursor_ == 0) {
     return;
   }
-  expression_[--expression_len_] = '\0';
+
+  std::memmove(expression_ + cursor_ - 1,
+               expression_ + cursor_,
+               expression_len_ - cursor_ + 1);
+  --expression_len_;
+  --cursor_;
+  expression_[expression_len_] = '\0';
   clear_result();
 }
 
 void StandardMode::clear_expression() {
   expression_len_ = 0;
+  cursor_ = 0;
   expression_[0] = '\0';
   variable_palette_ = VariablePalette::None;
   clear_result();
@@ -259,6 +313,36 @@ void StandardMode::clear_result() {
   result_is_error_ = false;
 }
 
+void StandardMode::move_cursor_left(bool all_the_way) {
+  if (all_the_way) {
+    cursor_ = 0;
+  } else if (cursor_ > 0) {
+    --cursor_;
+  }
+}
+
+void StandardMode::move_cursor_right(bool all_the_way) {
+  if (all_the_way) {
+    cursor_ = expression_len_;
+  } else if (cursor_ < expression_len_) {
+    ++cursor_;
+  }
+}
+
+size_t StandardMode::expression_visible_start() const {
+  if (expression_len_ <= kVisibleExpressionChars) {
+    return 0;
+  }
+
+  const size_t half_window = kVisibleExpressionChars / 2;
+  if (cursor_ <= half_window) {
+    return 0;
+  }
+
+  const size_t max_start = expression_len_ - kVisibleExpressionChars;
+  return std::min(cursor_ - half_window, max_start);
+}
+
 bool StandardMode::set_result_text(const char* text) {
   char* copy = duplicate_text(text);
   if (copy == nullptr) {
@@ -268,10 +352,6 @@ bool StandardMode::set_result_text(const char* text) {
   clear_result();
   result_text_ = copy;
   return true;
-}
-
-bool StandardMode::is_variable_key(const KeyDef& def) const {
-  return def.row == 2 && (def.col == 0 || def.col == 1);
 }
 
 void StandardMode::open_variable_palette(VariablePalette palette) {
@@ -295,7 +375,7 @@ ModeResult StandardMode::handle_variable_palette_key(const KeyDef& def) {
       return ModeResult::None;
   }
 }
-
+// Submenu that lists the possible variables, very clean, I would have not thought of doing it with global constants/tokens.
 ModeResult StandardMode::choose_selected_variable() {
   char token[5] {};
   if (variable_palette_ == VariablePalette::Square) {
@@ -313,32 +393,61 @@ ModeResult StandardMode::choose_selected_variable() {
   status_ = "ENTER SENDS";
   return ModeResult::Redraw;
 }
-
+// Operation Box
 void StandardMode::render_calculate(MonoCanvas& canvas) {
-  render_mode_title(canvas, name());
+  canvas.draw_text(6, 17, "CALCULATE", 1, true);
+  canvas.rect(kInputX, kInputY, kInputWidth, kInputHeight, true);
 
-  canvas.draw_text(6, 42, "CALCULATE", 1, true);
-  canvas.rect(5, 54, 240, 28, true);
-
-  const char* visible = expression_;
-  if (expression_len_ > kVisibleExpressionChars) {
-    visible = expression_ + expression_len_ - kVisibleExpressionChars;
+  const size_t visible_start = expression_visible_start();
+  const size_t visible_count =
+      expression_len_ > visible_start
+          ? std::min(kVisibleExpressionChars, expression_len_ - visible_start)
+          : 0;
+  char visible_expression[kVisibleExpressionChars + 1] {};
+  if (visible_count > 0) {
+    std::memcpy(visible_expression, expression_ + visible_start, visible_count);
+    visible_expression[visible_count] = '\0';
   }
-  canvas.draw_text(10, 64, expression_len_ == 0 ? "0" : visible, 1, true);
+  canvas.draw_text(kInputTextX,
+                   kInputTextY,
+                   expression_len_ == 0 ? "0" : visible_expression,
+                   1,
+                   true);
+
+  const size_t cursor_relative = cursor_ > visible_start ? cursor_ - visible_start : 0;
+  const size_t cursor_cells = expression_len_ == 0
+                                  ? 1
+                                  : std::min(cursor_relative, kVisibleExpressionChars);
+  const int cursor_x =
+      kInputTextX + static_cast<int>(cursor_cells) * kCharWidth;
+  canvas.vline(cursor_x, kInputTextY - 3, 13, true);
 
   if (result_text_ != nullptr) {
     const size_t result_len = std::strlen(result_text_);
-    const char* visible_result = result_text_;
-    if (result_len > kVisibleResultChars) {
-      visible_result = result_text_ + result_len - kVisibleResultChars;
+    const size_t max_visible_result = kVisibleResultChars * 2;
+    size_t result_offset = 0;
+    if (result_len > max_visible_result) {
+      result_offset = result_len - max_visible_result;
     }
-    canvas.draw_text(10, 87, result_is_error_ ? "ERR" : "=", 1, true);
-    canvas.draw_text(34, 87, visible_result, 1, true);
+
+    canvas.draw_text(6, 66, result_is_error_ ? "ERR" : "=", 1, true);
+    for (size_t line = 0; line < 2; ++line) {
+      const size_t line_offset = result_offset + line * kVisibleResultChars;
+      if (line_offset >= result_len) {
+        break;
+      }
+
+      const size_t line_len = std::min(kVisibleResultChars, result_len - line_offset);
+      char line_text[kVisibleResultChars + 1] {};
+      std::memcpy(line_text, result_text_ + line_offset, line_len);
+      line_text[line_len] = '\0';
+      canvas.draw_text(28, 66 + static_cast<int>(line) * 12, line_text, 1, true);
+    }
   }
 
-  canvas.hline(5, 99, 240, true);
-  canvas.draw_text(6, 109, status_, 1, true);
-  canvas.draw_text(126, 109, "DEL/AC EDIT", 1, true);
+  canvas.hline(5, 98, 240, true);
+  canvas.draw_text(6, 108, status_, 1, true);
+  canvas.draw_text(154, 108, "DEL AC EDIT", 1, true);
 
   if (variable_palette_ != VariablePalette::None) {
     render_variable_palette(canvas);

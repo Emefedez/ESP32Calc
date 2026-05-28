@@ -36,15 +36,15 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_0",
-      "top": 236.6,
-      "left": -201.6,
+      "top": -80.2,
+      "left": -288,
       "attrs": { "label": "SHIFT", "key": "s" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_1",
-      "top": 236.6,
-      "left": -144,
+      "top": -22.6,
+      "left": -288,
       "attrs": { "label": "ALPHA", "key": "a" }
     },
     {
@@ -58,7 +58,7 @@
       "type": "wokwi-pushbutton",
       "id": "btn_0_3",
       "top": 236.6,
-      "left": -86.4,
+      "left": -211.2,
       "attrs": { "label": "MODE", "key": "m" }
     },
     {
@@ -120,8 +120,8 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_2_0",
-      "top": 342.2,
-      "left": -153.6,
+      "top": -272.2,
+      "left": -288,
       "attrs": { "label": "xyz", "key": "x", "color": "yellow" }
     },
     {
@@ -234,13 +234,13 @@
       "id": "btn_4_4",
       "top": 236.6,
       "left": -384,
-      "attrs": { "label": "DEL" }
+      "attrs": { "label": "DEL", "key": "Backspace" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_4_5",
-      "top": 390.2,
-      "left": 326.4,
+      "top": -147.4,
+      "left": -288,
       "attrs": { "label": "AC", "color": "black" }
     },
     {
@@ -274,15 +274,15 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_4",
-      "top": 524.6,
-      "left": 393.6,
+      "top": -185.8,
+      "left": 153.6,
       "attrs": { "label": "x", "color": "black" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_5_5",
-      "top": 457.4,
-      "left": 326.4,
+      "top": -118.6,
+      "left": 153.6,
       "attrs": { "label": "/", "color": "black", "bounce": "1", "key": "Control" }
     },
     {
@@ -316,15 +316,15 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_4",
-      "top": 524.6,
-      "left": 259.2,
+      "top": -185.8,
+      "left": 96,
       "attrs": { "label": "+", "key": "p", "color": "black" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_6_5",
-      "top": 524.6,
-      "left": 326.4,
+      "top": -118.6,
+      "left": 96,
       "attrs": { "label": "-", "color": "black" }
     },
     {
@@ -358,8 +358,8 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_7_4",
-      "top": 582.2,
-      "left": 326.4,
+      "top": -214.6,
+      "left": -288,
       "attrs": { "label": "ANS", "color": "black" }
     },
     {

@@ -87,6 +87,8 @@ void glyph_for(char in, uint8_t (&out)[5]) {
   };
 
   static constexpr uint8_t colon[5] = {0x00, 0x36, 0x36, 0x00, 0x00};
+  static constexpr uint8_t semicolon[5] = {0x00, 0x56, 0x36, 0x00, 0x00};
+  static constexpr uint8_t comma[5] = {0x00, 0x50, 0x30, 0x00, 0x00};
   static constexpr uint8_t dot[5] = {0x00, 0x60, 0x60, 0x00, 0x00};
   static constexpr uint8_t dash[5] = {0x08, 0x08, 0x08, 0x08, 0x08};
   static constexpr uint8_t plus[5] = {0x08, 0x08, 0x3E, 0x08, 0x08};
@@ -118,6 +120,8 @@ void glyph_for(char in, uint8_t (&out)[5]) {
   } else {
     switch (c) {
       case ':': glyph = colon; break;
+      case ';': glyph = semicolon; break;
+      case ',': glyph = comma; break;
       case '.': glyph = dot; break;
       case '-': glyph = dash; break;
       case '+': glyph = plus; break;

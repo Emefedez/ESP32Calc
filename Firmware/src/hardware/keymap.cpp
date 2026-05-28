@@ -16,6 +16,16 @@ constexpr KeyDef input_key(uint8_t row,
   return KeyDef {row, col, label, KeyRole::Normal, {normal, shift, alpha}};
 }
 
+constexpr KeyDef input_key(uint8_t row,
+                           uint8_t col,
+                           const char* label,
+                           KeyRole role,
+                           const char* normal,
+                           const char* shift = nullptr,
+                           const char* alpha = nullptr) {
+  return KeyDef {row, col, label, role, {normal, shift, alpha}};
+}
+
 bool has_text(const char* text) {
   return text != nullptr && text[0] != '\0';
 }
@@ -35,8 +45,8 @@ const std::array<std::array<KeyDef, kMatrixColCount>, kMatrixRowCount> kKeyList 
       input_key(1, 3, "dx", "d/dx("),
       input_key(1, 4, "'''", "'"),
       input_key(1, 5, "sqrt", "sqrt(")}},
-    {{input_key(2, 0, "xyz", "x", "y", "z"),
-      input_key(2, 1, "xyz^2", "x^2", "y^2", "z^2"),
+    {{input_key(2, 0, "xyz", KeyRole::Variable, "x", "y", "z"),
+      input_key(2, 1, "xyz^2", KeyRole::VariableSquare, "x^2", "y^2", "z^2"),
       input_key(2, 2, "xyz^a", "^"),
       input_key(2, 3, "(/)v", "root("),
       input_key(2, 4, "(/)", "/"),
