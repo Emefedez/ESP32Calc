@@ -2,6 +2,7 @@
 
 #include "app_events.h"
 #include "app_config.h"
+#include "calc/symbolic_engine.h"
 #include "esp_log.h"
 #include "freertos/task.h"
 
@@ -141,7 +142,7 @@ struct NumericParser {
   }
 
   NumericParseStatus parse_product(double& value) {
-    NumericParseStatus status = parse_factor(value);
+    NumericParseStatus status = parse_unary(value);
     if (status != NumericParseStatus::Ok) return status;
     
 
@@ -152,7 +153,7 @@ struct NumericParser {
       ++cursor;
 
       double rhs = 0.0;
-      status = parse_factor(rhs);
+      status = parse_unary(rhs);
       if (status != NumericParseStatus::Ok) return status;
 
       if (op == '/') {
@@ -170,22 +171,52 @@ struct NumericParser {
     }
   }
 
-  NumericParseStatus parse_factor(double& value) {
+  NumericParseStatus parse_unary(double& value) {
     skip_spaces(cursor);
     if (*cursor == '\0') {
       return NumericParseStatus::MissingNumber;
     }
     if (*cursor == '+') {
       ++cursor;
-      return parse_factor(value);
+      return parse_unary(value);
     }
     if (*cursor == '-') {
       ++cursor;
-      const NumericParseStatus status = parse_factor(value);
+      const NumericParseStatus status = parse_unary(value);
       if (status == NumericParseStatus::Ok) {
         value = -value;
       }
       return status;
+    }
+    return parse_power(value);
+  }
+
+  NumericParseStatus parse_power(double& value) {
+    NumericParseStatus status = parse_primary(value);
+    if (status != NumericParseStatus::Ok) {
+      return status;
+    }
+
+    skip_spaces(cursor);
+    if (*cursor != '^') {
+      return NumericParseStatus::Ok;
+    }
+    ++cursor;
+
+    double exponent = 0.0;
+    status = parse_unary(exponent);
+    if (status != NumericParseStatus::Ok) {
+      return status;
+    }
+
+    value = std::pow(value, exponent);
+    return std::isfinite(value) ? NumericParseStatus::Ok : NumericParseStatus::BadNumber;
+  }
+
+  NumericParseStatus parse_primary(double& value) {
+    skip_spaces(cursor);
+    if (*cursor == '\0') {
+      return NumericParseStatus::MissingNumber;
     }
     if (*cursor == '(') {
       ++cursor;
@@ -230,7 +261,7 @@ const char* numeric_error_text(NumericParseStatus status) {
     case NumericParseStatus::DivideByZero:
       return "DIV BY ZERO";
     case NumericParseStatus::UnsupportedOperator:
-      return "ONLY +-*/() READY";
+      return "ONLY +-*/^() READY";
     case NumericParseStatus::BadNumber:
     case NumericParseStatus::MissingNumber:
     default:
@@ -423,7 +454,7 @@ struct LinearParser {
   }
 
   LinearParseStatus parse_product(LinearExpr& expr) {
-    LinearParseStatus status = parse_power(expr);
+    LinearParseStatus status = parse_unary(expr);
     if (status != LinearParseStatus::Ok) {
       return status;
     }
@@ -435,7 +466,7 @@ struct LinearParser {
         ++cursor;
 
         LinearExpr rhs {};
-        status = parse_power(rhs);
+        status = parse_unary(rhs);
         if (status != LinearParseStatus::Ok) {
           return status;
         }
@@ -448,7 +479,7 @@ struct LinearParser {
         expr = combined;
       } else if (starts_primary()) {
         LinearExpr rhs {};
-        status = parse_power(rhs);
+        status = parse_unary(rhs);
         if (status != LinearParseStatus::Ok) {
           return status;
         }
@@ -466,7 +497,7 @@ struct LinearParser {
   }
 
   LinearParseStatus parse_power(LinearExpr& expr) {
-    LinearParseStatus status = parse_unary(expr);
+    LinearParseStatus status = parse_primary(expr);
     if (status != LinearParseStatus::Ok) {
       return status;
     }
@@ -1098,12 +1129,22 @@ CalcResult* make_numeric_result(const char* expr) {
     value = 0.0;
   }
 
+  const symbolic::TextResult rational = symbolic::try_rational_result(expr);
+  if (rational.handled()) {
+    return make_text_result(rational.text, rational.is_error());
+  }
+
   char text[32] {};
   std::snprintf(text, sizeof(text), "%.12g", value);
   return make_text_result(text, false);
 }
 
 CalcResult* make_symbolic_result(const char* expr) {
+  const symbolic::TextResult symbolic_result = symbolic::try_symbolic_result(expr);
+  if (symbolic_result.handled()) {
+    return make_text_result(symbolic_result.text, symbolic_result.is_error());
+  }
+
   CalcSolveOptions options {};
   LinearExpr parsed {};
   const LinearParseStatus status = parse_linear_expression(expr, options, parsed);
@@ -1129,6 +1170,12 @@ CalcResult* make_solve_result(const char* expr, const CalcSolveOptions& options)
   LinearSystem system {};
   const LinearParseStatus status = parse_linear_system(expr, options, system);
   if (status != LinearParseStatus::Ok) {
+    if (status == LinearParseStatus::NonLinear) {
+      const symbolic::TextResult polynomial = symbolic::try_polynomial_equation_result(expr);
+      if (polynomial.handled()) {
+        return make_text_result(polynomial.text, polynomial.is_error());
+      }
+    }
     return make_text_result(linear_error_text(status), true);
   }
 

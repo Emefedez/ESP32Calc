@@ -8,6 +8,7 @@ idf_component_register(
     "battery/battery_monitor.cpp"
     "storage/sd_storage.cpp"
     "calc/calc_engine.cpp"
+    "calc/symbolic_engine.cpp"
     "programs/program_loader.cpp"
     "wireless/wireless_service.cpp"
     "ui/menu.cpp"

@@ -1,6 +1,7 @@
 #include "ui/modes/mode_registry.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include <new>
@@ -52,6 +53,77 @@ char* duplicate_text(const char* text) {
   return copy;
 }
 
+bool format_decimal_from_fraction(const char* text, char* output, size_t output_size) {
+  if (text == nullptr || output == nullptr || output_size == 0) {
+    return false;
+  }
+
+  char* end = nullptr;
+  const long long numerator = std::strtoll(text, &end, 10);
+  if (end == text || *end != '/') {
+    return false;
+  }
+  const char* denominator_start = end + 1;
+  const long long denominator = std::strtoll(denominator_start, &end, 10);
+  if (end == denominator_start || *end != '\0' || denominator == 0) {
+    return false;
+  }
+
+  const double value = static_cast<double>(numerator) / static_cast<double>(denominator);
+  std::snprintf(output, output_size, "%.12g", value);
+  return true;
+}
+
+bool is_simple_fraction_text(const char* text) {
+  char decimal[32] {};
+  return format_decimal_from_fraction(text, decimal, sizeof(decimal));
+}
+
+bool draw_stacked_fraction(esp32calc::MonoCanvas& canvas, int x, int y, const char* text) {
+  const char* slash = std::strchr(text, '/');
+  if (slash == nullptr) {
+    return false;
+  }
+
+  const bool negative = text[0] == '-';
+  const char* numerator = negative ? text + 1 : text;
+  const size_t numerator_len = static_cast<size_t>(slash - numerator);
+  const char* denominator = slash + 1;
+  const size_t denominator_len = std::strlen(denominator);
+  if (numerator_len == 0 || denominator_len == 0) {
+    return false;
+  }
+
+  constexpr int kCharWidth = 6;
+  const int fraction_x = negative ? x + kCharWidth + 2 : x;
+  const int numerator_width = static_cast<int>(numerator_len) * kCharWidth;
+  const int denominator_width = static_cast<int>(denominator_len) * kCharWidth;
+  const int line_width = std::max(numerator_width, denominator_width);
+  if (line_width > 180) {
+    return false;
+  }
+
+  char numerator_text[28] {};
+  char denominator_text[28] {};
+  if (numerator_len >= sizeof(numerator_text) || denominator_len >= sizeof(denominator_text)) {
+    return false;
+  }
+  std::memcpy(numerator_text, numerator, numerator_len);
+  std::memcpy(denominator_text, denominator, denominator_len);
+
+  if (negative) {
+    canvas.draw_text(x, y + 9, "-", 1, true);
+  }
+  canvas.draw_text(fraction_x + (line_width - numerator_width) / 2, y, numerator_text, 1, true);
+  canvas.hline(fraction_x, y + 10, line_width, true);
+  canvas.draw_text(fraction_x + (line_width - denominator_width) / 2,
+                   y + 14,
+                   denominator_text,
+                   1,
+                   true);
+  return true;
+}
+
 }  // namespace
 
 namespace esp32calc {
@@ -80,7 +152,9 @@ class StandardMode final : public UiMode {
   size_t cursor_ = 0;
   const char* status_ = "ENTER SENDS";
   char* result_text_ = nullptr;
+  char* result_decimal_text_ = nullptr;
   bool result_is_error_ = false;
+  bool result_decimal_mode_ = false;
   VariablePalette variable_palette_ = VariablePalette::None;
   uint8_t variable_selected_ = 0;
 
@@ -150,6 +224,16 @@ ModeResult StandardMode::handle_key(const KeyEvent& key, const KeyDef& def) {
       if (def.role == KeyRole::Delete) {
         delete_expression_char();
         status_ = "ENTER SENDS";
+        return ModeResult::Redraw;
+      }
+
+      if (def.role == KeyRole::FractionToggle) {
+        if (result_decimal_text_ == nullptr) {
+          status_ = "NO FRAC";
+          return ModeResult::Redraw;
+        }
+        result_decimal_mode_ = !result_decimal_mode_;
+        status_ = result_decimal_mode_ ? "DECIMAL" : "FRACTION";
         return ModeResult::Redraw;
       }
 
@@ -310,6 +394,9 @@ void StandardMode::clear_expression() {
 void StandardMode::clear_result() {
   delete[] result_text_;
   result_text_ = nullptr;
+  delete[] result_decimal_text_;
+  result_decimal_text_ = nullptr;
+  result_decimal_mode_ = false;
   result_is_error_ = false;
 }
 
@@ -349,8 +436,15 @@ bool StandardMode::set_result_text(const char* text) {
     return false;
   }
 
+  char decimal[32] {};
+  char* decimal_copy = nullptr;
+  if (format_decimal_from_fraction(text, decimal, sizeof(decimal))) {
+    decimal_copy = duplicate_text(decimal);
+  }
+
   clear_result();
   result_text_ = copy;
+  result_decimal_text_ = decimal_copy;
   return true;
 }
 
@@ -423,14 +517,21 @@ void StandardMode::render_calculate(MonoCanvas& canvas) {
   canvas.vline(cursor_x, kInputTextY - 3, 13, true);
 
   if (result_text_ != nullptr) {
-    const size_t result_len = std::strlen(result_text_);
+    const char* display_text =
+        result_decimal_mode_ && result_decimal_text_ != nullptr ? result_decimal_text_
+                                                                : result_text_;
     const size_t max_visible_result = kVisibleResultChars * 2;
     size_t result_offset = 0;
+    const size_t result_len = std::strlen(display_text);
     if (result_len > max_visible_result) {
       result_offset = result_len - max_visible_result;
     }
 
     canvas.draw_text(6, 66, result_is_error_ ? "ERR" : "=", 1, true);
+    if (!result_decimal_mode_ && is_simple_fraction_text(display_text) &&
+        draw_stacked_fraction(canvas, 28, 61, display_text)) {
+      canvas.draw_text(196, 76, "S<>D", 1, true);
+    } else {
     for (size_t line = 0; line < 2; ++line) {
       const size_t line_offset = result_offset + line * kVisibleResultChars;
       if (line_offset >= result_len) {
@@ -439,9 +540,10 @@ void StandardMode::render_calculate(MonoCanvas& canvas) {
 
       const size_t line_len = std::min(kVisibleResultChars, result_len - line_offset);
       char line_text[kVisibleResultChars + 1] {};
-      std::memcpy(line_text, result_text_ + line_offset, line_len);
+      std::memcpy(line_text, display_text + line_offset, line_len);
       line_text[line_len] = '\0';
       canvas.draw_text(28, 66 + static_cast<int>(line) * 12, line_text, 1, true);
+    }
     }
   }
 

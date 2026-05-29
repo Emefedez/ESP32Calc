@@ -20,6 +20,7 @@ enum class KeyRole : uint8_t {
   Clear,
   Variable,
   VariableSquare,
+  FractionToggle,
 };
 
 struct KeyInputTokens {

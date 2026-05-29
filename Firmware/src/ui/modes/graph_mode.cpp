@@ -334,6 +334,86 @@ float evaluate_graph_relation(const char* expression, float x, float y, bool& ok
   return left_value - right_value;
 }
 
+bool prefer_graph_root(float candidate, float best, bool has_best) {
+  if (!has_best) {
+    return true;
+  }
+  if (candidate >= 0.0f && best < 0.0f) {
+    return true;
+  }
+  if (candidate < 0.0f && best >= 0.0f) {
+    return false;
+  }
+  return std::fabs(candidate) < std::fabs(best);
+}
+
+bool solve_graph_relation_y(const char* expression, float x, float& y) {
+  constexpr float kYMin = -50.0f;
+  constexpr float kYMax = 50.0f;
+  constexpr float kStep = 0.5f;
+  constexpr float kRootEpsilon = 0.0001f;
+
+  bool has_best = false;
+  float best_y = 0.0f;
+  bool prev_ok = false;
+  float prev_y = kYMin;
+  float prev_value = 0.0f;
+
+  for (float sample_y = kYMin; sample_y <= kYMax + 0.0001f; sample_y += kStep) {
+    bool ok = false;
+    const float value = evaluate_graph_relation(expression, x, sample_y, ok);
+    if (!ok || !std::isfinite(value)) {
+      prev_ok = false;
+      continue;
+    }
+
+    if (std::fabs(value) < kRootEpsilon) {
+      if (prefer_graph_root(sample_y, best_y, has_best)) {
+        best_y = sample_y;
+        has_best = true;
+      }
+    }
+
+    if (prev_ok && ((prev_value <= 0.0f && value >= 0.0f) ||
+                    (prev_value >= 0.0f && value <= 0.0f))) {
+      float low_y = prev_y;
+      float high_y = sample_y;
+      float low_value = prev_value;
+      for (int i = 0; i < 24; ++i) {
+        const float mid_y = 0.5f * (low_y + high_y);
+        bool mid_ok = false;
+        const float mid_value = evaluate_graph_relation(expression, x, mid_y, mid_ok);
+        if (!mid_ok || !std::isfinite(mid_value)) {
+          break;
+        }
+        if ((low_value <= 0.0f && mid_value >= 0.0f) ||
+            (low_value >= 0.0f && mid_value <= 0.0f)) {
+          high_y = mid_y;
+        } else {
+          low_y = mid_y;
+          low_value = mid_value;
+        }
+      }
+
+      const float root_y = 0.5f * (low_y + high_y);
+      if (prefer_graph_root(root_y, best_y, has_best)) {
+        best_y = root_y;
+        has_best = true;
+      }
+    }
+
+    prev_ok = true;
+    prev_y = sample_y;
+    prev_value = value;
+  }
+
+  if (!has_best) {
+    return false;
+  }
+  y = best_y;
+  return true;
+}
+
 float evaluate_graph_expression(const char* expression, float x, bool& ok) {
   const char* equals = expression == nullptr ? nullptr : std::strchr(expression, '=');
   const bool has_equals = equals != nullptr;
@@ -367,8 +447,9 @@ float evaluate_graph_expression(const char* expression, float x, bool& ok) {
     const float linear_error = std::fabs((y2_value - y0_value) - 2.0f * y_slope);
     if (!y0_ok || !y1_ok || !y2_ok || std::fabs(y_slope) < 0.00001f ||
         linear_error > 0.001f * (1.0f + std::fabs(y2_value))) {
-      ok = false;
-      return 0.0f;
+      float nonlinear_y = 0.0f;
+      ok = solve_graph_relation_y(expression, x, nonlinear_y);
+      return ok ? nonlinear_y : 0.0f;
     }
 
     const float y = -y0_value / y_slope;

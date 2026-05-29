@@ -102,7 +102,7 @@ void MatrixMode::on_open() {
 }
 
 ModeResult MatrixMode::handle_key(const KeyEvent& key, const KeyDef& def) {
-  if (menu_.detail_open && menu_.selected == 0) {
+  if (menu_.detail_open && (menu_.selected == 0 || menu_.selected == 2 || menu_.selected == 3)) {
     return handle_solver_key(key, def);
   }
 
@@ -283,7 +283,18 @@ ModeResult MatrixMode::handle_solver_key(const KeyEvent& key, const KeyDef& def)
       return ModeResult::Redraw;
     }
 
-    const bool submitted = g_calc.submit_solve_expression(system_);
+    bool submitted = false;
+    if (menu_.selected == 0) {
+      submitted = g_calc.submit_solve_expression(system_);
+    } else {
+      char request[160] {};
+      std::snprintf(request,
+                    sizeof(request),
+                    "%s(%s)",
+                    menu_.selected == 2 ? "det" : "inv",
+                    system_);
+      submitted = g_calc.submit_expression(request);
+    }
     status_ = submitted ? "SOLVE QUEUED" : "QUEUE FULL";
     if (submitted) {
       clear_result();
@@ -301,7 +312,10 @@ ModeResult MatrixMode::handle_solver_key(const KeyEvent& key, const KeyDef& def)
 }
 
 void MatrixMode::render_solver(MonoCanvas& canvas) {
-  canvas.draw_text(6, 17, "LINEAR SYSTEM", 1, true);
+  const char* title = menu_.selected == 0 ? "LINEAR SYSTEM"
+                                          : (menu_.selected == 2 ? "DET MATRIX"
+                                                                 : "INVERSE MATRIX");
+  canvas.draw_text(6, 17, title, 1, true);
   canvas.rect(5, 30, 240, 28, true);
 
   const size_t visible_start = system_visible_start();
@@ -347,7 +361,7 @@ void MatrixMode::render_solver(MonoCanvas& canvas) {
 
   canvas.hline(5, 98, 240, true);
   canvas.draw_text(6, 108, status_, 1, true);
-  canvas.draw_text(132, 108, "SHIFT =  ALPHA ;", 1, true);
+  canvas.draw_text(96, 108, "A/=,  A==;  S==", 1, true);
 }
 
 }  // namespace esp32calc

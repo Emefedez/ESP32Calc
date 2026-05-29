@@ -99,6 +99,8 @@ void glyph_for(char in, uint8_t (&out)[5]) {
   static constexpr uint8_t caret[5] = {0x04, 0x02, 0x01, 0x02, 0x04};
   static constexpr uint8_t left_paren[5] = {0x00, 0x1C, 0x22, 0x41, 0x00};
   static constexpr uint8_t right_paren[5] = {0x00, 0x41, 0x22, 0x1C, 0x00};
+  static constexpr uint8_t left_bracket[5] = {0x00, 0x7F, 0x41, 0x41, 0x00};
+  static constexpr uint8_t right_bracket[5] = {0x00, 0x41, 0x41, 0x7F, 0x00};
   static constexpr uint8_t less_than[5] = {0x08, 0x14, 0x22, 0x41, 0x00};
   static constexpr uint8_t greater_than[5] = {0x00, 0x41, 0x22, 0x14, 0x08};
   static constexpr uint8_t apostrophe[5] = {0x00, 0x05, 0x03, 0x00, 0x00};
@@ -132,6 +134,8 @@ void glyph_for(char in, uint8_t (&out)[5]) {
       case '^': glyph = caret; break;
       case '(': glyph = left_paren; break;
       case ')': glyph = right_paren; break;
+      case '[': glyph = left_bracket; break;
+      case ']': glyph = right_bracket; break;
       case '<': glyph = less_than; break;
       case '>': glyph = greater_than; break;
       case '\'': glyph = apostrophe; break;

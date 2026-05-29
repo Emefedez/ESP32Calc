@@ -1,91 +1,111 @@
 # Firmware Architecture
 
-## Language Choice
+ESP32Calc is an ESP-IDF C++ firmware split around small FreeRTOS services and a
+single UI event queue. The code avoids copying owned data through queues:
+expressions and calculation results travel as heap-owned pointers, then the
+receiver frees them after copying what it needs.
 
-The base is ESP-IDF C++ rather than MicroPython or Rust. Rust would let us use
-`weact-studio-epd` directly, but the rest of the requested stack is easier to
-stage in ESP-IDF today: dual-core FreeRTOS pinning, SDSPI, ADC, Wi-Fi/BLE, and
-the existing PlatformIO/ESP-IDF toolchain.
+## Boot And Tasks
 
-The display layer keeps the key part of the Rust driver: SSD1680 init, 128x250
-RAM layout, full refresh, fast refresh, and the partial LUT. That avoids the
-known-bad deprecated display code while keeping a path that already worked on
-the panel.
+- `main.cpp` owns global services: display, keypad, battery monitor, SD storage,
+  calculation engine, wireless service, and boot canvas.
+- Core 1 runs the UI task. `MenuUi::run()` receives events, mutates current mode
+  state, then renders one frame.
+- Core 0 runs lower-level services: keypad scanning, battery polling, SD setup,
+  wireless placeholder service, and `CalcEngine`.
+- `AppEvent` is the only UI ingress path. Event variants currently cover keys,
+  battery snapshots, storage, calculation results, and wireless updates.
 
-## Task Split
+## Input
 
-- Core 1: keyboard scan and UI/display updates.
-- Core 0: battery monitor, SD/program service, calculation engine, and future
-  wireless service.
-- `AppEvent` queue: input, battery, storage, calculation, and wireless events
-  flow into the UI.
+`pins.h` defines the keyboard matrix GPIOs. `keypad_matrix.cpp` drives columns
+open-drain, reads pulled-up rows, debounces changes, and publishes key events.
+`keymap.cpp` maps physical keys to roles and text tokens.
 
-This is intentionally small. It is not an OS yet; it is the skeleton that lets
-the calculator boot, scan keys, show the menu, and grow each mode independently.
+Important roles:
+
+- `SHIFT` and `ALPHA` are one-shot UI modifiers managed by `MenuUi`.
+- `MODE` closes the active mode and returns to the main menu.
+- `S<>D` is `KeyRole::FractionToggle` in Standard mode.
+- In Matrix mode, `ALPHA /` inserts `,` and `ALPHA =` inserts `;`.
 
 ## Display
 
-The logical UI canvas is 250x128 landscape, matching the Rust driver's 128x250
-buffer after `Rotate90`. The WeAct panel physically exposes only 122 of those
-128 rows. `MonoCanvas::to_epd_native` rotates and packs the logical framebuffer
-into the controller buffer.
+`MonoCanvas` is the drawing layer. It stores a 250x128 logical black/white
+framebuffer and exposes primitive drawing plus Raylib-like aliases such as
+`DrawLine`, `DrawRectangleLines`, and `DrawText`.
 
-The driver writes both the B/W buffer and the controller's second buffer on full
-updates, matching the Rust driver behavior. Fast refresh writes the partial LUT
-before using the fast update control value.
+`Weact213BwDisplay` converts that logical landscape buffer into the SSD1680
+128x250 native layout, keeping in mind the real screen resolution is actually 122*250.
+Full updates write both controller buffers. Partial updates (which are much faster and as such, essential for e-ink) use the dirty rectangle from `CanvasUpdateHint`, patch the cached native buffer, and send a byte-aligned e-paper window. After `ESP32CALC_EPD_FULL_REFRESH_INTERVAL` partial updates, the driver forces a full refresh to control ghosting.
 
-## Keyboard
+## UI Modes
 
-`pins.h` is the GPIO list. `keymap.cpp` is the key list. The matrix scanner uses
-open-drain columns and pulled-up rows, debounces transitions, then publishes
-press/release events. `SHIFT` and `ALPHA` are UI booleans. `MODE` always returns
-to the menu.
+Modes are registered in `mode_registry.cpp` and constructed in preallocated
+storage owned by `MenuUi`. Only one mode instance is live at once.
 
-## Drawing And Refresh
+- `STANDARD`: expression entry, graph launch with `ALPHA ENTER`, result display,
+  symbolic calculus, and `S<>D`. [NOTE] `SHIFT ENTER` inserts `=`.
+- `MATRIX`: linear systems, matrix determinant, matrix inverse.
+- `PROGRAMS`, `FILES`, `WIRELESS`, `SETTINGS`: menu shells for upcoming work.
+- `GRAPH`: opened by calculation result action, not shown in the main mode list.
 
-`MonoCanvas` is the primary drawing API. It stores a 250x128 logical 1-bit
-framebuffer and provides both low-level primitives (`set_pixel`, `line`,
-`rect`, `circle`, `triangle`, `draw_text`) and familiar convenience methods
-(`DrawLine`, `DrawLineStrip`, `DrawRectangleLines`, `DrawText`, and related
-helpers). The graph screen uses this path directly; it does not initialize
-an intermediate RGB565 renderer.
+Modes render into the shared `MonoCanvas` and return `ModeResult` to request
+redraws, full refreshes, or menu exit.
 
-Every drawing operation updates a `CanvasUpdateHint`. The hint has two refresh
-levels:
+## Calculation Engine
 
-- `Partial`: the normal interactive mode. Drawing operations merge their touched
-  logical rectangle into the hint.
-- `Full`: used by callers before whole-screen transitions or boot screens.
+`CalcEngine` owns a FreeRTOS request queue. Public submission methods duplicate
+the input expression into a heap `char*`, enqueue it, and return immediately.
+The calculation task classifies the expression, evaluates it, allocates a
+`CalcResult`, and sends that pointer through `AppEvent`.
 
-`Weact213BwDisplay::update_canvas(canvas)` reads the hint, compares only the
-hinted canvas bytes when possible, patches the cached native 128x250 controller
-buffer, and sends a byte-aligned partial e-paper window. If the hint requests
-`Full`, or if the partial update counter reaches
-`ESP32CALC_EPD_FULL_REFRESH_INTERVAL`, the driver performs a full e-paper
-refresh and resets the counter. This keeps the UI simple while still giving the
-driver enough information to avoid unnecessary full-screen transfers.
+`calc_engine.cpp` is the queue/orchestration layer plus the numeric and linear
+paths. `symbolic_engine.cpp` contains the heavier dynamic math paths: exact
+rational display, polynomial symbolic work, polynomial equations, and matrices.
 
-## Removed RGB565 Renderer
+Expression paths:
 
-Raylib and the previous e-paper bridge were removed from the firmware. On the
-ESP32-S3 software-rendered RGB565 path, even a simple graph frame measured about
-0.9 s before the e-paper transfer. That made the bridge slower than the display
-refresh itself, so interactive calculator screens now draw directly into the
-1-bit `MonoCanvas`.
+- Numeric parser: recursive descent for `+ - * / ^`, unary signs, parentheses,
+  and `strtod` numbers. Exponentiation binds tighter than unary signs, so
+  `-x^2` is parsed as `-(x^2)`.
+- Rational parser: exact(ish) integer/decimal rational arithmetic for fraction
+  display when division is present.
+- Linear parser: expressions over `x,y,z,a,b,c` normalized into coefficient rows.
+- RREF solver: handles linear systems, inconsistent systems, free variables, and
+  known-variable options.
+- Polynomial parser: dynamic `std::vector<PolyTerm>` representation for `x`
+  expressions, including implicit multiplication and integer exponents.
+- Polynomial calculus: `d/dx(...)` and `int(...)`. `int(...)` is the integration
+  operator exposed by the calculator UI.
+- Polynomial equation solver: real degree 1 and degree 2 equations.
+- Matrix helpers: dynamic matrix parse, determinant, and inverse.
 
-## Calculation / Programs
+The engine still keeps small fixed caps where the UI or solver needs bounded
+embedded behavior: UI entry buffers, maximum linear equation count, and maximum
+linear variables. Symbolic polynomial and matrix internals use dynamic storage.
 
-`CalcEngine` owns a request queue for expression parse/evaluate jobs and later
-CAS work. Results are allocated dynamically and sent back to the UI as
-`CalcResult*` inside `AppEvent`; the UI owns each received result and frees it
-after the active mode has copied what it needs. This keeps FreeRTOS queue copies
-shallow and explicit instead of copying structs that contain owned pointers.
-`ProgramLoader` already assumes SD programs live in `/sdcard/programs`.
+## Graphing
 
-Recommended custom program model:
+Graph mode has a local expression evaluator for `x`, `y`, constants `pi/e`, and
+functions `sin`, `cos`, `tan`, `sqrt`, `ln`, and `log`.
 
-- Start with a restricted bytecode or tiny interpreted language.
-- Give programs explicit APIs for screen, keys, files, and math.
-- Run user code in the calculation task with watchdog-friendly yields.
-- Keep Wi-Fi/BLE APIs behind capabilities so programs cannot silently enable
-  radios.
+Supported graph forms:
+
+- `sin(x)` and other explicit `y=f(x)` bodies.
+- `y=...` and `...=y`.
+- Linear implicit equations with `y` on both sides.
+- Nonlinear implicit equations through numeric root scanning in `y`. If multiple
+  real branches exist, the displayed branch prefers non-negative `y`, then the
+  root closest to zero.
+
+## Storage / Programs / Wireless
+
+- `SdStorage` should mount SDSPI at `/sdcard`.
+- `ProgramLoader` expects programs under /sdcard/programs`.
+- Wireless service should eventually be able to help us connect to the device and manage it.
+
+## Build Targets
+
+- `esp32-s3-n16r16`: real hardware target with 16 MB flash and OPI PSRAM config.
+- `esp32-s3-wokwi`: Wokwi target with simulator defines and slower battery poll.

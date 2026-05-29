@@ -1,6 +1,9 @@
 # ESP32Calc Firmware
 
-This firmware is designed to run on my custom ESP32-S3 based calculator, this is the model with 16MB of PSRAM and 16MB of flash memory, it is designed to be a replacement/solid alternative to a scientific calculator, hopefully with good enough graphing, integration and maybe matrix solving.
+Firmware for the custom ESP32-S3 calculator: 16 MB flash, 16 MB PSRAM on target
+hardware, WeAct 2.13 inch black/white e-paper, SDSPI storage, matrix keyboard,
+and a small C++ math engine for numeric, symbolic, graph, system, and matrix
+work.
 
 ## Build
 
@@ -8,15 +11,6 @@ This firmware is designed to run on my custom ESP32-S3 based calculator, this is
 cd Firmware
 pio run -e esp32-s3-n16r16
 ```
-
-## Flash / Monitor
-
-```bash
-cd Firmware
-pio run -e esp32-s3-n16r16 -t upload
-pio device monitor -e esp32-s3-n16r16
-```
-- Within `/tools`, a MacOS utility for pixel color detection exists, it was used to debug the screen, as it took quite a bit of work to start displaying proper text/graphics instead of random lines.
 
 ## Wokwi
 
@@ -26,21 +20,53 @@ pio run -e esp32-s3-wokwi
 wokwi-cli .
 ```
 
-- `wokwi.toml` points at the Wokwi PlatformIO firmware output so Wokwi can be
-launched after `pio run -e esp32-s3-wokwi`.
+`wokwi.toml` points to the PlatformIO Wokwi firmware output. The simulator uses
+the same UI and calculation code as hardware, with simulator-specific battery
+poll timing.
 
-- **On real hardware, the FTDI connector should be used to flash the software.**
+## Flash / Monitor
 
-- The firmware itself targets the real WeAct 2.13' B/W module with partial refresh, this screen has a different resolution from the 2.9' display that is a default in wokwi and, as such, the display uses a version of [this driver](https://github.com/avsaase/weact-studio-epd) that has been adapted for C++.
+```bash
+cd Firmware
+pio run -e esp32-s3-n16r16 -t upload
+pio device monitor -e esp32-s3-n16r16
+```
+
+Real hardware should be flashed through the FTDI connector.
+
+## Current Math Surface
+
+- Numeric expressions: `+`, `-`, `*`, `/`, `^`, parentheses, unary signs, and
+  scientific notation such as `1E-3`.
+- Fractions: exact rational division results display as stacked fractions in
+  Standard mode. `S<>D` toggles fraction and decimal views.
+- Symbolic polynomial work: simplify polynomial expressions in `x`, derive with
+  `d/dx(...)`, integrate with `int(...)`, and solve real polynomial equations up
+  to degree 2.
+- Linear systems: enter equations separated by `;`, for example
+  `x+y=2;x-y=0`. The solver uses RREF and supports `x,y,z,a,b,c`.
+- Graphing: explicit `y=...`, reversed `...=y`, linear implicit equations, and
+  nonlinear implicit equations with one displayed real branch.
+- Matrix mode: enter matrices as rows separated by `;` and columns separated by
+  `,`, for example `1,2;3,4`. `DET` and `INVERSE` call the engine directly.
+
+See [docs/MATH_ENGINE.md](docs/MATH_ENGINE.md) for syntax and limits.
+
+## Architecture Docs
+
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): tasks, queues, display path, UI
+  modes, and calculation ownership.
+- [docs/WEACT_RUST_DRIVER_COMPARISON.md](docs/WEACT_RUST_DRIVER_COMPARISON.md):
+  display driver notes against the Rust reference driver.
 
 ## Notes
 
-- The battery sense input is modeled with a slide potentiometer on GPIO3. In the Wokwi build, the full slider travel maps to the configured empty-to-full battery range and updates once per second.
-
-- The UI is rendered through `MonoCanvas` with methods like `DrawLine`, `DrawLineStrip`, `DrawRectangleLines`,  and `DrawText`.
-
-- Drawing calls update a `CanvasUpdateHint` with either `Partial` or `Full` refresh intent plus a logical dirty rectangle; we keep a cache, to force `Full` refreshes after a certain amount of partial `render()` calls, this helps us keep solid performance while we mantain a clean look for the display.
-
-- I intended to use `Raylib` for this project, but rendering was extremely slow, even with the new `rlsb` renderer, most likely my fault, but the input lag was simply too much, about a second of delay was the usual amount. Franquly, this may mostly be the fault of trying to do the boilerplate with AI, but MonoCanvas did not give me this problem so I just decided to pivot.
-
-- `config::kBatteryDividerRatio` in `src/app_config.h` exists since real battery voltages are a much smaller range than what the slider in the simulator provides.
+- UI rendering goes through `MonoCanvas`, a 250x128 logical 1-bit framebuffer.
+- Drawing calls update `CanvasUpdateHint`; the display driver uses that dirty
+  region for partial refresh and forces a full refresh after the configured
+  interval.
+- The battery sense input is modeled with a slide potentiometer on GPIO3 in
+  Wokwi. Real hardware uses `config::kBatteryDividerRatio` from
+  `src/app_config.h`.
+- `tools/screen_color_probe.py` is a macOS helper used while debugging Wokwi
+  screen colors and panel mapping.
