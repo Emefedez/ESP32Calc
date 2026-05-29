@@ -1,6 +1,0 @@
-[wokwi]
-version = 1
-# After running tools/build_frozen_docker.sh, this firmware contains all
-# Python files frozen in as compiled .mpy modules.
-firmware = "build/frozen/firmware.bin"
-elf = "build/frozen/firmware.elf"

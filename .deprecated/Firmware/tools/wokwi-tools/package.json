@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@wokwi/client": "^0.26.0",
-    "@wokwi/diagram-lint": "^0.1.1"
-  }
-}
