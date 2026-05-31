@@ -1,0 +1,27 @@
+idf_component_register(
+  SRCS
+    "main.cpp"
+    "battery/battery_monitor.cpp"
+    "display/weact_213_bw.cpp"
+    "graphics/mono_canvas.cpp"
+    "hardware/keymap.cpp"
+    "hardware/keypad_matrix.cpp"
+    "math/core/numeric_eval.cpp"
+    "math/core/rational_eval.cpp"
+    "math/input/expression_classifier.cpp"
+    "math/math_engine.cpp"
+    "math/math_service.cpp"
+    "math/legacy/symbolic_engine.cpp"
+    "math/solve/linear_solver.cpp"
+    "ui/menu.cpp"
+  INCLUDE_DIRS
+    "."
+    "battery"
+    "display"
+    "graphics"
+    "hardware"
+    "math"
+    "ui"
+  REQUIRES
+    esp_lcd
+)
