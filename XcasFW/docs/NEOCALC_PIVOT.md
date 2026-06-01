@@ -37,7 +37,7 @@ NeoCalculator/NumOS has several ideas worth adapting:
 
 ## Pivot Recommendation
 
-Do not replace `Firmware/` immediately. Build `NeoCalculator_inspiration/` as a
+Do not replace `Firmware/` immediately. Build `XcasFW/` as a
 parallel lab with a new internal contract:
 
 ```text

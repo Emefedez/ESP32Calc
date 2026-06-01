@@ -6,8 +6,6 @@ idf_component_register(
     "graphics/mono_canvas.cpp"
     "hardware/keymap.cpp"
     "hardware/keypad_matrix.cpp"
-    "math/core/numeric_eval.cpp"
-    "math/core/rational_eval.cpp"
     "math/giac/giac_bridge.cpp"
     "math/input/expression_classifier.cpp"
     "math/math_engine.cpp"

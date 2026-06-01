@@ -1,4 +1,4 @@
-# NeoCalculator Inspiration Memory Policy
+# XcasFW Memory Policy
 
 Target: ESP32-S3 with 16 MB flash and 16 MB PSRAM.
 

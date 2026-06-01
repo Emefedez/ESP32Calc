@@ -29,12 +29,6 @@ src/
       expression_arena.*
       serializer.*
 
-    core/
-      numeric_eval.*
-      rational.*
-      constants.*
-      formatting.*
-
     solve/
       command_shape.*      request shaping and targeted regression helpers
       solve_steps.*
@@ -69,7 +63,7 @@ src/
 
 | Current Area | New Area | Notes |
 | --- | --- | --- |
-| `Firmware/src/calc/calc_engine.cpp` | `math/input`, `math/core`, `math/solve`, `system/math_service` | Split orchestration from parsing and solving. |
+| `Firmware/src/calc/calc_engine.cpp` | `math/input`, `math/giac`, `math/solve`, `system/math_service` | Split orchestration from parsing and solving. |
 | `Firmware/src/calc/symbolic_engine.cpp` | `math/giac`, `math/ast`, targeted regression tests | Keep behavior as test cases, but do not use this as the new CAS design. |
 | `Firmware/src/ui/modes/graph_mode.cpp` local evaluator | `math/graph` plus shared `math/input` | Graph and standard mode should not parse expressions differently. |
 | `Firmware/src/ui/modes/standard_mode.cpp` result drawing | `math/render` plus `ui/apps/calculation_app` | Fractions/powers should be renderer features, not mode special cases. |
@@ -84,8 +78,9 @@ src/
 - CAS should be centralized behind the Giac/Xcas bridge. The bridge exposes
   domain methods (`evaluate`, `simplify`, `solve`, `matrix`, `determinant`,
   `inverse`, `graph_expression`) instead of a generic backend abstraction.
-- Lightweight local math exists only as targeted regression aid or request
-  shaping. Giac/KhiCAS is the primary CAS path.
+- Lightweight local math should only shape requests. Giac/KhiCAS is the
+  evaluator for calculation, exact arithmetic, solving, matrices, graph
+  normalization, and symbolic operations.
 - Graphing must share parser/classifier code with calculator mode.
 - Lua and Python runtimes must talk to the same math service instead of reaching
   into UI internals.
@@ -114,9 +109,9 @@ The first slice is now wired into `src/math/math_service.*`:
 - `math/giac/giac_bridge.*`
 
 This path now treats Giac/KhiCAS as the real evaluator. The old native numeric
-and symbolic helpers are no longer the active engine path. Graph sampling, math
-AST rendering, a proper matrix editor, and scripting should be added as
-separate slices around this bridge.
+and rational evaluator files have been removed so XcasFW does not grow a second
+math engine. Graph sampling, math AST rendering, a proper matrix editor, and
+scripting should be added as separate slices around this bridge.
 
 ## Giac/Xcas Bridge Slice
 

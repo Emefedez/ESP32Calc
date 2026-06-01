@@ -1,11 +1,11 @@
-# NeoCalculator Inspiration
+# XcasFW
 
 Experimental firmware workspace for the ESP32Calc engine/CAS pivot.
 
 This folder is intentionally separate from `Firmware/`. The current firmware is
-not replaced, deleted, or reorganized here. `NeoCalculator_inspiration/` is a
-place to study the NeoCalculator/NumOS shape, then reimplement the parts we want
-with our own contracts, naming, memory policy, UI, and hardware assumptions.
+not replaced, deleted, or reorganized here. `XcasFW/` is the alternative
+firmware workspace for the Xcas/Giac-based path, using its own contracts,
+naming, memory policy, UI, and hardware assumptions.
 
 ## Status
 
@@ -40,9 +40,8 @@ Current lab slice:
   CAS.
 - Split the old monolithic `calc_engine` into smaller layers:
   - `math/input`: tokenize, parse, expression classification.
-- `math/core`: numeric and exact arithmetic.
-- `math/giac`: canonical Xcas/Giac bridge.
-- `math/solve`: command shaping and optional targeted regression helpers.
+  - `math/giac`: canonical Xcas/Giac bridge and only evaluator.
+  - `math/solve`: command shaping and optional targeted regression helpers.
   - `math/graph`: sampling and expression evaluation independent of UI.
   - `math/render`: display-neutral math layout.
   - `ui/apps`: app shells that load one active workspace at a time.
@@ -71,13 +70,13 @@ pio run -e esp32-s3-n16r16
 From the repository root:
 
 ```sh
-pio run -d NeoCalculator_inspiration -e esp32-s3-n16r16
+pio run -d XcasFW -e esp32-s3-n16r16
 ```
 
 Wokwi build from the repository root:
 
 ```sh
-pio run -d NeoCalculator_inspiration -e esp32-s3-wokwi
+pio run -d XcasFW -e esp32-s3-wokwi
 ```
 
 The Wokwi files live directly in this folder:
