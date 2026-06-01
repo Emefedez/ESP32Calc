@@ -1,0 +1,41 @@
+{
+  "write_flash_args": [
+    "--flash-mode",
+    "dio",
+    "--flash-size",
+    "16MB",
+    "--flash-freq",
+    "40m"
+  ],
+  "flash_settings": {
+    "flash_mode": "dio",
+    "flash_size": "16MB",
+    "flash_freq": "40m"
+  },
+  "flash_files": {
+    "0x0": ".pio/build/esp32-s3-wokwi/bootloader.bin",
+    "0x8000": ".pio/build/esp32-s3-wokwi/partitions.bin",
+    "0x10000": ".pio/build/esp32-s3-wokwi/firmware.bin"
+  },
+  "bootloader": {
+    "offset": "0x0",
+    "file": ".pio/build/esp32-s3-wokwi/bootloader.bin",
+    "encrypted": "false"
+  },
+  "partition-table": {
+    "offset": "0x8000",
+    "file": ".pio/build/esp32-s3-wokwi/partitions.bin",
+    "encrypted": "false"
+  },
+  "app": {
+    "offset": "0x10000",
+    "file": ".pio/build/esp32-s3-wokwi/firmware.bin",
+    "encrypted": "false"
+  },
+  "extra_esptool_args": {
+    "after": "hard-reset",
+    "before": "default-reset",
+    "stub": true,
+    "chip": "esp32s3"
+  }
+}

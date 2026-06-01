@@ -1,0 +1,78 @@
+idf_component_register(
+  SRCS
+    "main.cpp"
+    "battery/battery_monitor.cpp"
+    "display/weact_213_bw.cpp"
+    "graphics/mono_canvas.cpp"
+    "hardware/keymap.cpp"
+    "hardware/keypad_matrix.cpp"
+    "math/core/numeric_eval.cpp"
+    "math/core/rational_eval.cpp"
+    "math/giac/giac_bridge.cpp"
+    "math/input/expression_classifier.cpp"
+    "math/math_engine.cpp"
+    "math/math_service.cpp"
+    "math/solve/linear_solver.cpp"
+    "math/solve/solve_result_formatter.cpp"
+    "ui/menu.cpp"
+  INCLUDE_DIRS
+    "."
+    "battery"
+    "display"
+    "graphics"
+    "hardware"
+    "math"
+    "ui"
+  REQUIRES
+    esp_adc
+    esp_lcd
+    giac
+)
+
+target_compile_options(${COMPONENT_LIB}
+  PRIVATE
+    $<$<COMPILE_LANGUAGE:CXX>:-fexceptions>
+    $<$<COMPILE_LANGUAGE:CXX>:-frtti>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-error>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-declarations>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-ignored-qualifiers>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-register>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-reorder>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-template-id-cdtor>
+    $<$<COMPILE_LANGUAGE:CXX>:-Wno-unknown-pragmas>
+)
+
+target_compile_definitions(${COMPONENT_LIB}
+  PRIVATE
+    DOUBLEVAL
+    SIZEOF_INT=3
+    SIZEOF_LONG=4
+    SIZEOF_LONG_LONG=8
+    VERSION="1.4.9-57"
+    PACKAGE="giac"
+    GIAC_KHICAS
+    NO_GUI
+    GIAC_GENERIC
+    EMBEDDED
+    UMAP
+    USE_GMP_REPLACEMENTS
+    NO_CLOCK
+    GIAC_ESP32_SILENT_IO
+    GIAC_ESP32_KEEP_STATIC_BUILTINS
+    NO_RTTI
+    NO_STDEXCEPT
+    NO_UNARY_FUNCTION_COMPOSE
+    STATIC_BUILTIN_LEXER_FUNCTIONS
+    NO_PHYSICAL_CONSTANTS
+    NO_TEMPLATE_MULTGCD
+    HAVE_SSTREAM
+    NOTURTLE
+    IN_GIAC
+    HAVE_NO_SYS_TIMES_H
+    HAVE_NO_SIGNAL_H
+    HAVE_NO_SYS_RESOURCE_WAIT_H
+    HAVE_NO_HOME_DIRECTORY
+    HAVE_NO_PWD_H
+    HAVE_NO_CWD
+)

@@ -1,0 +1,53 @@
+name: Solve linear equation
+version: 1
+author: ESP32Calc
+steps:
+  - wait-serial: 'boot complete'
+  - set-control: { part-id: btn_6_1, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_6_1, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_6_2, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_6_2, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_6_2, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_6_2, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_6_3, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_6_3, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_6_2, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_6_2, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_6_4, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_6_4, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_5_2, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_5_2, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_2_0, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_2_0, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_0_0, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_0_0, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_7_5, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_7_5, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_7_1, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_7_1, control: pressed, value: 0 }
+  - delay: 60ms
+  - set-control: { part-id: btn_7_5, control: pressed, value: 1 }
+  - delay: 80ms
+  - set-control: { part-id: btn_7_5, control: pressed, value: 0 }
+  - delay: 4s

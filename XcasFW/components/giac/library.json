@@ -1,0 +1,37 @@
+{
+  "name": "giac",
+  "version": "1.9.0",
+  "description": "Giac CAS engine for NumOS",
+  "build": {
+    "flags": [
+      "-DGIAC_KHICAS",
+      "-DNO_GUI",
+      "-DGIAC_GENERIC",
+      "-DEMBEDDED",
+      "-DUSE_GMP_REPLACEMENTS",
+      "-DUMAP",
+      "-fexceptions",
+      "-Isrc"
+    ],
+    "srcFilter": [
+      "+<*.cc>",
+      "+<*.cpp>",
+      "+<*.c>",
+      "-<kdisplay*>",
+      "-<k_*.cc>",
+      "-<k_*.cpp>",
+      "-<fx*.cc>",
+      "-<fx*.cpp>",
+      "-<ti*.cc>",
+      "-<ti*.cpp>",
+      "-<Xcas*>",
+      "-<Fl_*>",
+      "-<Graph*>",
+      "-<hist*>",
+      "-<test.cpp>"
+    ]
+  },
+  "dependencies": {
+    "libtommath": "*"
+  }
+}

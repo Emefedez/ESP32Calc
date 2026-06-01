@@ -1,0 +1,90 @@
+file(GLOB GIAC_SOURCES
+  "src/*.c"
+  "src/*.cc"
+  "src/*.cpp"
+)
+
+list(FILTER GIAC_SOURCES EXCLUDE REGEX ".*/kdisplay\\.(c|cc|cpp)$")
+
+idf_component_register(
+  SRCS
+    ${GIAC_SOURCES}
+  INCLUDE_DIRS
+    "src"
+  REQUIRES
+    libtommath
+)
+
+target_compile_definitions(${COMPONENT_LIB}
+  PUBLIC
+    DOUBLEVAL
+    SIZEOF_INT=3
+    SIZEOF_LONG=4
+    SIZEOF_LONG_LONG=8
+    VERSION="1.4.9-57"
+    PACKAGE="giac"
+    GIAC_KHICAS
+    NO_GUI
+    GIAC_GENERIC
+    EMBEDDED
+    UMAP
+    USE_GMP_REPLACEMENTS
+    NO_CLOCK
+    GIAC_ESP32_SILENT_IO
+    GIAC_ESP32_KEEP_STATIC_BUILTINS
+    NO_RTTI
+    NO_STDEXCEPT
+    NO_UNARY_FUNCTION_COMPOSE
+    STATIC_BUILTIN_LEXER_FUNCTIONS
+    NO_PHYSICAL_CONSTANTS
+    NO_TEMPLATE_MULTGCD
+    HAVE_SSTREAM
+    NOTURTLE
+    IN_GIAC
+    HAVE_NO_SYS_TIMES_H
+    HAVE_NO_SIGNAL_H
+    HAVE_NO_SYS_RESOURCE_WAIT_H
+    HAVE_NO_HOME_DIRECTORY
+    HAVE_NO_PWD_H
+    HAVE_NO_CWD
+)
+
+target_compile_options(${COMPONENT_LIB}
+  PRIVATE
+    -fexceptions
+    -frtti
+    -fno-strict-aliasing
+    -UCASIO
+    -Wno-error
+    -Wno-array-bounds
+    -Wno-address
+    -Wno-bool-compare
+    -Wno-deprecated-copy
+    -Wno-deprecated-declarations
+    -Wno-deprecated-enum-enum-conversion
+    -Wno-deprecated-enum-float-conversion
+    -Wno-extra
+    -Wno-format
+    -Wno-ignored-qualifiers
+    -Wno-implicit-fallthrough
+    -Wno-maybe-uninitialized
+    -Wno-misleading-indentation
+    -Wno-missing-field-initializers
+    -Wno-narrowing
+    -Wno-parentheses
+    -Wno-pointer-arith
+    -Wno-register
+    -Wno-reorder
+    -Wno-return-type
+    -Wno-sign-compare
+    -Wno-template-id-cdtor
+    -Wno-type-limits
+    -Wno-unknown-pragmas
+    -Wno-unused-but-set-variable
+    -Wno-unused-but-set-parameter
+    -Wno-unused-function
+    -Wno-unused-result
+    -Wno-unused-value
+    -Wno-unused-variable
+    -Wno-volatile
+)

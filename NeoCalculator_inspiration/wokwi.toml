@@ -1,8 +1,0 @@
-[wokwi]
-version = 1
-firmware = ".pio/build/esp32-s3-wokwi/firmware.bin"
-elf = ".pio/build/esp32-s3-wokwi/firmware.elf"
-
-[[chip]]
-name = "weact_213_bw"
-binary = "weact_213_bw.chip.wasm"

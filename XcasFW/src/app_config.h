@@ -1,0 +1,74 @@
+#pragma once
+
+#include <cstddef>
+#include <cstdint>
+
+#ifndef ESP32CALC_BOOT_DISPLAY_TEST
+#define ESP32CALC_BOOT_DISPLAY_TEST 0
+#endif
+
+#ifndef ESP32CALC_BOOT_NATIVE_TEST
+#define ESP32CALC_BOOT_NATIVE_TEST 0
+#endif
+
+#ifndef ESP32CALC_EPD_SPI_HZ
+#define ESP32CALC_EPD_SPI_HZ 100000
+#endif
+
+#ifndef ESP32CALC_EPD_POWER_SETTLE_MS
+#define ESP32CALC_EPD_POWER_SETTLE_MS 250
+#endif
+
+#ifndef ESP32CALC_EPD_FULL_REFRESH_INTERVAL
+#define ESP32CALC_EPD_FULL_REFRESH_INTERVAL 24
+#endif
+
+#ifndef ESP32CALC_WOKWI
+#define ESP32CALC_WOKWI 0
+#endif
+
+#ifndef ESP32CALC_USE_GIAC
+#define ESP32CALC_USE_GIAC 1
+#endif
+
+#ifndef ESP32CALC_GIAC_BOOT_INIT
+#define ESP32CALC_GIAC_BOOT_INIT 0
+#endif
+
+#ifndef ESP32CALC_BATTERY_POLL_PERIOD_MS
+#define ESP32CALC_BATTERY_POLL_PERIOD_MS 30000
+#endif
+
+namespace esp32calc_alt::config {
+
+constexpr uint16_t kDisplayLogicalWidth = 250;
+constexpr uint16_t kDisplayLogicalHeight = 128;
+constexpr uint16_t kDisplayVisibleLogicalHeight = 122;
+constexpr uint16_t kDisplayNativeWidth = 128;
+constexpr uint16_t kDisplayVisibleNativeWidth = 122;
+constexpr uint16_t kDisplayNativeHeight = 250;
+constexpr size_t kDisplayNativeBufferSize =
+    (kDisplayNativeWidth / 8) * kDisplayNativeHeight;
+
+constexpr uint32_t kInputScanPeriodMs = 5;
+constexpr uint8_t kInputDebounceSamples = 4;
+
+constexpr uint8_t kWirelessMode = 0;
+
+constexpr uint32_t kBatteryPollPeriodMs = ESP32CALC_BATTERY_POLL_PERIOD_MS;
+constexpr uint16_t kEpdFullRefreshInterval = ESP32CALC_EPD_FULL_REFRESH_INTERVAL;
+
+constexpr uint8_t kCoreServicesCore = 0;
+constexpr uint8_t kUiCore = 1;
+
+constexpr uint32_t kAppEventQueueDepth = 32;
+
+// Adjust this to match the actual resistor divider between VBAT and GPIO3.
+constexpr float kBatteryDividerRatio = 2.0f;
+constexpr uint16_t kBatteryEmptyMv = 3300;
+constexpr uint16_t kBatteryFullMv = 4200;
+
+constexpr const char* kSdMountPoint = "/sdcard";
+constexpr const char* kProgramsPath = "/sdcard/programs";
+
+}  // namespace esp32calc_alt::config

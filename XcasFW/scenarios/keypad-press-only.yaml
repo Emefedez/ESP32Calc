@@ -1,0 +1,14 @@
+name: Keypad press only
+version: 1
+author: ESP32Calc
+steps:
+  - wait-serial: 'boot complete'
+  - set-control:
+      part-id: btn_7_1
+      control: pressed
+      value: 1
+  - delay: 120ms
+  - set-control:
+      part-id: btn_7_1
+      control: pressed
+      value: 0
