@@ -22,7 +22,10 @@
 
 ![image](/CAD/exploded_view.png)
 
-![image](/poster.png)
+> Bicuadratic ecuation solved with the calculator `XCas` based firmware.
+![image](/images/bicuadratic_ecuation.jpg)
+
+![image](/images/poster.png)
 
 
 > [!WARNING]

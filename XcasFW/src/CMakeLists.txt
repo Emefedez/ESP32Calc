@@ -12,7 +12,11 @@ idf_component_register(
     "math/math_service.cpp"
     "math/solve/linear_solver.cpp"
     "math/solve/solve_result_formatter.cpp"
+    "ui/graph_expression.cpp"
     "ui/menu.cpp"
+    "ui/menu_detail.cpp"
+    "ui/menu_graph.cpp"
+    "ui/menu_standard.cpp"
   INCLUDE_DIRS
     "."
     "battery"

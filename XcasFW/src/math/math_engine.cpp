@@ -49,9 +49,13 @@ MathResult make_giac_result(const MathRequest& request,
       break;
     case MathJobKind::Numeric:
     default:
-      response = expression_kind == ExpressionKind::Equation
-                     ? bridge.solve(request.expression, request.solve_options)
-                     : bridge.evaluate(request.expression);
+      if (expression_kind == ExpressionKind::Equation) {
+        response = bridge.solve(request.expression, request.solve_options);
+      } else if (expression_kind == ExpressionKind::Symbolic) {
+        response = bridge.simplify(request.expression);
+      } else {
+        response = bridge.evaluate(request.expression);
+      }
       break;
   }
 

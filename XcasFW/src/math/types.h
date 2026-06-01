@@ -19,7 +19,7 @@ enum class ExpressionKind : uint8_t {
   Symbolic,
   Equation,
 };
-
+// how many variables can we use and how much space do we allocate for them?
 inline constexpr size_t kSolveVariableCount = 6;
 inline constexpr uint8_t kSolveVariableX = 1u << 0;
 inline constexpr uint8_t kSolveVariableY = 1u << 1;
@@ -30,14 +30,14 @@ inline constexpr uint8_t kSolveVariableC = 1u << 5;
 inline constexpr char kSolveVariables[kSolveVariableCount] = {'x', 'y', 'z', 'a', 'b', 'c'};
 
 struct SolveOptions {
-  uint8_t solve_mask = 0;
-  uint8_t parameter_mask = 0;
-  uint8_t known_mask = 0;
+  uint8_t solve_mask = 0; // the solve_mask identifies what variables we want to solve for, by default, it goes in appearance order.
+  uint8_t parameter_mask = 0; // parameters are unsolved variables, so it is masked sepparately
+  uint8_t known_mask = 0; // this is treated as a helper, these values are already "OK", so we compare what we have to what we want to get
   double known_values[kSolveVariableCount] {};
 };
 
 struct MathRequest {
-  MathJobKind kind = MathJobKind::Numeric;
+  MathJobKind kind = MathJobKind::Numeric; // default state which may be changed
   char expression[128] {};
   SolveOptions solve_options {};
 };

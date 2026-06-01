@@ -1,3 +1,9 @@
+/*
+ * math_engine.cpp basically calculates the intercepted math
+ * requests from the UI and calls the appropriate GiacBridge
+ * methods to evaluate them.
+ */
+
 #pragma once
 
 #include "math/types.h"

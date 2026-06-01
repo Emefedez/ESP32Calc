@@ -1,3 +1,10 @@
+/*
+ * math_service.cpp is actually what gets the requests
+ * and calls the appropriate the engine after dealing with queues
+ * and tasks.
+ */
+
+
 #pragma once
 
 #include <cstddef>
@@ -25,7 +32,7 @@ class MathService {
 
   static void task_trampoline(void* arg);
   void task();
-  void handle_request(const MathRequest& request, MathResult& result);
+  void handle_request(const MathRequest& request, MathResult& result); // this calls the math_engine.cpp
 
   QueueHandle_t request_queue_ = nullptr;
   QueueHandle_t result_queue_ = nullptr;
