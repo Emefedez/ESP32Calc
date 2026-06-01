@@ -1,5 +1,8 @@
 #pragma once
 
+// Deprecated custom fallback solver API. Move back to src/math/solve only if a
+// no-Giac linear solving path is restored, and include it from math_engine.
+
 #include <cstddef>
 #include <cstdint>
 
@@ -41,4 +44,3 @@ LinearStatus solve_linear_system_text(const char* expr,
 const char* linear_error_text(LinearStatus status);
 
 }  // namespace esp32calc_alt::solve
-

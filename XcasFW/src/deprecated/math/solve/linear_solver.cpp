@@ -1,4 +1,7 @@
-#include "math/solve/linear_solver.h"
+// Deprecated custom fallback solver. Move back to src/math/solve only if a
+// no-Giac linear solving path is restored, and add it back to src/CMakeLists.txt.
+
+#include "linear_solver.h"
 
 #include <cctype>
 #include <cstdarg>
@@ -843,4 +846,3 @@ const char* linear_error_text(LinearStatus status) {
 }
 
 }  // namespace esp32calc_alt::solve
-

@@ -272,6 +272,25 @@ bool integral_query_has_text(const char* query) {
   return query != nullptr && query[0] != '\0';
 }
 
+int constant_selected_ordinal(uint8_t group, const char* query, uint8_t selected_index) {
+  int ordinal = 0;
+  for (size_t i = 0; i < constants::kScientificConstantCount; ++i) {
+    const auto& item = constants::kScientificConstants[i];
+    if (!constants::scientific_constant_matches(item, i, group, query)) {
+      continue;
+    }
+    if (i == selected_index) {
+      return ordinal;
+    }
+    ++ordinal;
+  }
+  return -1;
+}
+
+bool constant_query_has_text(const char* query) {
+  return query != nullptr && query[0] != '\0';
+}
+
 }  // namespace
 void MenuUi::apply_standard_key(const KeyEvent& key) {
   const KeyDef& def = key_at(key.row, key.col);
@@ -574,40 +593,95 @@ void MenuUi::move_variable_selection(int delta) {
 void MenuUi::apply_constants_key(const KeyEvent& key) {
   const KeyDef& def = key_at(key.row, key.col);
   const int digit = key_digit(def);
-  if (digit >= 0 && static_cast<size_t>(digit) < constants::kScientificConstantCount) {
-    constant_selected_ = static_cast<uint8_t>(digit);
-    choose_selected_constant();
+
+  if (constant_stage_ == ConstantMenuStage::Groups) {
+    if (digit >= 0 && static_cast<size_t>(digit) < constants::kScientificConstantGroupCount) {
+      open_constant_group(static_cast<uint8_t>(digit));
+      return;
+    }
+
+    switch (def.role) {
+      case KeyRole::Left:
+      case KeyRole::Up:
+        move_constant_group_selection(-1);
+        status_ = "PICK GROUP";
+        return;
+      case KeyRole::Right:
+      case KeyRole::Down:
+        move_constant_group_selection(1);
+        status_ = "PICK GROUP";
+        return;
+      case KeyRole::Enter:
+        open_constant_group(constant_group_selected_);
+        return;
+      case KeyRole::Clear:
+        open_mode(ModeKind::Standard);
+        return;
+      default:
+        return;
+    }
+  }
+
+  if (def.role == KeyRole::Clear) {
+    if (constant_query_has_text(constant_search_)) {
+      backspace_constant_search();
+    } else {
+      constant_stage_ = ConstantMenuStage::Groups;
+      status_ = "PICK GROUP";
+    }
+    return;
+  }
+
+  if (def.role == KeyRole::Delete) {
+    backspace_constant_search();
     return;
   }
 
   switch (def.role) {
     case KeyRole::Left:
-      move_constant_selection(-static_cast<int>(constants::kConstantsVisibleRows));
-      status_ = "PICK CONST";
-      break;
+      move_constant_group_selection(-1);
+      open_constant_group(constant_group_selected_);
+      return;
     case KeyRole::Right:
-      move_constant_selection(static_cast<int>(constants::kConstantsVisibleRows));
-      status_ = "PICK CONST";
-      break;
+      move_constant_group_selection(1);
+      open_constant_group(constant_group_selected_);
+      return;
     case KeyRole::Up:
-      move_constant_selection(-1);
-      status_ = "PICK CONST";
-      break;
+      move_constant_item_selection(-1);
+      return;
     case KeyRole::Down:
-      move_constant_selection(1);
-      status_ = "PICK CONST";
-      break;
+      move_constant_item_selection(1);
+      return;
     case KeyRole::Enter:
       choose_selected_constant();
-      break;
-    case KeyRole::Clear:
-      open_mode(ModeKind::Standard);
-      break;
+      return;
     default:
       break;
   }
+
+  const char* token = key_input(def, key.shift, key.alpha);
+  append_constant_search_token(token);
+}
+void MenuUi::open_constant_group(uint8_t group) {
+  constant_group_selected_ = group;
+  constant_stage_ = ConstantMenuStage::Items;
+  clear_constant_search();
+  const int first = constants::first_scientific_constant_for_group(constant_group_selected_);
+  if (first >= 0) {
+    constant_selected_ = static_cast<uint8_t>(first);
+  }
+  status_ = "SEARCH / = COPY";
 }
 void MenuUi::choose_selected_constant() {
+  if (constant_selected_ >= constants::kScientificConstantCount ||
+      !constants::scientific_constant_matches(constants::kScientificConstants[constant_selected_],
+                                              constant_selected_,
+                                              constant_group_selected_,
+                                              constant_search_)) {
+    status_ = "NO MATCH";
+    return;
+  }
+
   const auto& constant = constants::kScientificConstants[constant_selected_];
   char token[16] {};
   std::snprintf(token, sizeof(token), "%c%s", constants::kConstantMarker, constant.label);
@@ -615,13 +689,87 @@ void MenuUi::choose_selected_constant() {
   open_mode(ModeKind::Standard);
   status_ = inserted ? constant.label : "EXPR FULL";
 }
-void MenuUi::move_constant_selection(int delta) {
-  const int count = static_cast<int>(constants::kScientificConstantCount);
-  int next = static_cast<int>(constant_selected_) + delta;
+void MenuUi::move_constant_group_selection(int delta) {
+  const int count = static_cast<int>(constants::kScientificConstantGroupCount);
+  int next = static_cast<int>(constant_group_selected_) + delta;
   while (next < 0) {
     next += count;
   }
-  constant_selected_ = static_cast<uint8_t>(next % count);
+  constant_group_selected_ = static_cast<uint8_t>(next % count);
+}
+void MenuUi::move_constant_item_selection(int delta) {
+  const size_t count =
+      constants::filtered_scientific_constant_count(constant_group_selected_, constant_search_);
+  if (count == 0) {
+    status_ = "NO MATCH";
+    return;
+  }
+
+  int ordinal = constant_selected_ordinal(constant_group_selected_, constant_search_, constant_selected_);
+  if (ordinal < 0) {
+    ordinal = 0;
+  } else {
+    ordinal += delta;
+  }
+  while (ordinal < 0) {
+    ordinal += static_cast<int>(count);
+  }
+  ordinal %= static_cast<int>(count);
+
+  const int selected =
+      constants::filtered_scientific_constant_index(constant_group_selected_, constant_search_, ordinal);
+  if (selected >= 0) {
+    constant_selected_ = static_cast<uint8_t>(selected);
+    status_ = "SEARCH / = COPY";
+  }
+}
+void MenuUi::clear_constant_search() {
+  constant_search_[0] = '\0';
+}
+void MenuUi::backspace_constant_search() {
+  const size_t len = std::strlen(constant_search_);
+  if (len == 0) {
+    status_ = "SEARCH / = COPY";
+    return;
+  }
+  constant_search_[len - 1] = '\0';
+  sync_constant_selection_to_filter();
+}
+void MenuUi::append_constant_search_token(const char* token) {
+  char clean[8] {};
+  constants::sanitize_constant_search_token(token, clean, sizeof(clean));
+  if (!menu_detail::has_text(clean)) {
+    return;
+  }
+
+  const size_t query_len = std::strlen(constant_search_);
+  const size_t clean_len = std::strlen(clean);
+  const size_t available = sizeof(constant_search_) - query_len - 1;
+  if (available == 0) {
+    status_ = "SEARCH FULL";
+    return;
+  }
+  std::strncat(constant_search_, clean, available < clean_len ? available : clean_len);
+  sync_constant_selection_to_filter();
+}
+void MenuUi::sync_constant_selection_to_filter() {
+  if (constant_selected_ < constants::kScientificConstantCount &&
+      constants::scientific_constant_matches(constants::kScientificConstants[constant_selected_],
+                                             constant_selected_,
+                                             constant_group_selected_,
+                                             constant_search_)) {
+    status_ = "SEARCH / = COPY";
+    return;
+  }
+
+  const int first =
+      constants::filtered_scientific_constant_index(constant_group_selected_, constant_search_, 0);
+  if (first >= 0) {
+    constant_selected_ = static_cast<uint8_t>(first);
+    status_ = "SEARCH / = COPY";
+  } else {
+    status_ = "NO MATCH";
+  }
 }
 void MenuUi::apply_integrals_key(const KeyEvent& key) {
   const KeyDef& def = key_at(key.row, key.col);
@@ -937,17 +1085,79 @@ void MenuUi::render_standard() {
 void MenuUi::render_constants() {
   canvas_.draw_text(6, 17, "CONSTANTS", 1, true);
 
-  size_t first = 0;
-  if (constant_selected_ >= constants::kConstantsVisibleRows / 2) {
-    first = constant_selected_ - constants::kConstantsVisibleRows / 2;
+  if (constant_stage_ == ConstantMenuStage::Groups) {
+    for (size_t i = 0; i < constants::kScientificConstantGroupCount; ++i) {
+      const int y = constants::kConstantsListY +
+                    static_cast<int>(i) * constants::kConstantsRowHeight;
+      const bool selected = i == constant_group_selected_;
+      if (selected) {
+        canvas_.fill_rect(constants::kConstantsListX - 3,
+                          y - 3,
+                          constants::kConstantsRowWidth,
+                          12,
+                          true);
+      }
+
+      const auto& group = constants::constant_group_at(i);
+      char row_text[40] {};
+      std::snprintf(row_text,
+                    sizeof(row_text),
+                    "%u %-10s %s",
+                    static_cast<unsigned>(i),
+                    group.label,
+                    group.hint);
+      canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
+    }
+    canvas_.draw_text(6, 108, "ARROWS/INDEX  ENTER", 1, true);
+    return;
   }
-  if (first + constants::kConstantsVisibleRows > constants::kScientificConstantCount) {
-    first = constants::kScientificConstantCount - constants::kConstantsVisibleRows;
+
+  const auto& group = constants::constant_group_at(constant_group_selected_);
+  char title[40] {};
+  std::snprintf(title,
+                sizeof(title),
+                "%s  FIND:%s",
+                group.label,
+                constant_query_has_text(constant_search_) ? constant_search_ : "-");
+  canvas_.draw_text(78, 17, title, 1, true);
+
+  const size_t match_count =
+      constants::filtered_scientific_constant_count(constant_group_selected_, constant_search_);
+  if (match_count == 0) {
+    canvas_.draw_text(6, 54, "NO MATCH", 1, true);
+    canvas_.draw_text(6, 108, "TYPE TO FILTER  AC BACK", 1, true);
+    return;
+  }
+
+  int selected_ordinal =
+      constant_selected_ordinal(constant_group_selected_, constant_search_, constant_selected_);
+  if (selected_ordinal < 0) {
+    selected_ordinal = 0;
+  }
+
+  size_t first_ordinal = 0;
+  if (selected_ordinal >= static_cast<int>(constants::kConstantsVisibleRows / 2)) {
+    first_ordinal =
+        static_cast<size_t>(selected_ordinal) - constants::kConstantsVisibleRows / 2;
+  }
+  if (first_ordinal + constants::kConstantsVisibleRows > match_count) {
+    first_ordinal = match_count > constants::kConstantsVisibleRows
+                        ? match_count - constants::kConstantsVisibleRows
+                        : 0;
   }
 
   for (size_t row = 0; row < constants::kConstantsVisibleRows; ++row) {
-    const size_t index = first + row;
-    const auto& constant = constants::kScientificConstants[index];
+    const size_t ordinal = first_ordinal + row;
+    if (ordinal >= match_count) {
+      break;
+    }
+    const int index = constants::filtered_scientific_constant_index(constant_group_selected_,
+                                                                    constant_search_,
+                                                                    ordinal);
+    if (index < 0) {
+      break;
+    }
+    const auto& constant = constants::kScientificConstants[static_cast<size_t>(index)];
     const int y = constants::kConstantsListY +
                   static_cast<int>(row) * constants::kConstantsRowHeight;
     const bool selected = index == constant_selected_;
@@ -962,14 +1172,14 @@ void MenuUi::render_constants() {
     char row_text[40] {};
     std::snprintf(row_text,
                   sizeof(row_text),
-                  "%02u %-8s %s",
+                  "%02u %-8s %-8s",
                   static_cast<unsigned>(index),
                   constant.label,
-                  constant.category);
+                  constant.value);
     canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
   }
 
-  canvas_.draw_text(6, 108, "ENTER INSERTS  AC BACK", 1, true);
+  canvas_.draw_text(6, 108, "= COPY  DIGITS FILTER  AC BACK", 1, true);
 }
 void MenuUi::render_integrals() {
   canvas_.draw_text(6, 17, "INTEGRALS", 1, true);
