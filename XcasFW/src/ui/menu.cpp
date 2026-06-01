@@ -61,6 +61,17 @@ class ConstantsMenuMode final : public MenuMode {
   MenuUi& owner_;
 };
 
+class IntegralsMenuMode final : public MenuMode {
+ public:
+  explicit IntegralsMenuMode(MenuUi& owner) : owner_(owner) {}
+  const char* name() const override { return "INTEGRALS"; }
+  void handle_key(const KeyEvent& key) override { owner_.apply_integrals_key(key); }
+  void render(MonoCanvas&) override { owner_.render_integrals(); }
+
+ private:
+  MenuUi& owner_;
+};
+
 MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display, MathService& math)
     : app_events_(app_events), display_(display), math_(math) {
   open_mode(ModeKind::Standard);
@@ -123,10 +134,7 @@ void MenuUi::update_from_key(const KeyEvent& key) {
 
   if (def.role == KeyRole::Mode) {
     if (screen_ == Screen::ModeSelector) {
-      const ModeKind kind = selected_mode_ == 1 ? ModeKind::Graph
-                            : selected_mode_ == 2 ? ModeKind::Constants
-                                                  : ModeKind::Standard;
-      open_mode(kind);
+      open_mode(mode_from_index(selected_mode_));
     } else {
       close_active_mode();
       screen_ = Screen::ModeSelector;
@@ -154,9 +162,7 @@ void MenuUi::apply_selector_key(const KeyEvent& key, const KeyDef& def) {
   const int digit = key_digit(def);
   if (digit >= 0 && static_cast<size_t>(digit) < constants::kModeCount) {
     selected_mode_ = static_cast<uint8_t>(digit);
-    open_mode(selected_mode_ == 1 ? ModeKind::Graph
-                                  : selected_mode_ == 2 ? ModeKind::Constants
-                                                        : ModeKind::Standard);
+    open_mode(mode_from_index(selected_mode_));
     return;
   }
 
@@ -172,9 +178,7 @@ void MenuUi::apply_selector_key(const KeyEvent& key, const KeyDef& def) {
       status_ = "PICK MENU";
       return;
     case KeyRole::Enter:
-      open_mode(selected_mode_ == 1 ? ModeKind::Graph
-                                    : selected_mode_ == 2 ? ModeKind::Constants
-                                                          : ModeKind::Standard);
+      open_mode(mode_from_index(selected_mode_));
       return;
     case KeyRole::Clear:
       open_mode(active_mode_kind_);
@@ -189,16 +193,53 @@ void MenuUi::consume_modifiers() {
   alpha_ = false;
 }
 
+MenuUi::ModeKind MenuUi::mode_from_index(uint8_t index) const {
+  switch (index) {
+    case 1:
+      return ModeKind::Graph;
+    case 2:
+      return ModeKind::Constants;
+    case 3:
+      return ModeKind::Integrals;
+    case 0:
+    default:
+      return ModeKind::Standard;
+  }
+}
+
+uint8_t MenuUi::index_from_mode(ModeKind kind) const {
+  switch (kind) {
+    case ModeKind::Graph:
+      return 1;
+    case ModeKind::Constants:
+      return 2;
+    case ModeKind::Integrals:
+      return 3;
+    case ModeKind::Standard:
+    default:
+      return 0;
+  }
+}
+
 void MenuUi::open_mode(ModeKind kind) {
   close_active_mode();
   active_mode_kind_ = kind;
-  selected_mode_ = kind == ModeKind::Graph ? 1 : kind == ModeKind::Constants ? 2 : 0;
+  selected_mode_ = index_from_mode(kind);
 
   switch (kind) {
+    case ModeKind::Integrals:
+      static_assert(sizeof(IntegralsMenuMode) <= constants::kModeStorageSize);
+      active_mode_ = new (mode_storage_) IntegralsMenuMode(*this);
+      integral_stage_ = IntegralMenuStage::Groups;
+      clear_integral_search();
+      status_ = "PICK GROUP";
+      break;
     case ModeKind::Constants:
       static_assert(sizeof(ConstantsMenuMode) <= constants::kModeStorageSize);
       active_mode_ = new (mode_storage_) ConstantsMenuMode(*this);
-      status_ = "PICK CONST";
+      constant_stage_ = ConstantMenuStage::Groups;
+      clear_constant_search();
+      status_ = "PICK GROUP";
       break;
     case ModeKind::Graph:
       static_assert(sizeof(GraphMenuMode) <= constants::kModeStorageSize);
@@ -220,6 +261,9 @@ void MenuUi::open_mode(ModeKind kind) {
 void MenuUi::close_active_mode() {
   if (active_mode_ != nullptr) {
     switch (active_mode_kind_) {
+      case ModeKind::Integrals:
+        static_cast<IntegralsMenuMode*>(active_mode_)->~IntegralsMenuMode();
+        break;
       case ModeKind::Constants:
         static_cast<ConstantsMenuMode*>(active_mode_)->~ConstantsMenuMode();
         break;

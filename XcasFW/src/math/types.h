@@ -38,7 +38,7 @@ struct SolveOptions {
 
 struct MathRequest {
   MathJobKind kind = MathJobKind::Numeric; // default state which may be changed
-  char expression[128] {};
+  char expression[224] {};
   SolveOptions solve_options {};
 };
 
@@ -50,4 +50,3 @@ struct MathResult {
 };
 
 }  // namespace esp32calc_alt
-

@@ -15,6 +15,10 @@ namespace {
 
 namespace constants = menu_constants;
 
+bool expand_graph_expression(const char* input, char* output, size_t output_size) {
+  return constants::expand_scientific_constants(input, output, output_size);
+}
+
 }  // namespace
 
 void MenuUi::apply_graph_key(const KeyEvent& key) {
@@ -56,12 +60,21 @@ void MenuUi::render_graph() {
   }
   menu_detail::draw_math_text(canvas_, 88, 24, expression_label);
 
+  char expanded_graph_expression[constants::kExpandedExpressionCapacity] {};
+  if (!expand_graph_expression(graph_expression_,
+                               expanded_graph_expression,
+                               sizeof(expanded_graph_expression))) {
+    canvas_.draw_text(18, 68, "GRAPH EXPR TOO LONG", 1, true);
+    canvas_.draw_text(6, 108, status_, 1, true);
+    return;
+  }
+
   constexpr int gx = constants::kGraphX;
   constexpr int gy = constants::kGraphY;
   const int gw = MonoCanvas::kWidth - gx * 2;
   const int gh = MonoCanvas::kHeight - gy - 12;
   const int y_axis = gx + gw / 2;
-  const bool implicit_graph = graph_expression::should_render_implicit(graph_expression_);
+  const bool implicit_graph = graph_expression::should_render_implicit(expanded_graph_expression);
 
   if (implicit_graph) {
     const int x_axis = gy + gh / 2;
@@ -83,7 +96,8 @@ void MenuUi::render_graph() {
                                        (static_cast<float>(py) / static_cast<float>(gh - 2));
 
         bool ok = false;
-        const float value = graph_expression::evaluate_relation(graph_expression_, x_value, y_value, ok);
+        const float value =
+            graph_expression::evaluate_relation(expanded_graph_expression, x_value, y_value, ok);
         if (!ok || !std::isfinite(value)) {
           left_ok = false;
           previous_ok[px] = false;
@@ -125,7 +139,7 @@ void MenuUi::render_graph() {
     const float t = static_cast<float>(i) / static_cast<float>(constants::kGraphPoints - 1);
     const float x_value = constants::kGraphXMin + (constants::kGraphXMax - constants::kGraphXMin) * t;
     bool ok = false;
-    const float y_value = graph_expression::evaluate(graph_expression_, x_value, ok);
+    const float y_value = graph_expression::evaluate(expanded_graph_expression, x_value, ok);
     if (!ok || !std::isfinite(y_value)) {
       continue;
     }
@@ -175,7 +189,8 @@ void MenuUi::render_graph() {
   }
 
   for (int i = 1; i < constants::kGraphPoints; ++i) {
-    if (y_valid[i - 1] && y_valid[i]) {
+    if (y_valid[i - 1] && y_valid[i] &&
+        std::abs(points[i].y - points[i - 1].y) < gh * 2) {
       canvas_.line(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y, true);
     }
   }

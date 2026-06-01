@@ -254,7 +254,7 @@ GiacResponse GiacBridge::evaluate(const char* expression) {
 }
 
 GiacResponse GiacBridge::simplify(const char* expression) {
-  char command[160] {};
+  char command[256] {};
   std::snprintf(command, sizeof(command), "simplify(%s)", expression == nullptr ? "" : expression);
   return run(GiacOperation::Simplify, command);
 }
@@ -263,7 +263,7 @@ GiacResponse GiacBridge::solve(const char* equation, const SolveOptions& options
   char variables[24] {};
   format_solve_variables(options, variables, sizeof(variables));
 
-  char command[160] {};
+  char command[256] {};
   if (contains_char(equation, ';')) {
     char equations[112] {};
     if (!format_system_equations(equation, equations, sizeof(equations))) {
@@ -289,7 +289,7 @@ GiacResponse GiacBridge::matrix(const char* expression) {
 }
 
 GiacResponse GiacBridge::determinant(const char* matrix_expression) {
-  char command[160] {};
+  char command[256] {};
   std::snprintf(command,
                 sizeof(command),
                 "det(%s)",
@@ -298,7 +298,7 @@ GiacResponse GiacBridge::determinant(const char* matrix_expression) {
 }
 
 GiacResponse GiacBridge::inverse(const char* matrix_expression) {
-  char command[160] {};
+  char command[256] {};
   std::snprintf(command,
                 sizeof(command),
                 "inv(%s)",
@@ -307,7 +307,7 @@ GiacResponse GiacBridge::inverse(const char* matrix_expression) {
 }
 
 GiacResponse GiacBridge::graph_expression(const char* expression) {
-  char command[160] {};
+  char command[256] {};
   std::snprintf(command,
                 sizeof(command),
                 "simplify(%s)",

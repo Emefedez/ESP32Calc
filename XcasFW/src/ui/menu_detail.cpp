@@ -4,11 +4,26 @@
 #include <cctype>
 #include <cstring>
 
+#include "ui/menu_constants.h"
+
 namespace esp32calc_alt::menu_detail {
 namespace {
 
 bool starts_with_at(const char* text, size_t offset, const char* prefix) {
   return text != nullptr && std::strncmp(text + offset, prefix, std::strlen(prefix)) == 0;
+}
+
+size_t marked_constant_length(const char* text, size_t offset) {
+  if (text == nullptr || text[offset] != menu_constants::kConstantMarker) {
+    return 0;
+  }
+  size_t end = offset + 1;
+  while (std::isalnum(static_cast<unsigned char>(text[end])) != 0) {
+    ++end;
+  }
+  return menu_constants::find_scientific_constant(text + offset + 1, end - offset - 1) == nullptr
+             ? 0
+             : end - offset;
 }
 
 }  // namespace
@@ -25,6 +40,12 @@ int math_text_width(const char* text, size_t raw_chars) {
   int width = 0;
   int sqrt_depth = 0;
   for (size_t i = 0; text != nullptr && text[i] != '\0' && i < raw_chars;) {
+    const size_t constant_len = marked_constant_length(text, i);
+    if (constant_len > 0) {
+      width += static_cast<int>(constant_len - 1) * 6;
+      i += constant_len;
+      continue;
+    }
     if (starts_with_at(text, i, "sqrt(")) {
       width += 10;
       i += 5;
@@ -51,6 +72,15 @@ void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
   int cursor = x;
   int sqrt_depth = 0;
   for (size_t i = 0; text != nullptr && text[i] != '\0';) {
+    const size_t constant_len = marked_constant_length(text, i);
+    if (constant_len > 0) {
+      for (size_t j = i + 1; j < i + constant_len; ++j) {
+        canvas.draw_char(cursor, y, text[j], 1, true);
+        cursor += 6;
+      }
+      i += constant_len;
+      continue;
+    }
     if (starts_with_at(text, i, "sqrt(")) {
       canvas.line(cursor, y + 5, cursor + 3, y + 9, true);
       canvas.line(cursor + 3, y + 9, cursor + 7, y - 1, true);

@@ -26,7 +26,7 @@ struct GiacBridgeConfig {
 struct GiacResponse {
   bool ok = false;
   GiacOperation operation = GiacOperation::Raw;
-  char command[160] {};
+  char command[256] {};
   char plain[192] {};
   char error[96] {};
 };

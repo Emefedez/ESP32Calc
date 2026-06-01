@@ -43,7 +43,7 @@ namespace esp32calc_alt::config {
 
 constexpr uint16_t kDisplayLogicalWidth = 250;
 constexpr uint16_t kDisplayLogicalHeight = 128;
-constexpr uint16_t kDisplayVisibleLogicalHeight = 122;
+constexpr uint16_t kDisplayVisibleLogicalHeight = 122; // since we use the 2.13' screen
 constexpr uint16_t kDisplayNativeWidth = 128;
 constexpr uint16_t kDisplayVisibleNativeWidth = 122;
 constexpr uint16_t kDisplayNativeHeight = 250;

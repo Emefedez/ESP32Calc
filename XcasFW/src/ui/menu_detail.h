@@ -1,3 +1,7 @@
+/*
+ * menu_detail.cpp contains some helper functions for drawing math but prettier.
+ */
+
 #pragma once
 
 #include <cstddef>

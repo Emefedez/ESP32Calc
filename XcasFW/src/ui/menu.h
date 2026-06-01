@@ -19,6 +19,7 @@ class MenuMode;
 class StandardMenuMode;
 class GraphMenuMode;
 class ConstantsMenuMode;
+class IntegralsMenuMode;
 
 class MenuUi {
  public:
@@ -36,6 +37,17 @@ class MenuUi {
     Standard,
     Graph,
     Constants,
+    Integrals,
+  };
+
+  enum class IntegralMenuStage : uint8_t {
+    Groups,
+    Items,
+  };
+
+  enum class ConstantMenuStage : uint8_t {
+    Groups,
+    Items,
   };
 
   enum class VariablePalette : uint8_t {
@@ -49,13 +61,17 @@ class MenuUi {
   void apply_standard_key(const KeyEvent& key);
   void apply_graph_key(const KeyEvent& key);
   void apply_constants_key(const KeyEvent& key);
+  void apply_integrals_key(const KeyEvent& key);
   void apply_math_result(const MathResult& result);
   void consume_modifiers();
+  ModeKind mode_from_index(uint8_t index) const;
+  uint8_t index_from_mode(ModeKind kind) const;
   void open_mode(ModeKind kind);
   void close_active_mode();
   void move_mode_selection(int delta);
 
   bool append_expression(const char* token);
+  bool append_expression_at_cursor(const char* token, size_t token_cursor);
   void delete_expression_char();
   void clear_expression();
   void clear_result();
@@ -66,8 +82,22 @@ class MenuUi {
   void handle_variable_palette_key(const KeyEvent& key);
   void choose_selected_variable();
   void move_variable_selection(int delta);
+  void open_constant_group(uint8_t group);
   void choose_selected_constant();
-  void move_constant_selection(int delta);
+  void move_constant_group_selection(int delta);
+  void move_constant_item_selection(int delta);
+  void clear_constant_search();
+  void backspace_constant_search();
+  void append_constant_search_token(const char* token);
+  void sync_constant_selection_to_filter();
+  void open_integral_group(uint8_t group);
+  void choose_selected_integral();
+  void move_integral_group_selection(int delta);
+  void move_integral_item_selection(int delta);
+  void clear_integral_search();
+  void backspace_integral_search();
+  void append_integral_search_token(const char* token);
+  void sync_integral_selection_to_filter();
   void move_cursor_left(bool all_the_way);
   void move_cursor_right(bool all_the_way);
   size_t expression_visible_start() const;
@@ -79,11 +109,13 @@ class MenuUi {
   void render_standard();
   void render_graph();
   void render_constants();
+  void render_integrals();
   void render_variable_palette();
 
   friend class StandardMenuMode;
   friend class GraphMenuMode;
   friend class ConstantsMenuMode;
+  friend class IntegralsMenuMode;
 
   QueueHandle_t app_events_;
   Weact213BwDisplay& display_;
@@ -108,7 +140,14 @@ class MenuUi {
   const char* status_ = "ENTER SENDS";
   VariablePalette variable_palette_ = VariablePalette::None;
   uint8_t variable_selected_ = 0;
+  ConstantMenuStage constant_stage_ = ConstantMenuStage::Groups;
+  uint8_t constant_group_selected_ = 0;
   uint8_t constant_selected_ = 0;
+  char constant_search_[12] {};
+  IntegralMenuStage integral_stage_ = IntegralMenuStage::Groups;
+  uint8_t integral_group_selected_ = 0;
+  uint8_t integral_selected_ = 0;
+  char integral_search_[12] {};
 };
 
 }  // namespace esp32calc_alt
