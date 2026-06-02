@@ -54,9 +54,31 @@ bool query_is_digits(const char* query) {
   return true;
 }
 
-bool constant_code_matches(size_t index, const char* query) {
-  char code[4] {};
-  std::snprintf(code, sizeof(code), "%02u", static_cast<unsigned>(index));
+int constant_group_ordinal(size_t index, uint8_t group) {
+  if (group >= kScientificConstantGroupCount || index >= kScientificConstantCount) {
+    return -1;
+  }
+  int ordinal = 0;
+  for (size_t i = 0; i < kScientificConstantCount; ++i) {
+    if (std::strcmp(kScientificConstants[i].category, kScientificConstantGroups[group].category) !=
+        0) {
+      continue;
+    }
+    if (i == index) {
+      return ordinal;
+    }
+    ++ordinal;
+  }
+  return -1;
+}
+
+bool constant_code_matches(size_t index, uint8_t group, const char* query) {
+  char code[12] {};
+  const int ordinal = constant_group_ordinal(index, group);
+  if (ordinal < 0) {
+    return false;
+  }
+  std::snprintf(code, sizeof(code), "%02u", static_cast<unsigned>(ordinal));
   return std::strncmp(code, query, std::strlen(query)) == 0;
 }
 
@@ -158,11 +180,22 @@ bool scientific_constant_matches(const ScientificConstant& item,
     return true;
   }
   if (query_is_digits(query)) {
-    return constant_code_matches(index, query);
+    return constant_code_matches(index, group, query);
   }
   return contains_case_insensitive(item.label, query) ||
          contains_case_insensitive(item.category, query) ||
          contains_case_insensitive(item.value, query);
+}
+
+void scientific_constant_code(uint8_t group, size_t index, char* output, size_t output_size) {
+  if (output == nullptr || output_size == 0) {
+    return;
+  }
+  output[0] = '\0';
+  const int ordinal = constant_group_ordinal(index, group);
+  if (ordinal >= 0) {
+    std::snprintf(output, output_size, "%02u", static_cast<unsigned>(ordinal));
+  }
 }
 
 size_t filtered_scientific_constant_count(uint8_t group, const char* query) {

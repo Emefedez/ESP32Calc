@@ -26,6 +26,98 @@ size_t marked_constant_length(const char* text, size_t offset) {
              : end - offset;
 }
 
+size_t grouped_span_length(const char* text, size_t offset, size_t raw_chars) {
+  if (text == nullptr || offset >= raw_chars) {
+    return 0;
+  }
+  const char open = text[offset];
+  const char close = open == '(' ? ')' : (open == '[' ? ']' : '\0');
+  if (close == '\0') {
+    return 0;
+  }
+  int depth = 0;
+  for (size_t i = offset; text[i] != '\0' && i < raw_chars; ++i) {
+    if (text[i] == open) {
+      ++depth;
+    } else if (text[i] == close) {
+      --depth;
+      if (depth == 0) {
+        return i - offset + 1;
+      }
+    }
+  }
+  return raw_chars - offset;
+}
+
+size_t power_span_length(const char* text, size_t offset, size_t raw_chars) {
+  if (text == nullptr || offset >= raw_chars) {
+    return 0;
+  }
+  if (text[offset] == '(' || text[offset] == '[') {
+    return grouped_span_length(text, offset, raw_chars);
+  }
+
+  const size_t constant_len = marked_constant_length(text, offset);
+  if (constant_len > 0) {
+    return constant_len;
+  }
+
+  size_t end = offset;
+  while (text[end] != '\0' && end < raw_chars &&
+         (std::isalnum(static_cast<unsigned char>(text[end])) != 0 || text[end] == '.')) {
+    ++end;
+  }
+  return end > offset ? end - offset : 1;
+}
+
+bool find_top_level_fraction(const char* text, size_t raw_chars, size_t& slash) {
+  int paren_depth = 0;
+  int bracket_depth = 0;
+  for (size_t i = 0; text != nullptr && text[i] != '\0' && i < raw_chars; ++i) {
+    switch (text[i]) {
+      case '(':
+        ++paren_depth;
+        break;
+      case ')':
+        if (paren_depth > 0) {
+          --paren_depth;
+        }
+        break;
+      case '[':
+        ++bracket_depth;
+        break;
+      case ']':
+        if (bracket_depth > 0) {
+          --bracket_depth;
+        }
+        break;
+      case '/':
+        if (paren_depth == 0 && bracket_depth == 0 && i > 0 && i + 1 < raw_chars) {
+          slash = i;
+          return true;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  return false;
+}
+
+void copy_slice(char* output, size_t output_size, const char* text, size_t begin, size_t end) {
+  if (output == nullptr || output_size == 0 || text == nullptr || end < begin) {
+    return;
+  }
+  if (end > begin + 1 && text[begin] == '(' && text[end - 1] == ')' &&
+      grouped_span_length(text, begin, end) == end - begin) {
+    ++begin;
+    --end;
+  }
+  const size_t len = std::min(end - begin, output_size - 1);
+  std::memcpy(output, text + begin, len);
+  output[len] = '\0';
+}
+
 }  // namespace
 
 bool has_text(const char* text) {
@@ -37,6 +129,17 @@ bool is_word_char(char value) {
 }
 
 int math_text_width(const char* text, size_t raw_chars) {
+  size_t slash = 0;
+  if (find_top_level_fraction(text, raw_chars, slash)) {
+    char numerator[48] {};
+    char denominator[48] {};
+    copy_slice(numerator, sizeof(numerator), text, 0, slash);
+    copy_slice(denominator, sizeof(denominator), text, slash + 1, raw_chars);
+    return std::max(math_text_width(numerator, std::strlen(numerator)),
+                    math_text_width(denominator, std::strlen(denominator))) +
+           6;
+  }
+
   int width = 0;
   int sqrt_depth = 0;
   for (size_t i = 0; text != nullptr && text[i] != '\0' && i < raw_chars;) {
@@ -58,8 +161,11 @@ int math_text_width(const char* text, size_t raw_chars) {
       continue;
     }
     if (text[i] == '^' && text[i + 1] != '\0' && i + 1 < raw_chars) {
-      width += 6;
-      i += 2;
+      const size_t span = power_span_length(text, i + 1, raw_chars);
+      const bool grouped =
+          (text[i + 1] == '(' || text[i + 1] == '[') && span > 2;
+      width += static_cast<int>(grouped ? span - 2 : span) * 6;
+      i += 1 + span;
       continue;
     }
     width += 6;
@@ -69,6 +175,22 @@ int math_text_width(const char* text, size_t raw_chars) {
 }
 
 void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
+  const size_t raw_chars = text == nullptr ? 0 : std::strlen(text);
+  size_t slash = 0;
+  if (find_top_level_fraction(text, raw_chars, slash)) {
+    char numerator[48] {};
+    char denominator[48] {};
+    copy_slice(numerator, sizeof(numerator), text, 0, slash);
+    copy_slice(denominator, sizeof(denominator), text, slash + 1, raw_chars);
+    const int numerator_width = math_text_width(numerator, std::strlen(numerator));
+    const int denominator_width = math_text_width(denominator, std::strlen(denominator));
+    const int width = std::max(numerator_width, denominator_width) + 4;
+    draw_math_text(canvas, x + (width - numerator_width) / 2, y - 8, numerator);
+    canvas.hline(x, y + 3, width, true);
+    draw_math_text(canvas, x + (width - denominator_width) / 2, y + 6, denominator);
+    return;
+  }
+
   int cursor = x;
   int sqrt_depth = 0;
   for (size_t i = 0; text != nullptr && text[i] != '\0';) {
@@ -96,9 +218,18 @@ void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
       continue;
     }
     if (text[i] == '^' && text[i + 1] != '\0') {
-      canvas.draw_char(cursor, y - 5, text[i + 1], 1, true);
-      cursor += 6;
-      i += 2;
+      const size_t span = power_span_length(text, i + 1, std::strlen(text));
+      size_t begin = i + 1;
+      size_t end = begin + span;
+      if (text[begin] == '(' && end > begin + 1 && text[end - 1] == ')') {
+        ++begin;
+        --end;
+      }
+      for (size_t j = begin; j < end; ++j) {
+        canvas.draw_char(cursor, y - 5, text[j], 1, true);
+        cursor += 6;
+      }
+      i += 1 + span;
       continue;
     }
     canvas.draw_char(cursor, y, text[i], 1, true);

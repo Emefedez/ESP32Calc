@@ -1,0 +1,192 @@
+/***
+
+THIS CODE HAS BEEN REVAMPED... AGAIN!
+
+IF YOU WANT THE ORIGINAL CSS, GO TO: 
+  https://eggramen.neocities.org/code/css/misc/fakewp_old/fakewp2.css
+
+IF YOU WANT THE v2 CSS (i.e. NOT THE ORIGINAL BUT NOT THE CURRENT WIP REVAMP), GO TO: 
+  https://eggramen.neocities.org/code/css/misc/fakewp_new/fakewp2_new.css
+
+***/
+
+body {
+  background: #0c5a72;
+  color: white;
+  font-family: sans-serif;
+  font-size: 0.875em;
+  }
+  
+center {
+  text-align: center;
+  }
+  
+/*Contains everything*/
+.wrapper {
+  width: 1150px;
+  background: #12282f;
+  margin: 0 auto;
+  top: 0;
+  margin-top: -10px;
+  border-left: 0px solid #12282f;
+  border-right: 0px solid #12282f;  
+  margin-bottom: -10px;
+  }
+  
+/*Contains main and sidebar divs*/
+.wrapper-2 {
+  position: relative;
+}
+  
+/*Header and footer images*/
+.header, .footer {
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(rgb(0,0,0,0.1),rgb(0,0,0,0.1)), url("/img/river.gif"); /*This is the image in the header and footer. Replace it with your own!*/
+  background-size:cover;
+  }
+  
+  
+.footer {
+  height: 50px;
+  }
+  
+.header img {
+  border-top: 0px;
+  }
+  
+  
+/*Big title at the top of the page.*/  
+.title {
+  padding: 15px 10px 10px 20px;
+  }
+  
+/*Override default margins/padding for headings.*/
+.title h1, .title h2, .title h3 {
+  padding:0;
+  margin: 0;
+  }
+
+/*Container for top row of links.*/
+.links {
+  padding: 5px;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  }
+  
+/*Div style for individual links.*/
+.link {
+  text-align: center;
+  display: inline-block;
+  list-style-type: none;
+  float: none;
+  font-weight: bold;
+  font-size: 1.16em;
+  padding: 5px;
+  margin-right: 10px;
+  margin-left: 10px;
+  border: 0px solid red;
+  }
+  
+.link a {
+  color: white;
+  text-decoration: none;
+  }
+
+/*These three classes are just for defining the boundaries and size of the main and sidebar columns. Most fancy styling goes in the 'box' class.*/
+.main, .sidebar-right {
+  display: inline-block;
+  }
+  
+.sidebar-left, .sidebar-right {
+  width: 200px;
+  position: absolute;
+  top: 0;
+  }
+
+.sidebar-left {
+  margin-left: 10px;
+  }
+  
+.main {
+  margin-left: 220px;
+  width: 710px;
+  }
+  
+.sidebar-right {
+  margin-right: 10px;
+  margin-left: 10px;
+  }
+  
+/*Box used for individual sections in the sidebar, center column, etc.*/
+.box {  
+  padding: 5px 10px 0px 10px;
+  background: #e2dcc1;
+  color: #12282f;
+  border-top: 5px solid #187b9b;
+  border-bottom: 5px solid #187b9b;
+  margin: 10px 0px 15px 0px;
+  }
+  
+/*Prevent overflow of large images in main text areas.*/
+.box img {
+  max-width: 100%;
+  height: auto;
+  }
+  
+/***
+  Not give any style rules by default. Move the padding from the 'box' class here if you want boxes with specially styled headers or images that 
+  don't follow the margins of the main text. (For an example of that: see skin #1.)
+  ***/
+.inner {
+  
+  }
+  
+/* For narrow screens. Makes the sidebars narrower, and makes width of the 
+ * center/main div 50% of the viewport width.
+ */
+@media(max-width:1180px) {
+  .wrapper {
+    width: calc(440px + 50vw);
+    }
+  .main {
+    width: 50vw;
+    }
+  }
+  
+@media(max-width:910px) {
+  .wrapper {
+    width: calc(360px + 52vw);
+    }
+  .sidebar-left, .sidebar-right {
+    width: 160px;
+    }
+  .main {
+    margin-left: 180px;
+    width: 52vw;
+    }
+  }
+  
+/* Mobile compatibility. Puts everything into a standard vertical layout. */
+@media(orientation:portrait) {
+  .wrapper {
+    width: 96vw;
+    margin: 0 auto;
+    padding:0;
+    position: relative;
+    }
+  .wrapper-2 {
+    width: 94vw;
+    margin: 0 auto;
+    padding:0;
+    position: relative;
+    }
+  .sidebar-left, .main, .sidebar-right {
+    position: relative;
+    width: 92vw;
+    margin: 0.25rem 1vw;
+    }
+  .sidebar-left, .sidebar-right {
+    font-size: 0.95em;
+    }
+  }

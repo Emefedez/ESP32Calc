@@ -33,11 +33,20 @@ MathResult make_giac_result(const MathRequest& request,
       request.kind == MathJobKind::Solve ||
       (request.kind == MathJobKind::Numeric && expression_kind == ExpressionKind::Equation);
 
+  if (request.kind == MathJobKind::Graph) {
+    const giac::GiacGraphResponse graph =
+        bridge.sample_graph(request.expression, -5.0f, 5.0f, kGraphSampleCount);
+    result.graph_count = graph.count;
+    for (size_t i = 0; i < graph.count && i < kGraphSampleCount; ++i) {
+      result.graph_y[i] = graph.y[i];
+      result.graph_valid[i] = graph.valid[i];
+    }
+    set_text(result, graph.ok ? "GRAPH READY" : graph.error, graph.ok);
+    return result;
+  }
+
   giac::GiacResponse response {};
   switch (request.kind) {
-    case MathJobKind::Graph:
-      response = bridge.graph_expression(request.expression);
-      break;
     case MathJobKind::Solve:
       response = bridge.solve(request.expression, request.solve_options);
       break;

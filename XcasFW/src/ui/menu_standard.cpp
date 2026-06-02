@@ -291,6 +291,45 @@ bool constant_query_has_text(const char* query) {
   return query != nullptr && query[0] != '\0';
 }
 
+size_t expression_operand_begin(const char* expression, size_t cursor) {
+  if (expression == nullptr || cursor == 0) {
+    return cursor;
+  }
+
+  size_t begin = cursor;
+  if (expression[begin - 1] == ')') {
+    int depth = 0;
+    while (begin > 0) {
+      --begin;
+      if (expression[begin] == ')') {
+        ++depth;
+      } else if (expression[begin] == '(') {
+        --depth;
+        if (depth == 0) {
+          while (begin > 0 && menu_detail::is_word_char(expression[begin - 1])) {
+            --begin;
+          }
+          return begin;
+        }
+      }
+    }
+    return cursor;
+  }
+
+  while (begin > 0) {
+    const char previous = expression[begin - 1];
+    if (std::isalnum(static_cast<unsigned char>(previous)) == 0 && previous != '.') {
+      break;
+    }
+    --begin;
+  }
+  if (begin > 0 && expression[begin - 1] == constants::kConstantMarker &&
+      constants::find_scientific_constant(expression + begin, cursor - begin) != nullptr) {
+    --begin;
+  }
+  return begin;
+}
+
 }  // namespace
 void MenuUi::apply_standard_key(const KeyEvent& key) {
   const KeyDef& def = key_at(key.row, key.col);
@@ -371,6 +410,11 @@ void MenuUi::apply_standard_key(const KeyEvent& key) {
     return;
   }
 
+  if (!key.shift && !key.alpha && std::strcmp(def.label, "(/)") == 0) {
+    status_ = insert_fraction_template() ? "FRACTION" : "EXPR FULL";
+    return;
+  }
+
   if (!key.shift && !key.alpha && std::strcmp(def.label, "INT") == 0) {
     open_mode(ModeKind::Integrals);
     return;
@@ -419,6 +463,44 @@ bool MenuUi::append_expression_at_cursor(const char* token, size_t token_cursor)
   clear_result();
   return true;
 }
+bool MenuUi::insert_fraction_template() {
+  if (cursor_ > expression_len_) {
+    cursor_ = expression_len_;
+  }
+
+  const size_t numerator_begin = expression_operand_begin(expression_, cursor_);
+  char numerator[48] {};
+  const size_t numerator_len = cursor_ - numerator_begin;
+  if (numerator_len > 0) {
+    const size_t copy_len = std::min(numerator_len, sizeof(numerator) - 1);
+    std::memcpy(numerator, expression_ + numerator_begin, copy_len);
+    numerator[copy_len] = '\0';
+  }
+
+  char token[72] {};
+  size_t new_cursor_offset = 1;
+  if (numerator_len == 0) {
+    std::snprintf(token, sizeof(token), "()/()");
+  } else {
+    std::snprintf(token, sizeof(token), "(%s)/()", numerator);
+    new_cursor_offset = std::strlen(token) - 1;
+  }
+
+  const size_t token_len = std::strlen(token);
+  if (expression_len_ - numerator_len + token_len >= sizeof(expression_)) {
+    return false;
+  }
+
+  std::memmove(expression_ + numerator_begin + token_len,
+               expression_ + cursor_,
+               expression_len_ - cursor_ + 1);
+  std::memcpy(expression_ + numerator_begin, token, token_len);
+  expression_len_ = expression_len_ - numerator_len + token_len;
+  cursor_ = numerator_begin + new_cursor_offset;
+  expression_[expression_len_] = '\0';
+  clear_result();
+  return true;
+}
 void MenuUi::delete_expression_char() {
   if (expression_len_ == 0 || cursor_ == 0) {
     return;
@@ -443,8 +525,6 @@ void MenuUi::delete_expression_char() {
     while (delete_begin > 0 && menu_detail::is_word_char(expression_[delete_begin - 1])) {
       --delete_begin;
     }
-  } else if (delete_begin > 0 && expression_[delete_begin - 1] == '^') {
-    --delete_begin;
   }
 
   const size_t delete_count = cursor_ - delete_begin;
@@ -1060,9 +1140,9 @@ void MenuUi::render_standard() {
   canvas_.vline(cursor_x, constants::kInputTextY - 3, 13, true);
 
   if (result_visible_) {
-    canvas_.draw_text(6, 66, result_is_error_ ? "ERR" : "=", 1, true);
+    canvas_.draw_text(6, 56, result_is_error_ ? "ERR" : "=", 1, true);
     const size_t result_len = std::strlen(result_text_);
-    for (size_t line = 0; line < 2; ++line) {
+    for (size_t line = 0; line < 3; ++line) {
       const size_t line_offset = line * constants::kVisibleResultChars;
       if (line_offset >= result_len) {
         break;
@@ -1070,13 +1150,13 @@ void MenuUi::render_standard() {
       char line_text[constants::kVisibleResultChars + 1] {};
       const size_t line_len = std::min(constants::kVisibleResultChars, result_len - line_offset);
       std::memcpy(line_text, result_text_ + line_offset, line_len);
-      menu_detail::draw_math_text(canvas_, 28, 66 + static_cast<int>(line) * 12, line_text);
+      menu_detail::draw_math_text(canvas_, 28, 56 + static_cast<int>(line) * 13, line_text);
     }
   }
 
-  canvas_.hline(5, 98, 240, true);
+  canvas_.hline(5, 96, 240, true);
   canvas_.draw_text(6, 108, status_, 1, true);
-  canvas_.draw_text(130, 108, "SHIFT+=  ALPHA+=", 1, true);
+  canvas_.draw_text(154, 108, "S+= A+=", 1, true);
 
   if (variable_palette_ != VariablePalette::None) {
     render_variable_palette();
@@ -1094,7 +1174,7 @@ void MenuUi::render_constants() {
         canvas_.fill_rect(constants::kConstantsListX - 3,
                           y - 3,
                           constants::kConstantsRowWidth,
-                          12,
+                          11,
                           true);
       }
 
@@ -1165,15 +1245,20 @@ void MenuUi::render_constants() {
       canvas_.fill_rect(constants::kConstantsListX - 3,
                         y - 3,
                         constants::kConstantsRowWidth,
-                        12,
+                        11,
                         true);
     }
 
+    char code[4] {};
+    constants::scientific_constant_code(constant_group_selected_,
+                                        static_cast<size_t>(index),
+                                        code,
+                                        sizeof(code));
     char row_text[40] {};
     std::snprintf(row_text,
                   sizeof(row_text),
-                  "%02u %-8s %-8s",
-                  static_cast<unsigned>(index),
+                  "%s %-8s %-8s",
+                  code,
                   constant.label,
                   constant.value);
     canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
@@ -1193,7 +1278,7 @@ void MenuUi::render_integrals() {
         canvas_.fill_rect(constants::kConstantsListX - 3,
                           y - 3,
                           constants::kConstantsRowWidth,
-                          12,
+                          11,
                           true);
       }
 
@@ -1263,7 +1348,7 @@ void MenuUi::render_integrals() {
       canvas_.fill_rect(constants::kConstantsListX - 3,
                         y - 3,
                         constants::kConstantsRowWidth,
-                        12,
+                        11,
                         true);
     }
 

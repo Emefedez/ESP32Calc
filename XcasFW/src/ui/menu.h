@@ -60,6 +60,7 @@ class MenuUi {
   void apply_selector_key(const KeyEvent& key, const KeyDef& def);
   void apply_standard_key(const KeyEvent& key);
   void apply_graph_key(const KeyEvent& key);
+  void apply_graph_result(const MathResult& result);
   void apply_constants_key(const KeyEvent& key);
   void apply_integrals_key(const KeyEvent& key);
   void apply_math_result(const MathResult& result);
@@ -72,6 +73,7 @@ class MenuUi {
 
   bool append_expression(const char* token);
   bool append_expression_at_cursor(const char* token, size_t token_cursor);
+  bool insert_fraction_template();
   void delete_expression_char();
   void clear_expression();
   void clear_result();
@@ -134,6 +136,11 @@ class MenuUi {
   size_t expression_len_ = 0;
   size_t cursor_ = 0;
   char graph_expression_[menu_constants::kExpressionCapacity] {"sin(x)"};
+  float graph_y_[kGraphSampleCount] {};
+  bool graph_valid_[kGraphSampleCount] {};
+  size_t graph_count_ = 0;
+  bool graph_has_result_ = false;
+  bool graph_has_error_ = false;
   char result_text_[menu_constants::kResultCapacity] {};
   bool result_visible_ = false;
   bool result_is_error_ = false;

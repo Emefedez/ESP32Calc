@@ -44,6 +44,7 @@ class GraphMenuMode final : public MenuMode {
   explicit GraphMenuMode(MenuUi& owner) : owner_(owner) {}
   const char* name() const override { return "GRAPH"; }
   void handle_key(const KeyEvent& key) override { owner_.apply_graph_key(key); }
+  void handle_math_result(const MathResult& result) override { owner_.apply_graph_result(result); }
   void render(MonoCanvas&) override { owner_.render_graph(); }
 
  private:
@@ -338,7 +339,7 @@ void MenuUi::render_status_bar() {
 }
 
 void MenuUi::render_mode_selector() {
-  canvas_.draw_text(6, 17, "MENU", 2, true);
+  canvas_.draw_text(6, 17, "MENU", 1, true);
 
   for (size_t i = 0; i < constants::kModeCount; ++i) {
     const int y = constants::kModeSelectorY +
@@ -348,13 +349,13 @@ void MenuUi::render_mode_selector() {
       canvas_.fill_rect(constants::kModeSelectorX - 3,
                         y - 4,
                         constants::kModeSelectorRowWidth,
-                        15,
+                        13,
                         true);
     } else {
       canvas_.rect(constants::kModeSelectorX - 3,
                    y - 4,
                    constants::kModeSelectorRowWidth,
-                   15,
+                   13,
                    true);
     }
 

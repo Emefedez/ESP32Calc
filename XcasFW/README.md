@@ -61,6 +61,13 @@ Target hardware has 16 MB flash and 16 MB PSRAM. This workspace assumes:
 
 ## Build
 
+Current testing target is Wokwi only unless physical hardware is available.
+Scripts and quick checks should build only:
+
+```sh
+./build_wokwi.sh
+```
+
 From this folder:
 
 ```sh
@@ -97,3 +104,19 @@ exercise the migrated math path:
 - `SHIFT` then `xyz^2` opens the same selector and inserts the chosen variable
   squared.
 - `ENTER`/`CALC` evaluates through `MathService`.
+
+## Current Priority Notes
+
+- The active firmware folder is `XcasFW/`.
+- Graphing should move toward Giac-backed normalization/sampling instead of
+  local expression parsing. Non-linear graph behavior is a current priority.
+- Constants should keep the same staged UX as Integrals: group selector, search
+  within group, numeric filtering, and `=` to copy selected value.
+- Natural display/editing needs a real expression layout model for fractions,
+  powers, roots, and nested cursor movement. Editing an exponent/root/fraction
+  child should replace that child directly, not force deletion of the whole
+  parent expression.
+- Menus need denser layouts: Standard has unused space, and selector rows must
+  avoid overlapping arrows/hints.
+- Matrix support should go through Giac bridge methods first, with UI/editor
+  code only shaping bounded requests.

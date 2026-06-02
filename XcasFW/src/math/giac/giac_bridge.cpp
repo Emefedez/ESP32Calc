@@ -1,6 +1,7 @@
 #include "math/giac/giac_bridge.h"
 
 #include <cctype>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 
@@ -128,6 +129,80 @@ std::string map_command_aliases(const std::string& expression) {
     return "texpand(" + trimmed.substr(std::strlen("trigexpand("));
   }
   return trimmed;
+}
+
+size_t top_level_equals(const std::string& expression) {
+  int paren_depth = 0;
+  int bracket_depth = 0;
+  int brace_depth = 0;
+  for (size_t i = 0; i < expression.size(); ++i) {
+    switch (expression[i]) {
+      case '(':
+        ++paren_depth;
+        break;
+      case ')':
+        if (paren_depth > 0) {
+          --paren_depth;
+        }
+        break;
+      case '[':
+        ++bracket_depth;
+        break;
+      case ']':
+        if (bracket_depth > 0) {
+          --bracket_depth;
+        }
+        break;
+      case '{':
+        ++brace_depth;
+        break;
+      case '}':
+        if (brace_depth > 0) {
+          --brace_depth;
+        }
+        break;
+      case '=':
+        if (paren_depth == 0 && bracket_depth == 0 && brace_depth == 0) {
+          return i;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+  return std::string::npos;
+}
+
+bool is_plain_y(const std::string& expression) {
+  const std::string trimmed = trim_copy(expression);
+  return trimmed.size() == 1 &&
+         std::tolower(static_cast<unsigned char>(trimmed[0])) == 'y';
+}
+
+std::string explicit_graph_expression(const char* expression, bool& ok) {
+  ok = false;
+  const std::string trimmed = trim_copy(expression == nullptr ? "" : expression);
+  if (trimmed.empty()) {
+    return "";
+  }
+
+  const size_t equals = top_level_equals(trimmed);
+  if (equals == std::string::npos) {
+    ok = true;
+    return trimmed;
+  }
+
+  const std::string left = trim_copy(trimmed.substr(0, equals));
+  const std::string right = trim_copy(trimmed.substr(equals + 1));
+  if (is_plain_y(left)) {
+    ok = true;
+    return right;
+  }
+  if (is_plain_y(right)) {
+    ok = true;
+    return left;
+  }
+  return "";
 }
 
 bool contains_rootof_text(const std::string& value) {
@@ -313,6 +388,79 @@ GiacResponse GiacBridge::graph_expression(const char* expression) {
                 "simplify(%s)",
                 expression == nullptr ? "" : expression);
   return run(GiacOperation::Graph, command);
+}
+
+GiacGraphResponse GiacBridge::sample_graph(const char* expression,
+                                           float x_min,
+                                           float x_max,
+                                           size_t sample_count) {
+  GiacGraphResponse response {};
+  response.count = sample_count > kGraphSampleCount ? kGraphSampleCount : sample_count;
+  copy_text(response.command, sizeof(response.command), expression);
+
+  if (!has_text(expression) || response.count == 0) {
+    copy_text(response.error, sizeof(response.error), "EMPTY GRAPH");
+    return response;
+  }
+
+#if ESP32CALC_USE_GIAC && ESP32CALC_GIAC_COMPILED
+  if (!ready_ || context_ == nullptr) {
+    copy_text(response.error, sizeof(response.error), status_text());
+    return response;
+  }
+
+  bool explicit_ok = false;
+  const std::string body = explicit_graph_expression(expression, explicit_ok);
+  const std::string relation = trim_copy(expression);
+  if (body.empty() && relation.empty()) {
+    copy_text(response.error, sizeof(response.error), "EMPTY GRAPH");
+    return response;
+  }
+
+  ::giac::context* context = as_context(context_);
+  bool has_value = false;
+  for (size_t i = 0; i < response.count; ++i) {
+    const float t = response.count <= 1
+                        ? 0.0f
+                        : static_cast<float>(i) / static_cast<float>(response.count - 1);
+    const float x_value = x_min + (x_max - x_min) * t;
+    char command[256] {};
+    if (explicit_ok) {
+      std::snprintf(command,
+                    sizeof(command),
+                    "evalf(subst((%s),x,(%.8g)))",
+                    body.c_str(),
+                    static_cast<double>(x_value));
+    } else {
+      std::snprintf(command,
+                    sizeof(command),
+                    "evalf((solve(subst((%s),x,(%.8g)),y))[0])",
+                    relation.c_str(),
+                    static_cast<double>(x_value));
+    }
+    try {
+      ::giac::gen result = eval_in_context(command, context);
+      result = ::giac::evalf(result, 1, context);
+      const double y_value = result.to_double(context);
+      if (std::isfinite(y_value)) {
+        response.y[i] = static_cast<float>(y_value);
+        response.valid[i] = true;
+        has_value = true;
+      }
+    } catch (...) {
+      response.valid[i] = false;
+    }
+  }
+
+  if (!has_value) {
+    copy_text(response.error, sizeof(response.error), "GRAPH ERR");
+    return response;
+  }
+  response.ok = true;
+#else
+  copy_text(response.error, sizeof(response.error), status_text());
+#endif
+  return response;
 }
 
 GiacResponse GiacBridge::raw(const char* command) {

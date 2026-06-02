@@ -11,7 +11,6 @@ idf_component_register(
     "math/math_engine.cpp"
     "math/math_service.cpp"
     "math/solve/solve_result_formatter.cpp"
-    "ui/graph_expression.cpp"
     "ui/menu.cpp"
     "ui/menu_constants.cpp"
     "ui/menu_detail.cpp"

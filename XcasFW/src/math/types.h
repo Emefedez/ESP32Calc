@@ -19,6 +19,8 @@ enum class ExpressionKind : uint8_t {
   Symbolic,
   Equation,
 };
+
+inline constexpr size_t kGraphSampleCount = 96;
 // how many variables can we use and how much space do we allocate for them?
 inline constexpr size_t kSolveVariableCount = 6;
 inline constexpr uint8_t kSolveVariableX = 1u << 0;
@@ -47,6 +49,9 @@ struct MathResult {
   MathJobKind kind = MathJobKind::Numeric;
   ExpressionKind expression_kind = ExpressionKind::Invalid;
   char text[192] {};
+  float graph_y[kGraphSampleCount] {};
+  bool graph_valid[kGraphSampleCount] {};
+  size_t graph_count = 0;
 };
 
 }  // namespace esp32calc_alt

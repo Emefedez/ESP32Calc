@@ -1,4 +1,7 @@
-#include "ui/graph_expression.h"
+// Deprecated local graph parser/evaluator. Move back only if graph sampling
+// leaves GiacBridge and returns to a UI-local parser.
+
+#include "graph_expression.h"
 
 #include <algorithm>
 #include <cctype>

@@ -31,6 +31,15 @@ struct GiacResponse {
   char error[96] {};
 };
 
+struct GiacGraphResponse {
+  bool ok = false;
+  char command[256] {};
+  char error[96] {};
+  float y[kGraphSampleCount] {};
+  bool valid[kGraphSampleCount] {};
+  size_t count = 0;
+};
+
 class GiacBridge {
  public:
   ~GiacBridge();
@@ -51,6 +60,10 @@ class GiacBridge {
   GiacResponse determinant(const char* matrix_expression);
   GiacResponse inverse(const char* matrix_expression);
   GiacResponse graph_expression(const char* expression);
+  GiacGraphResponse sample_graph(const char* expression,
+                                 float x_min,
+                                 float x_max,
+                                 size_t sample_count);
   GiacResponse raw(const char* command);
 
  private:

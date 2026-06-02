@@ -6,7 +6,6 @@
 #include <cstring>
 
 #include "graphics/mono_canvas.h"
-#include "ui/graph_expression.h"
 #include "ui/menu_constants.h"
 #include "ui/menu_detail.h"
 
@@ -48,7 +47,41 @@ void MenuUi::open_graph_expression(const char* expression) {
     return;
   }
   std::snprintf(graph_expression_, sizeof(graph_expression_), "%s", expression);
+  graph_count_ = 0;
+  graph_has_result_ = false;
+  graph_has_error_ = false;
   open_mode(ModeKind::Graph);
+  MathRequest request {};
+  request.kind = MathJobKind::Graph;
+  char expanded_expression[sizeof(request.expression)] {};
+  if (!expand_graph_expression(graph_expression_,
+                               expanded_expression,
+                               sizeof(expanded_expression))) {
+    status_ = "GRAPH EXPR TOO LONG";
+    graph_has_error_ = true;
+    return;
+  }
+  std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
+  if (math_.submit(request)) {
+    status_ = "GRAPH QUEUED";
+  } else {
+    status_ = "QUEUE FULL";
+    graph_has_error_ = true;
+  }
+}
+void MenuUi::apply_graph_result(const MathResult& result) {
+  if (result.kind != MathJobKind::Graph) {
+    return;
+  }
+  graph_count_ = result.graph_count > kGraphSampleCount ? kGraphSampleCount : result.graph_count;
+  for (size_t i = 0; i < graph_count_; ++i) {
+    graph_y_[i] = result.graph_y[i];
+    graph_valid_[i] = result.graph_valid[i];
+  }
+  graph_has_result_ = result.ok;
+  graph_has_error_ = !result.ok;
+  std::snprintf(result_text_, sizeof(result_text_), "%s", result.text);
+  status_ = result.ok ? "GRAPH READY" : result_text_;
 }
 void MenuUi::render_graph() {
   canvas_.draw_text(4, 17, "GRAPH", 2, true);
@@ -60,136 +93,59 @@ void MenuUi::render_graph() {
   }
   menu_detail::draw_math_text(canvas_, 88, 24, expression_label);
 
-  char expanded_graph_expression[constants::kExpandedExpressionCapacity] {};
-  if (!expand_graph_expression(graph_expression_,
-                               expanded_graph_expression,
-                               sizeof(expanded_graph_expression))) {
-    canvas_.draw_text(18, 68, "GRAPH EXPR TOO LONG", 1, true);
-    canvas_.draw_text(6, 108, status_, 1, true);
-    return;
-  }
-
   constexpr int gx = constants::kGraphX;
   constexpr int gy = constants::kGraphY;
   const int gw = MonoCanvas::kWidth - gx * 2;
   const int gh = MonoCanvas::kHeight - gy - 12;
   const int y_axis = gx + gw / 2;
-  const bool implicit_graph = graph_expression::should_render_implicit(expanded_graph_expression);
+  bool has_visible_value = false;
+  auto map_y = [&](float y_value) {
+    const float top = static_cast<float>(gy + 1);
+    const float bottom = static_cast<float>(gy + gh - 2);
+    const float normalized =
+        (y_value - constants::kGraphYMin) / (constants::kGraphYMax - constants::kGraphYMin);
+    return static_cast<int>(bottom - normalized * (bottom - top));
+  };
 
-  if (implicit_graph) {
-    const int x_axis = gy + gh / 2;
-    canvas_.plot_graph(gx, gy, gw, gh, x_axis, y_axis, nullptr, 0, true);
+  const int x_axis =
+      constants::kGraphYMin <= 0.0f && constants::kGraphYMax >= 0.0f ? map_y(0.0f) : gy + gh / 2;
+  canvas_.plot_graph(gx, gy, gw, gh, x_axis, y_axis, nullptr, 0, true);
 
-    bool has_value = false;
-    std::array<float, MonoCanvas::kWidth> previous_row {};
-    std::array<bool, MonoCanvas::kWidth> previous_ok {};
-
-    for (int py = 1; py < gh - 1; ++py) {
-      float left_value = 0.0f;
-      bool left_ok = false;
-      for (int px = 1; px < gw - 1 && px < static_cast<int>(previous_row.size()); ++px) {
-        const float x_value =
-            constants::kGraphXMin + (constants::kGraphXMax - constants::kGraphXMin) *
-                                       (static_cast<float>(px) / static_cast<float>(gw - 2));
-        const float y_value =
-            constants::kGraphYMax - (constants::kGraphYMax - constants::kGraphYMin) *
-                                       (static_cast<float>(py) / static_cast<float>(gh - 2));
-
-        bool ok = false;
-        const float value =
-            graph_expression::evaluate_relation(expanded_graph_expression, x_value, y_value, ok);
-        if (!ok || !std::isfinite(value)) {
-          left_ok = false;
-          previous_ok[px] = false;
-          continue;
-        }
-
-        const bool near_zero = std::fabs(value) < constants::kImplicitNearZero;
-        const bool crosses_left =
-            left_ok && ((left_value <= 0.0f && value >= 0.0f) ||
-                        (left_value >= 0.0f && value <= 0.0f));
-        const bool crosses_up =
-            previous_ok[px] && ((previous_row[px] <= 0.0f && value >= 0.0f) ||
-                                (previous_row[px] >= 0.0f && value <= 0.0f));
-        if (near_zero || crosses_left || crosses_up) {
-          canvas_.set_pixel(gx + px, gy + py, true);
-          has_value = true;
-        }
-
-        left_value = value;
-        left_ok = true;
-        previous_row[px] = value;
-        previous_ok[px] = true;
-      }
-    }
-
-    if (!has_value) {
-      canvas_.draw_text(gx + 8, gy + gh / 2 - 4, "GRAPH ERR", 1, true);
-    }
+  if (graph_has_error_) {
+    canvas_.draw_text(gx + 8, gy + gh / 2 - 4, status_, 1, true);
+    canvas_.draw_text(6, 108, "AC/MODE RETURNS", 1, true);
+    return;
+  }
+  if (!graph_has_result_) {
+    canvas_.draw_text(gx + 8, gy + gh / 2 - 4, "GRAPH LOADING", 1, true);
     canvas_.draw_text(6, 108, status_, 1, true);
     return;
   }
 
-  std::array<float, constants::kGraphPoints> y_values {};
-  std::array<bool, constants::kGraphPoints> y_valid {};
-  float y_min = 0.0f;
-  float y_max = 0.0f;
-  bool has_value = false;
-  for (int i = 0; i < constants::kGraphPoints; ++i) {
-    const float t = static_cast<float>(i) / static_cast<float>(constants::kGraphPoints - 1);
-    const float x_value = constants::kGraphXMin + (constants::kGraphXMax - constants::kGraphXMin) * t;
-    bool ok = false;
-    const float y_value = graph_expression::evaluate(expanded_graph_expression, x_value, ok);
-    if (!ok || !std::isfinite(y_value)) {
+  std::array<MonoPoint, kGraphSampleCount> points {};
+  std::array<bool, kGraphSampleCount> visible {};
+  for (size_t i = 0; i < graph_count_; ++i) {
+    if (!graph_valid_[i] ||
+        graph_y_[i] < constants::kGraphYMin ||
+        graph_y_[i] > constants::kGraphYMax) {
       continue;
     }
-
-    y_valid[i] = true;
-    y_values[i] = y_value;
-    if (!has_value) {
-      y_min = y_value;
-      y_max = y_value;
-      has_value = true;
-    } else {
-      y_min = std::fmin(y_min, y_value);
-      y_max = std::fmax(y_max, y_value);
-    }
+    const int px = gx + 1 +
+                   static_cast<int>(i) * (gw - 3) /
+                       static_cast<int>(graph_count_ > 1 ? graph_count_ - 1 : 1);
+    points[i] = MonoPoint {px, map_y(graph_y_[i])};
+    visible[i] = true;
+    has_visible_value = true;
   }
 
-  if (has_value && std::fabs(y_max - y_min) < 0.001f) {
-    y_min -= 1.0f;
-    y_max += 1.0f;
-  }
-
-  auto map_y = [&](float y_value) {
-    const float top = static_cast<float>(gy + 1);
-    const float bottom = static_cast<float>(gy + gh - 2);
-    const float normalized = (y_value - y_min) / (y_max - y_min);
-    return static_cast<int>(bottom - normalized * (bottom - top));
-  };
-
-  const int x_axis = has_value && y_min <= 0.0f && y_max >= 0.0f ? map_y(0.0f) : gy + gh / 2;
-  canvas_.plot_graph(gx, gy, gw, gh, x_axis, y_axis, nullptr, 0, true);
-
-  if (!has_value) {
-    canvas_.draw_text(gx + 8, gy + gh / 2 - 4, "GRAPH ERR", 1, true);
-    canvas_.draw_text(6, 108, "AC/MODE RETURNS", 1, true);
+  if (!has_visible_value) {
+    canvas_.draw_text(gx + 8, gy + gh / 2 - 4, "OUT OF VIEW", 1, true);
+    canvas_.draw_text(6, 108, status_, 1, true);
     return;
   }
 
-  std::array<MonoPoint, constants::kGraphPoints> points {};
-  for (int i = 0; i < constants::kGraphPoints; ++i) {
-    if (!y_valid[i]) {
-      continue;
-    }
-    points[i] = MonoPoint {
-        gx + 1 + i * (gw - 3) / (constants::kGraphPoints - 1),
-        map_y(y_values[i]),
-    };
-  }
-
-  for (int i = 1; i < constants::kGraphPoints; ++i) {
-    if (y_valid[i - 1] && y_valid[i] &&
+  for (size_t i = 1; i < graph_count_; ++i) {
+    if (visible[i - 1] && visible[i] &&
         std::abs(points[i].y - points[i - 1].y) < gh * 2) {
       canvas_.line(points[i - 1].x, points[i - 1].y, points[i].x, points[i].y, true);
     }

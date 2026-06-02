@@ -81,7 +81,9 @@ src/
 - Lightweight local math should only shape requests. Giac/KhiCAS is the
   evaluator for calculation, exact arithmetic, solving, matrices, graph
   normalization, and symbolic operations.
-- Graphing must share parser/classifier code with calculator mode.
+- Graphing must share parser/classifier code with calculator mode. The current
+  local graph evaluator is temporary and should be replaced by Giac-backed
+  normalization/sampling helpers in the bridge.
 - Lua and Python runtimes must talk to the same math service instead of reaching
   into UI internals.
 
@@ -110,8 +112,22 @@ The first slice is now wired into `src/math/math_service.*`:
 
 This path now treats Giac/KhiCAS as the real evaluator. The old native numeric
 and rational evaluator files have been removed so XcasFW does not grow a second
-math engine. Graph sampling, math AST rendering, a proper matrix editor, and
-scripting should be added as separate slices around this bridge.
+math engine. Explicit graph sampling now runs through
+`GiacBridge::sample_graph()`, and the old UI-local graph parser lives only under
+`src/deprecated/`. Math AST rendering, a proper matrix editor, and scripting
+should be added as separate slices around this bridge.
+
+Current UX priorities:
+
+- Use the Wokwi target (`esp32-s3-wokwi`) for testing until physical hardware is
+  available.
+- Keep menus staged and active-only: mode selector with arrows/index, `MENU`
+  returns to selector, and heavy submenu data should be built/destroyed by the
+  active mode path.
+- Constants and Integrals use the same interaction model: group selection,
+  in-group search/numeric filtering, then `=` copies the selected item.
+- Natural display must become structural for powers, roots, and fractions so
+  cursor edits target the child slot directly.
 
 ## Giac/Xcas Bridge Slice
 
