@@ -65,6 +65,8 @@ class MenuUi {
   };
 
   struct GraphCacheEntry {
+    // Stores a Giac-sampled x-range, often wider than current viewport. Pan can
+    // interpolate from this instead of queuing another CAS graph job.
     bool used = false;
     char expression[menu_constants::kGraphExpressionCapacity] {};
     float x_min = 0.0f;
@@ -171,6 +173,8 @@ class MenuUi {
   Weact213BwDisplay& display_;
   MathService& math_;
   MonoCanvas canvas_ {};
+  // One active mode object, placement-new into fixed storage. Menus do not all
+  // stay live, matching the active-only memory policy.
   alignas(menu_constants::kModeStorageAlign) std::byte mode_storage_[menu_constants::kModeStorageSize] {};
   MenuMode* active_mode_ = nullptr;
   ModeKind active_mode_kind_ = ModeKind::Standard;
@@ -199,6 +203,8 @@ class MenuUi {
   GraphCacheEntry* graph_cache_ = nullptr;
   size_t graph_cache_capacity_ = 0;
   uint32_t graph_cache_age_ = 0;
+  // Internal fallback keeps Wokwi/no-PSRAM builds functional; PSRAM path gives
+  // more graph history without taking internal RAM.
   GraphCacheEntry graph_cache_fallback_[kGraphFallbackCacheEntries] {};
   MatrixMenuStage matrix_stage_ = MatrixMenuStage::Matrices;
   uint8_t matrix_selected_ = 0;
@@ -207,6 +213,8 @@ class MenuUi {
   bool matrix_cell_editing_ = false;
   uint8_t matrix_rows_[menu_constants::kMatrixCount] {2, 2, 2, 2, 2, 2};
   uint8_t matrix_cols_[menu_constants::kMatrixCount] {2, 2, 2, 2, 2, 2};
+  // Matrix editor keeps tiny fixed cell text buffers. Giac receives a bounded
+  // assignment string on save; no dynamic matrix UI storage.
   char matrix_cells_[menu_constants::kMatrixCount]
                     [menu_constants::kMatrixMaxRows]
                     [menu_constants::kMatrixMaxCols]

@@ -129,6 +129,9 @@ bool MenuUi::restore_graph_cache(const char* expression) {
     return false;
   }
 
+  // Cache hit means "same expression and cached x-range contains viewport",
+  // not exact same x-range. This makes left/right pan RAM-only until leaving
+  // the sampled span.
   for (size_t i = 0; i < graph_cache_capacity_; ++i) {
     GraphCacheEntry& entry = graph_cache_[i];
     if (!entry.used ||
@@ -169,6 +172,7 @@ void MenuUi::store_graph_cache(const MathResult& result) {
   }
 
   if (target == nullptr) {
+    // Tiny LRU by monotonic age; no dynamic containers in UI path.
     target = &graph_cache_[0];
     for (size_t i = 1; i < graph_cache_capacity_; ++i) {
       if (graph_cache_[i].age < target->age) {
@@ -197,6 +201,8 @@ bool MenuUi::copy_graph_view_from_series(const float* y,
                                          size_t count,
                                          float sample_min,
                                          float sample_max) {
+  // Viewport samples are derived from a wider cached Giac series. Interpolation
+  // trades small visual error for avoiding another worker/CAS job during pan.
   graph_count_ = kGraphSampleCount;
   if (y == nullptr || valid == nullptr || count == 0 ||
       sample_max <= sample_min ||

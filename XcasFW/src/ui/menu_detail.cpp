@@ -364,6 +364,8 @@ bool is_known_function_name(const char* begin, size_t length) {
 }
 
 bool expand_for_math(const char* input, char* output, size_t output_size) {
+  // Shared pre-CAS normalizer for Standard/Graph. Keeps UI entry flexible while
+  // sending Giac explicit multiplication, expanded constants, no empty powers.
   char without_empty_slots[menu_constants::kExpandedExpressionCapacity] {};
   char constants_expanded[menu_constants::kExpandedExpressionCapacity] {};
   return remove_empty_power_slots(input,

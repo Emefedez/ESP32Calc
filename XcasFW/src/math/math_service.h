@@ -36,10 +36,14 @@ class MathService {
 
   QueueHandle_t request_queue_ = nullptr;
   QueueHandle_t result_queue_ = nullptr;
+  // Queue control blocks and payload storage are fixed-size. This keeps UI/CAS
+  // handoff bounded and avoids heap churn while keys are being pressed.
   StaticQueue_t request_queue_storage_ {};
   StaticQueue_t result_queue_storage_ {};
   uint8_t request_queue_buffer_[kQueueDepth * sizeof(MathRequest)] {};
   uint8_t result_queue_buffer_[kQueueDepth * sizeof(MathResult)] {};
+  // Giac context lives only on the worker side. UI sends bounded requests and
+  // never holds CAS objects or raw Giac trees.
   giac::GiacBridge giac_bridge_ {};
 };
 

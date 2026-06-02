@@ -173,6 +173,8 @@ void MonoCanvas::mark_dirty(int x, int y, int width, int height) {
     return;
   }
 
+  // Track one union dirty rectangle. It is cheap in RAM and lets e-paper driver
+  // scan only likely-changed bytes before issuing partial refresh.
   const int x0 = std::max(0, x);
   const int y0 = std::max(0, y);
   const int x1 = std::min<int>(kWidth, x + width);

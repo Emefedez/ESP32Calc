@@ -1,8 +1,6 @@
 # Target Structure
 
-This workspace should be a guided reimplementation, not a mirror of
-NeoCalculator. We use NeoCalculator to ask better questions, then keep or change
-each idea deliberately.
+Workspace = guided reimplementation, not NeoCalculator mirror. Use NeoCalculator to ask better questions; keep/change each idea deliberately.
 
 ## Proposed Source Layout
 
@@ -64,32 +62,24 @@ src/
 | Current Area | New Area | Notes |
 | --- | --- | --- |
 | `Firmware/src/calc/calc_engine.cpp` | `math/input`, `math/giac`, `math/solve`, `system/math_service` | Split orchestration from parsing and solving. |
-| `Firmware/src/calc/symbolic_engine.cpp` | `math/giac`, `math/ast`, targeted regression tests | Keep behavior as test cases, but do not use this as the new CAS design. |
-| `Firmware/src/ui/modes/graph_mode.cpp` local evaluator | `math/graph` plus shared `math/input` | Graph and standard mode should not parse expressions differently. |
-| `Firmware/src/ui/modes/standard_mode.cpp` result drawing | `math/render` plus `ui/apps/calculation_app` | Fractions/powers should be renderer features, not mode special cases. |
+| `Firmware/src/calc/symbolic_engine.cpp` | `math/giac`, `math/ast`, targeted regression tests | Keep behavior as test cases; do not use as new CAS design. |
+| `Firmware/src/ui/modes/graph_mode.cpp` local evaluator | `math/graph` plus shared `math/input` | Graph and standard mode should parse expressions same way. |
+| `Firmware/src/ui/modes/standard_mode.cpp` result drawing | `math/render` plus `ui/apps/calculation_app` | Fractions/powers renderer features, not mode special cases. |
 | `Firmware/src/app_events.h` calc result structs | `system/event_bus` and typed result payloads | Keep queue payloads bounded and ownership obvious. |
 
 ## Reimplementation Rules
 
-- Add a small contract first: structs, ownership, error model, and memory budget.
+- Add small contract first: structs, ownership, error model, memory budget.
 - Keep imported external source behind narrow boundaries.
-- Keep the current firmware behavior as the regression baseline unless we
-  explicitly choose a better behavior.
-- CAS should be centralized behind the Giac/Xcas bridge. The bridge exposes
-  domain methods (`evaluate`, `simplify`, `solve`, `matrix`, `determinant`,
-  `inverse`, `graph_expression`) instead of a generic backend abstraction.
-- Lightweight local math should only shape requests. Giac/KhiCAS is the
-  evaluator for calculation, exact arithmetic, solving, matrices, graph
-  normalization, and symbolic operations.
-- Graphing must share parser/classifier code with calculator mode. The current
-  local graph evaluator is temporary and should be replaced by Giac-backed
-  normalization/sampling helpers in the bridge.
-- Lua and Python runtimes must talk to the same math service instead of reaching
-  into UI internals.
+- Keep current firmware behavior as regression baseline unless explicitly choosing better behavior.
+- CAS centralized behind Giac/Xcas bridge. Bridge exposes domain methods (`evaluate`, `simplify`, `solve`, `matrix`, `determinant`, `inverse`, `graph_expression`) instead of generic backend abstraction.
+- Lightweight local math only shapes requests. Giac/KhiCAS evaluates calculation, exact arithmetic, solving, matrices, graph normalization, symbolic ops.
+- Graphing must share parser/classifier with calculator mode. Current local graph evaluator temporary; replace with Giac-backed normalization/sampling helpers in bridge.
+- Lua/Python runtimes talk to same math service; no reaching into UI internals.
 
 ## First Milestone
 
-Create a minimal, testable engine path:
+Create minimal, testable engine path:
 
 ```text
 MathRequest
@@ -99,40 +89,28 @@ MathRequest
   -> MathResult
 ```
 
-Then add AST/rendering, graph sampling, and matrix editing around the same
-request/result contract.
+Then add AST/rendering, graph sampling, matrix editing around same request/result contract.
 
 ## Current Implementation Slice
 
-The first slice is now wired into `src/math/math_service.*`:
+First slice wired into `src/math/math_service.*`:
 
 - `math/input/expression_classifier.*`
 - `math/math_engine.*`
 - `math/giac/giac_bridge.*`
 
-This path now treats Giac/KhiCAS as the real evaluator. The old native numeric
-and rational evaluator files have been removed so XcasFW does not grow a second
-math engine. Explicit graph sampling now runs through
-`GiacBridge::sample_graph()`, and the old UI-local graph parser lives only under
-`src/deprecated/`. Math AST rendering, a proper matrix editor, and scripting
-should be added as separate slices around this bridge.
+Giac/KhiCAS now real evaluator. Old native numeric/rational evaluator files removed so XcasFW does not grow second math engine. Explicit graph sampling runs through `GiacBridge::sample_graph()`. Old UI-local graph parser only under `src/deprecated/`. Math AST rendering, proper matrix editor, scripting should be separate slices around bridge.
 
 Current UX priorities:
 
-- Use the Wokwi target (`esp32-s3-wokwi`) for testing until physical hardware is
-  available.
-- Keep menus staged and active-only: mode selector with arrows/index, `MENU`
-  returns to selector, and heavy submenu data should be built/destroyed by the
-  active mode path.
-- Constants and Integrals use the same interaction model: group selection,
-  in-group search/numeric filtering, then `=` copies the selected item.
-- Natural display must become structural for powers, roots, and fractions so
-  cursor edits target the child slot directly.
+- Use Wokwi target (`esp32-s3-wokwi`) for testing until physical hardware available.
+- Keep menus staged and active-only: mode selector with arrows/index, `MENU` returns to selector, heavy submenu data built/destroyed by active mode path.
+- Constants and Integrals same interaction model: group selection, in-group search/numeric filtering, then `=` copies selected item.
+- Natural display must become structural for powers, roots, fractions so cursor edits target child slot directly.
 
 ## Giac/Xcas Bridge Slice
 
-The alternative firmware now has `src/math/giac/giac_bridge.*` as the intended
-CAS boundary. It is deliberately an object, not a UART command helper:
+Alt firmware has `src/math/giac/giac_bridge.*` as intended CAS boundary. Object, not UART command helper:
 
 - `begin()` owns context setup.
 - `evaluate()` handles direct calculation commands.
@@ -141,30 +119,19 @@ CAS boundary. It is deliberately an object, not a UART command helper:
 - `matrix()`, `determinant()`, and `inverse()` reserve matrix entry points.
 - `graph_expression()` reserves graph normalization and validation.
 
-The current implementation links the vendored Giac/KhiCAS source from
-`components/giac` plus `components/libtommath`. `MathService` owns one bridge
-instance in its worker task, lazy-initializes a Giac context, and routes
-math requests through this object. `ESP32CALC_USE_GIAC=1` and
-`ESP32CALC_GIAC_COMPILED=1` are enabled for the alternative firmware targets.
+Implementation links vendored Giac/KhiCAS from `components/giac` plus `components/libtommath`. `MathService` owns one bridge in worker task, lazy-initializes Giac context, routes math requests through object. `ESP32CALC_USE_GIAC=1` and `ESP32CALC_GIAC_COMPILED=1` enabled for alt firmware targets.
 
-It is supossed to be the main CAS method and not depend on manually implemented, so it will be used for everything like Matrix and equation systems except for integral transformations and derivative transformations as those are not implemented.
+Giac/Xcas should be main CAS method, used for Matrix and equation systems. Avoid manual implementations except bounded request shaping and integral/derivative transformations until bridge supports them.
 
 ## Current UI/Wokwi Slice
 
-The alternative firmware now has enough UI to test the engine on the simulated
-keypad/display path:
+Alt firmware has enough UI to test engine on simulated keypad/display:
 
-- `diagram.json`, `wokwi.toml`, and the `weact_213_bw` Wokwi chip are present at
-  the workspace root.
-- `hardware/keymap.*` and `hardware/keypad_matrix.*` keep the existing 9x6
-  keyboard matrix/pinout.
-- `graphics/mono_canvas.*` and `display/weact_213_bw.*` keep the e-paper render
-  path.
-- `ui/menu.*` is intentionally small: Standard expression entry, Graph screen,
-  and variable selector only.
-- `ui/input_behavior.h` makes the calculator-specific modifier rules explicit:
-  `SHIFT+=` inserts `=`, `ALPHA+=` opens Graph, and `SHIFT+xyz` opens the
-  variable selector.
-- squared numbers should not be shown on display like x^2 but rather with a small 2 up there, and automatic parenthesis should be included so that it accidentally does not take the following numbers into the elevation by mistake.
-- Divisions should be shown like the natural casio way by default, and the UI should be able to enter/get out of these sub-operations like the sqrt(), (/), x^n logab, etc...
-- If possible, make moving words also skip "tokens", as in, Ans is a single term, not actually 3 letters.
+- `diagram.json`, `wokwi.toml`, and `weact_213_bw` Wokwi chip at workspace root.
+- `hardware/keymap.*` and `hardware/keypad_matrix.*` keep existing 9x6 keyboard matrix/pinout.
+- `graphics/mono_canvas.*` and `display/weact_213_bw.*` keep e-paper render path.
+- `ui/menu.*` intentionally small: Standard expression entry, Graph screen, variable selector.
+- `ui/input_behavior.h` makes calculator modifier rules explicit: `SHIFT+=` inserts `=`, `ALPHA+=` opens Graph, `SHIFT+xyz` opens variable selector.
+- Squared numbers should display natural (`x` with small raised `2`), with automatic parentheses so following numbers do not accidentally join exponent.
+- Divisions should display natural Casio-style by default; UI must enter/exit sub-operations like `sqrt()`, `(/)`, `x^n`, `logab`, etc.
+- Movement should skip tokens when possible: `Ans` one term, not 3 letters.

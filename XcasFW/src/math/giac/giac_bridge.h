@@ -35,6 +35,8 @@ struct GiacGraphResponse {
   bool ok = false;
   char command[256] {};
   char error[96] {};
+  // Fixed sample arrays are the bridge contract: graph UI may cache/copy them
+  // without owning Giac objects or allocating per pan/zoom.
   float y[kGraphSampleCount] {};
   bool valid[kGraphSampleCount] {};
   size_t count = 0;
@@ -66,7 +68,7 @@ class GiacBridge {
                                  size_t sample_count);
   GiacResponse raw(const char* command);
 
- private:
+private:
   GiacResponse run(GiacOperation operation, const char* command);
   static char first_solve_variable(const SolveOptions& options);
   static void format_solve_variables(const SolveOptions& options,
@@ -77,6 +79,8 @@ class GiacBridge {
   GiacBridgeConfig config_ {};
   bool ready_ = false;
   esp_err_t status_ = ESP_ERR_INVALID_STATE;
+  // Opaque to keep Giac headers out of most firmware. Context is allocated in
+  // begin(), owned by worker bridge, and freed in destructor/reset_context().
   void* context_ = nullptr;
 };
 

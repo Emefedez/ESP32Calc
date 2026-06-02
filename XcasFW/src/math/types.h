@@ -39,6 +39,8 @@ struct SolveOptions {
 };
 
 struct MathRequest {
+  // Queue payload: keep everything POD + bounded so FreeRTOS queues copy safely
+  // and UI never shares heap-owned strings with worker.
   MathJobKind kind = MathJobKind::Numeric; // default state which may be changed
   char expression[224] {};
   SolveOptions solve_options {};
@@ -47,6 +49,8 @@ struct MathRequest {
 };
 
 struct MathResult {
+  // Result mirrors request constraints: fixed text + fixed graph arrays. Large
+  // CAS objects stay inside GiacBridge and are rendered down before crossing.
   bool ok = false;
   MathJobKind kind = MathJobKind::Numeric;
   ExpressionKind expression_kind = ExpressionKind::Invalid;

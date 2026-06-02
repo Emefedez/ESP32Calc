@@ -364,6 +364,8 @@ bool MenuUi::build_matrix_assignment(uint8_t matrix, char* output, size_t output
 void MenuUi::commit_matrix_definition() {
   MathRequest request {};
   request.kind = MathJobKind::Script;
+  // Save sends bounded `A:=[[...]]` script to Giac, then Standard shows only
+  // matrix name so input area is not consumed by assignment text.
   if (!build_matrix_assignment(matrix_selected_, request.expression, sizeof(request.expression))) {
     status_ = "MATRIX BIG";
     return;

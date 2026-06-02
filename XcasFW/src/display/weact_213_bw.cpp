@@ -441,6 +441,8 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
   uint16_t last_native_y = 0;
   bool changed = false;
 
+  // Compare logical canvas against previous frame and build minimal native EPD
+  // byte window. Previous canvas costs RAM but prevents full-panel refreshes.
   for (int ly = scan_y0; ly < scan_y1; ++ly) {
     for (int bx = scan_bx0; bx < scan_bx1; ++bx) {
       const size_t idx = static_cast<size_t>(ly) * kCpr + bx;

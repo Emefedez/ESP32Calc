@@ -88,6 +88,8 @@ class IntegralsMenuMode final : public MenuMode {
 
 MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display, MathService& math)
     : app_events_(app_events), display_(display), math_(math) {
+  // Graph cache is the one intentionally large UI allocation. Prefer PSRAM;
+  // fall back to two internal entries so Wokwi/no-PSRAM still behaves.
   graph_cache_ = static_cast<GraphCacheEntry*>(
       heap_caps_calloc(kGraphPsramCacheEntries,
                        sizeof(GraphCacheEntry),
@@ -107,6 +109,7 @@ MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display, MathService
 
 MenuUi::~MenuUi() {
   close_active_mode();
+  // Only free heap allocation; fallback array is part of MenuUi storage.
   if (graph_cache_ != nullptr && graph_cache_ != graph_cache_fallback_) {
     heap_caps_free(graph_cache_);
   }
@@ -279,6 +282,7 @@ void MenuUi::open_mode(ModeKind kind) {
   active_mode_kind_ = kind;
   selected_mode_ = index_from_mode(kind);
 
+  // Rebuild mode object in-place so submenu state stays active-only and cheap.
   switch (kind) {
     case ModeKind::Integrals:
       static_assert(sizeof(IntegralsMenuMode) <= constants::kModeStorageSize);

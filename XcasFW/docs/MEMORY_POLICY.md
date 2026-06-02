@@ -2,8 +2,7 @@
 
 Target: ESP32-S3 with 16 MB flash and 16 MB PSRAM.
 
-The goal is not to avoid dynamic memory completely. The goal is to make dynamic
-memory explicit, bounded where needed, and easy to release when an app closes.
+Goal not "avoid dynamic memory". Goal: dynamic memory explicit, bounded where needed, easy release when app closes.
 
 ## Internal RAM
 
@@ -11,8 +10,8 @@ Prefer internal RAM for:
 
 - FreeRTOS kernel objects and hot queues.
 - Task stacks.
-- Display transfer buffers and any DMA-sensitive buffers.
-- Small event/result envelopes sent between services.
+- Display transfer buffers and DMA-sensitive buffers.
+- Small event/result envelopes between services.
 - ISR-facing data.
 
 Avoid large `std::vector` or unbounded strings in internal RAM.
@@ -29,17 +28,16 @@ Use PSRAM for:
 - Lua or MicroPython heaps.
 - File import/export staging buffers.
 
-Prefer app-owned arenas or pools that can be reset on app close.
+Prefer app-owned arenas/pools reset on app close.
 
 ## Runtime Rules
 
-- Only one heavy app is active at a time.
-- Heavy apps must have `load()` and `unload()` or equivalent lifecycle hooks.
-- The math worker owns long CAS/scripting operations.
-- The UI receives bounded result objects, not raw CAS trees.
-- Large textual output must be paged or streamed.
-- A failed allocation should produce a user-visible memory error and leave the
-  system responsive.
+- Only one heavy app active at a time.
+- Heavy apps need `load()` and `unload()` or equivalent lifecycle hooks.
+- Math worker owns long CAS/scripting ops.
+- UI receives bounded result objects, not raw CAS trees.
+- Large textual output paged or streamed.
+- Failed allocation shows user-visible memory error and leaves system responsive.
 
 ## Build Flags To Consider Later
 
@@ -53,7 +51,7 @@ Prefer app-owned arenas or pools that can be reset on app close.
 
 ## Heap Checks
 
-Add logging around heavy operations:
+Log around heavy ops:
 
 - free internal heap
 - largest internal free block

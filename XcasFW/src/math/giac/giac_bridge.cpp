@@ -267,6 +267,8 @@ bool contains_rootof_text(const std::string& value) {
 }
 
 void configure_context(::giac::context* context, const GiacBridgeConfig& config) {
+  // Keep context deterministic across Wokwi/hardware: Xcas syntax, exact mode
+  // by default, complex roots enabled, no localized lexer surprises.
   ::giac::xcas_mode(0, context);
   ::giac::approx_mode(!config.exact, context);
   ::giac::complex_mode(config.allow_complex, context);
@@ -296,6 +298,8 @@ esp_err_t GiacBridge::begin(const GiacBridgeConfig& config) {
   config_ = config;
 #if ESP32CALC_USE_GIAC && ESP32CALC_GIAC_COMPILED
   try {
+    // Giac owns substantial heap behind context. Allocate once per worker and
+    // reuse for requests; reset_context() is the explicit release/reinit path.
     if (context_ == nullptr) {
       context_ = new (std::nothrow) ::giac::context();
       if (context_ == nullptr) {

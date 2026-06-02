@@ -1,44 +1,29 @@
 # NeoCalculator Pivot Notes
 
-Reference inspected: `El-EnderJ/NeoCalculator`, branch `main`, commit
-`7a1a415a1405368e780077a11fc06fb6c3f4fe5d` on 2026-05-31.
+Reference inspected: `El-EnderJ/NeoCalculator`, branch `main`, commit `7a1a415a1405368e780077a11fc06fb6c3f4fe5d` on 2026-05-31.
 
 ## What Looks Valuable
 
-NeoCalculator/NumOS has several ideas worth adapting:
+NeoCalculator/NumOS ideas worth adapting:
 
-- App lifecycle: apps are lazily created and torn down, instead of keeping every
-  view active forever.
-- Math AST first: formulas are edited and rendered as structure, not just as a
-  flat string.
-- CAS boundary: Giac/KhiCAS is treated as the canonical symbolic backend through
-  a bridge instead of being called directly from UI code.
-- PSRAM policy: symbolic objects, AST nodes, graph buffers, and step logs are
-  pushed toward PSRAM.
-- Staged solving: equation solving can be split into parse, solve, render step,
-  and finalize phases so the UI stays alive.
-- Visual renderer: natural display, fractions, powers, roots, and cursor layout
-  are first-class instead of special cases in each mode.
+- App lifecycle: lazy create/tear down apps; avoid every view active forever.
+- Math AST first: edit/render formulas as structure, not flat string.
+- CAS boundary: Giac/KhiCAS canonical symbolic backend through bridge; UI does not call CAS directly.
+- PSRAM policy: symbolic objects, AST nodes, graph buffers, step logs pushed toward PSRAM.
+- Staged solving: parse, solve, render step, finalize; UI stays alive.
+- Visual renderer: natural display, fractions, powers, roots, cursor layout first-class.
 
 ## What Should Not Be Copied Blindly
 
-- It targets Arduino + LVGL + TFT ILI9341, while this project currently targets
-  ESP-IDF + 2.13 inch black/white e-paper.
-- It uses a lot of `String`, `std::string`, `std::vector`, dynamic app objects,
-  and broad UI state. That is acceptable with 16 MB PSRAM, but still needs
-  ownership rules and caps.
-- It includes many large or experimental apps. Importing all of them would make
-  firmware direction less clear.
-- The parser/evaluator layers are not uniformly mature; some comments still
-  describe future work. The architecture is more valuable than a direct drop-in.
-- Its software license is GPLv3. The current ESP32Calc repository is AGPLv3.
-  Combining code is possible only if we preserve compatible copyleft terms and
-  attribution. A clean-room interface first is safer.
+- Targets Arduino + LVGL + TFT ILI9341; this project targets ESP-IDF + 2.13 inch black/white e-paper.
+- Uses much `String`, `std::string`, `std::vector`, dynamic app objects, broad UI state. OK with 16 MB PSRAM, but needs ownership rules + caps.
+- Many large/experimental apps; importing all muddies firmware direction.
+- Parser/evaluator layers mixed maturity; comments still describe future work. Architecture more useful than direct drop-in.
+- License GPLv3. Current ESP32Calc repo AGPLv3. Combining possible only with compatible copyleft + attribution. Clean-room interface first safer.
 
 ## Pivot Recommendation
 
-Do not replace `Firmware/` immediately. Build `XcasFW/` as a
-parallel lab with a new internal contract:
+Do not replace `Firmware/` immediately. Build `XcasFW/` parallel lab with new internal contract:
 
 ```text
 keys/storage/wireless
@@ -65,36 +50,28 @@ display-neutral math renderer
 e-paper or future display backend
 ```
 
-The first migration target should not be "all of NeoCalculator". It should be:
+First migration target not "all NeoCalculator". Target:
 
-1. A stable math request/result API.
-2. A display-neutral expression tree and renderer contract.
-3. A CAS bridge object backed by Giac/KhiCAS.
-4. A graph engine that shares the same parser/evaluator as calculation mode.
-5. A lazy app runtime that keeps only the active app loaded.
+1. Stable math request/result API.
+2. Display-neutral expression tree + renderer contract.
+3. CAS bridge object backed by Giac/KhiCAS.
+4. Graph engine sharing parser/evaluator with calculation mode.
+5. Lazy app runtime with only active app loaded.
 
 ## Lua And Python
 
-With 16 MB flash and PSRAM, scripting is realistic, but it should be isolated:
+16 MB flash + PSRAM makes scripting realistic, but isolated:
 
-- Lua is the better first embedded scripting runtime because it is smaller,
-  easy to sandbox, and enough for calculator programs.
-- Python should mean MicroPython or a compatible tiny runtime, not CPython.
-- Scripting should be one app or one service with a fixed heap budget.
-- Scripts should communicate through the same math/result API, not poke UI or
-  CAS internals directly.
+- Lua first: smaller, easy sandbox, enough for calculator programs.
+- Python means MicroPython or compatible tiny runtime, not CPython.
+- Scripting = one app/service with fixed heap budget.
+- Scripts communicate through same math/result API, not UI/CAS internals.
 
 ## Proposed Migration Phases
 
-1. Phase 0: create this inspiration folder and boot a bounded service
-   skeleton.
-2. Phase 1: extract current numeric, rational, linear, polynomial, and graph
-   logic behind separate interfaces without changing behavior.
-3. Phase 2: introduce a display-neutral math AST and renderer model for the
-   e-paper canvas.
-4. Phase 3: keep expanding the real Giac bridge methods instead of building a
-   parallel symbolic engine.
-5. Phase 4: measure Giac integration on hardware, including license, flash
-   size, PSRAM use, exceptions, stack size, and long-operation behavior.
-6. Phase 5: add Lua scripting. Consider MicroPython only after the app runtime
-   and memory guardrails are proven.
+1. Phase 0: create inspiration folder + bounded service skeleton.
+2. Phase 1: extract current numeric, rational, linear, polynomial, graph logic behind interfaces without behavior change.
+3. Phase 2: introduce display-neutral math AST + renderer model for e-paper canvas.
+4. Phase 3: expand real Giac bridge methods; avoid parallel symbolic engine.
+5. Phase 4: measure Giac on hardware: license, flash size, PSRAM use, exceptions, stack size, long-operation behavior.
+6. Phase 5: add Lua scripting. Consider MicroPython only after app runtime + memory guardrails proven.

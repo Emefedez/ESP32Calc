@@ -31,6 +31,8 @@ esp_err_t MathService::start() {
     return ESP_ERR_NO_MEM;
   }
 
+  // Prefer PSRAM stack for Giac/KhiCAS depth. If Wokwi/board lacks PSRAM, keep
+  // firmware usable with smaller internal stack and lazy Giac init.
   BaseType_t ok = xTaskCreatePinnedToCoreWithCaps(&MathService::task_trampoline,
                                                   "alt_math",
                                                   kTaskStackBytes,
@@ -89,6 +91,8 @@ void MathService::task() {
   ESP_LOGI(TAG, "giac lazy init enabled");
 #endif
 
+  // Single worker serializes CAS calls. This avoids sharing one Giac context
+  // across tasks and keeps result ownership simple.
   MathRequest request {};
   while (true) {
     if (xQueueReceive(request_queue_, &request, portMAX_DELAY) != pdTRUE) {
@@ -104,6 +108,7 @@ void MathService::task() {
 }
 
 void MathService::handle_request(const MathRequest& request, MathResult& result) {
+  // Lazy begin preserves boot RAM/time if user never touches CAS-heavy paths.
   if (!giac_bridge_.available()) {
     const esp_err_t giac_status = giac_bridge_.begin();
     ESP_LOGI(TAG, "giac begin: %s (%s)", esp_err_to_name(giac_status), giac_bridge_.status_text());

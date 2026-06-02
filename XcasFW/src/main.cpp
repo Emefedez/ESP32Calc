@@ -17,12 +17,16 @@ constexpr const char* TAG = "alt_boot";
 constexpr uint32_t kUiTaskStackBytes = 24 * 1024;
 constexpr UBaseType_t kUiTaskPriority = 6;
 
+// Core services stay static so boot has no hidden lifetime/order surprises.
+// Large transient memory should live in service/app internals, not globals here.
 QueueHandle_t g_app_events = nullptr;
 esp32calc_alt::Weact213BwDisplay g_display;
 esp32calc_alt::KeypadMatrix g_keypad;
 esp32calc_alt::BatteryMonitor g_battery;
 esp32calc_alt::MathService g_math_service;
 
+// Log both free total and largest block: total heap can look healthy while
+// fragmentation makes one Giac/UI allocation fail.
 void log_memory(const char* label) {
   ESP_LOGI(TAG,
            "%s internal=%u internal_largest=%u psram=%u psram_largest=%u",
