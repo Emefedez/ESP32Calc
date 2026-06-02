@@ -1354,28 +1354,60 @@ bool MenuUi::key_is_equals(const KeyEvent& key) const {
 void MenuUi::render_standard() {
   if (result_visible_) {
     canvas_.draw_text(6, 23, result_is_error_ ? "ERR" : "=", 1, true);
-    const size_t result_len = std::strlen(result_text_);
-    size_t source_offset = 0;
-    for (size_t line = 0; line < 3 && source_offset < result_len; ++line) {
-      char line_text[constants::kVisibleResultChars + 1] {};
-      size_t line_len = 0;
-      while (source_offset < result_len && result_text_[source_offset] == ' ') {
-        ++source_offset;
+    MatrixResultView matrix {};
+    const bool matrix_result = !result_is_error_ && parse_result_matrix(result_text_, matrix);
+    if (matrix_result) {
+      const int grid_x = 28;
+      const int grid_y = 25;
+      const int grid_w = 214;
+      const int grid_h = 43;
+      const int rows = std::max<int>(1, matrix.rows);
+      const int cols = std::max<int>(1, matrix.cols);
+      const int cell_w = grid_w / cols;
+      const int cell_h = grid_h / rows;
+      canvas_.rect(grid_x, grid_y, cell_w * cols + 1, cell_h * rows + 1, true);
+      for (int col = 1; col < cols; ++col) {
+        canvas_.vline(grid_x + col * cell_w, grid_y, cell_h * rows + 1, true);
       }
-      while (source_offset < result_len && line_len < constants::kVisibleResultChars) {
-        const char ch = result_text_[source_offset];
-        if (ch == '\n' || ch == ';') {
-          ++source_offset;
-          break;
+      for (int row = 1; row < rows; ++row) {
+        canvas_.hline(grid_x, grid_y + row * cell_h, cell_w * cols + 1, true);
+      }
+      for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < cols; ++col) {
+          const int x = grid_x + col * cell_w;
+          const int y = grid_y + row * cell_h;
+          const size_t max_chars =
+              static_cast<size_t>(std::max(1, (cell_w - 8) / constants::kCharWidth));
+          const char* cell = matrix.cells[row][col];
+          const size_t cell_len = std::strlen(cell);
+          const char* visible = cell_len > max_chars ? cell + cell_len - max_chars : cell;
+          canvas_.draw_text(x + 4, y + std::max(3, (cell_h - 7) / 2), visible, 1, true);
         }
-        line_text[line_len++] = ch;
-        ++source_offset;
       }
-      line_text[line_len] = '\0';
-      while (source_offset < result_len && result_text_[source_offset] == ' ') {
-        ++source_offset;
+    } else if (std::strstr(result_text_, "poly1") == nullptr) {
+      const size_t result_len = std::strlen(result_text_);
+      size_t source_offset = 0;
+      for (size_t line = 0; line < 3 && source_offset < result_len; ++line) {
+        char line_text[constants::kVisibleResultChars + 1] {};
+        size_t line_len = 0;
+        while (source_offset < result_len && result_text_[source_offset] == ' ') {
+          ++source_offset;
+        }
+        while (source_offset < result_len && line_len < constants::kVisibleResultChars) {
+          const char ch = result_text_[source_offset];
+          if (ch == '\n' || ch == ';') {
+            ++source_offset;
+            break;
+          }
+          line_text[line_len++] = ch;
+          ++source_offset;
+        }
+        line_text[line_len] = '\0';
+        while (source_offset < result_len && result_text_[source_offset] == ' ') {
+          ++source_offset;
+        }
+        canvas_.draw_text(28, 30 + static_cast<int>(line) * 14, line_text, 1, true);
       }
-      canvas_.draw_text(28, 30 + static_cast<int>(line) * 14, line_text, 1, true);
     }
   }
 
