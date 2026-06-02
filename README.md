@@ -84,15 +84,15 @@ Open Source software and hardware lead to the possibility of toying around with 
 
 2) JOINING PCBs: The Power PCB is printed as a footprint on the main board, as such, joining both devices is as simple as soldering the `SENSE` and `VOUT` pads and then fixing it in place with ground (for now).
 
-3) No exact battery spec was provided, so you should be able to make a hole in the case (I may replace it with a ready-made space, but I did not want to limit it to a specific Li-ION battery).
+3) BATTERY: No exact battery spec was provided, so you should be able to make a hole in the case (I may replace it with a ready-made space, but I did not want to limit it to a specific Li-ION battery).
 
-4) Print 1x `front_panel.step`, 1x `main_body.step`, 1x `midplate_button_holder.step` and 50x `button.step`.
+4) PRINTING: Print 1x `front_panel.step`, 1x `main_body.step`, 1x `midplate_button_holder.step` and 50x `button.step`.
 
-5) Slot the PCB into the main body with the appropiate battery inserted already.
+5) MAIN BODY: Slot the PCB into the main body with the appropiate battery inserted already.
 
-6) Now also slot the buttons on the front plate, then fix them in place with the button holder (itself held by small screws).
+6) FRONT PLATE: Now also slot the buttons on the front plate, then fix them in place with the button holder (itself held by small screws).
 
-7) Finally, close both sides of the calculator with eachother, using regular screws.
+7) CLOSING: Finally, close both sides of the calculator with eachother, using regular screws.
 
 
 ## Usage Manual:
