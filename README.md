@@ -82,9 +82,11 @@ Open Source software and hardware lead to the possibility of toying around with 
 
 * By pressing `MODE` you will be left with a menu that you can control with the arrow keys or by pressing the box index for each operation type/list.
 
-> Let's see how Matrix Mode looks:
+###  Let's see how Matrix Mode looks:
+
 > 1. We first define the Matrix:
 > <img src="/images/matrix_editor.jpg" alt="matrix_editor" width="500"/>
+
 > 2. We can then use them in Standard Mode:
 > <img src="/images/matrix_solution.jpg" alt="matrix_solution" width="500"/>
 
@@ -92,11 +94,18 @@ Open Source software and hardware lead to the possibility of toying around with 
 * You can print out `=` via having `SHIFT` enabled while pressing that key.
 
 * Pressing `ALPHA + =` will result in graphing your written expression.
+
+### Once Again, let's see how it shows up on screen:
+
 > 1. We get the variable solutions for graphing:
 > <img src="/images/graph_x_solutions.jpg" alt="graph_x_solutions" width="500"/>
+
 > 2. We perform the graphing:
 > <img src="/images/graph_solver.jpg" alt="graph_solver" width="500"/>
 
 
 * Pressing `SHIFT` before trying to enter a constant will lead you to a menu in which you can choose from any of the existing constants.
+
+### Quite clean, if I do say so myself:
+
 > <img src="/images/variable_selector.jpg" alt="variable_selector" width="500"/>
