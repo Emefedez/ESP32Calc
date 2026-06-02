@@ -3,13 +3,32 @@
 
 # Open Source Calculator intended for Symbolic Calculus and custom programs, based on the ESP32-S3
 
-## Main Schematic:
-![image](/calculator_schematics/Main.jpg)
+>[!NOTICE]
+> You can also take a look at the project through my [website](https://emefedez.github.io/projects.html).
 
-## Main PCB:
 
-![image](/calculator_pcb/ViewFront.jpg)
-![image](/calculator_pcb/ViewBack.jpg)
+Calculators are somehow boring and fun at the same time, could we make them a little bit less boring by overcomplicating ourselves?
+
+The answer is always yes!
+
+Open Source software and hardware lead to the possibility of toying around with your devices on your own, I want to make that easier and to finally have a practical FOSS calculator (with an e-paper display while we are at it!).
+
+
+
+>## Main PCB Schematic:
+>![image](/calculator_schematics/Main.jpg)
+
+
+>## Power PCB Schematic:
+>![image](/power_board_schematics/Schematic.jpg)
+
+>## Main PCB:
+>![image](/calculator_pcb/ViewFront.jpg)
+>![image](/calculator_pcb/ViewBack.jpg)
+
+>## Custom Power PCB:
+>![image](/power_board_pcb/View.jpg)
+
 
 ## Main Features:
 1.   Open Source Firmware
@@ -58,3 +77,16 @@
 |         | 1            | FTDI FT232RL CH340N   | _Not on Board_                                                                                                                                                                                                                                   | _Not on Board_                                        |           | FT232RL CH340N         | Aitver Electronics  |                      |              | 14,3236 €             | 14,6122 €         |                  |
 ```
 
+## Usage Manual:
+* After flashing your board with `./XcasFW/platformio.ini` or manually running `pio run -e esp32-s3-n16r16` (PlatformIO extension in VSCode must be installed) you will have a calculator that boots into `Standard Mode`.
+
+* By pressing `MODE` you will be left with a menu that you can control with the arrow keys or by pressing the box index for each operation type/list.
+
+* You can print out `=` via having `SHIFT` enabled while pressing that key.
+
+* Pressing `ALPHA + =` will result in graphing your written expression.
+
+>* Pressing `SHIFT` before trying to enter a constant will lead you to a menu in which you can choose from any of the existing constants.
+>![image](/images/variable_selector.jpg)
+
+<img src="/images/variable_selector.jpg" alt="variable_selector" width="400"/>

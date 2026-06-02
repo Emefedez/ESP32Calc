@@ -53,6 +53,17 @@ class GraphMenuMode final : public MenuMode {
   MenuUi& owner_;
 };
 
+class MatrixMenuMode final : public MenuMode {
+ public:
+  explicit MatrixMenuMode(MenuUi& owner) : owner_(owner) {}
+  const char* name() const override { return "MATRIX"; }
+  void handle_key(const KeyEvent& key) override { owner_.apply_matrix_key(key); }
+  void render(MonoCanvas&) override { owner_.render_matrix(); }
+
+ private:
+  MenuUi& owner_;
+};
+
 class ConstantsMenuMode final : public MenuMode {
  public:
   explicit ConstantsMenuMode(MenuUi& owner) : owner_(owner) {}
@@ -135,7 +146,9 @@ void MenuUi::run() {
     }
 
     const TickType_t now = xTaskGetTickCount();
-    if (screen_ == Screen::Mode && active_mode_kind_ == ModeKind::Standard &&
+    if (screen_ == Screen::Mode &&
+        (active_mode_kind_ == ModeKind::Standard ||
+         (active_mode_kind_ == ModeKind::Matrix && matrix_cell_editing_)) &&
         now - last_cursor_toggle >= kCursorBlinkTicks) {
       cursor_visible_ = !cursor_visible_;
       last_cursor_toggle = now;
@@ -234,8 +247,10 @@ MenuUi::ModeKind MenuUi::mode_from_index(uint8_t index) const {
     case 1:
       return ModeKind::Graph;
     case 2:
-      return ModeKind::Constants;
+      return ModeKind::Matrix;
     case 3:
+      return ModeKind::Constants;
+    case 4:
       return ModeKind::Integrals;
     case 0:
     default:
@@ -247,10 +262,12 @@ uint8_t MenuUi::index_from_mode(ModeKind kind) const {
   switch (kind) {
     case ModeKind::Graph:
       return 1;
-    case ModeKind::Constants:
+    case ModeKind::Matrix:
       return 2;
-    case ModeKind::Integrals:
+    case ModeKind::Constants:
       return 3;
+    case ModeKind::Integrals:
+      return 4;
     case ModeKind::Standard:
     default:
       return 0;
@@ -276,6 +293,15 @@ void MenuUi::open_mode(ModeKind kind) {
       constant_stage_ = ConstantMenuStage::Groups;
       clear_constant_search();
       status_ = "PICK GROUP";
+      break;
+    case ModeKind::Matrix:
+      static_assert(sizeof(MatrixMenuMode) <= constants::kModeStorageSize);
+      active_mode_ = new (mode_storage_) MatrixMenuMode(*this);
+      matrix_stage_ = MatrixMenuStage::Matrices;
+      matrix_cell_row_ = 0;
+      matrix_cell_col_ = 0;
+      matrix_cell_editing_ = false;
+      status_ = "PICK MATRIX";
       break;
     case ModeKind::Graph:
       static_assert(sizeof(GraphMenuMode) <= constants::kModeStorageSize);
@@ -305,6 +331,9 @@ void MenuUi::close_active_mode() {
         break;
       case ModeKind::Graph:
         static_cast<GraphMenuMode*>(active_mode_)->~GraphMenuMode();
+        break;
+      case ModeKind::Matrix:
+        static_cast<MatrixMenuMode*>(active_mode_)->~MatrixMenuMode();
         break;
       case ModeKind::Standard:
       default:

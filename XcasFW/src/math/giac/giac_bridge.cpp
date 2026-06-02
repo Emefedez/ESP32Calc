@@ -179,6 +179,26 @@ bool is_plain_y(const std::string& expression) {
          std::tolower(static_cast<unsigned char>(trimmed[0])) == 'y';
 }
 
+bool contains_plain_variable(const std::string& expression, char variable) {
+  for (size_t i = 0; i < expression.size(); ++i) {
+    if (std::tolower(static_cast<unsigned char>(expression[i])) != variable) {
+      continue;
+    }
+    const bool left_word =
+        i > 0 &&
+        (std::isalnum(static_cast<unsigned char>(expression[i - 1])) != 0 ||
+         expression[i - 1] == '_');
+    const bool right_word =
+        i + 1 < expression.size() &&
+        (std::isalnum(static_cast<unsigned char>(expression[i + 1])) != 0 ||
+         expression[i + 1] == '_');
+    if (!left_word && !right_word) {
+      return true;
+    }
+  }
+  return false;
+}
+
 std::string explicit_graph_expression(const char* expression, bool& ok) {
   ok = false;
   const std::string trimmed = trim_copy(expression == nullptr ? "" : expression);
@@ -201,6 +221,10 @@ std::string explicit_graph_expression(const char* expression, bool& ok) {
   if (is_plain_y(right)) {
     ok = true;
     return left;
+  }
+  if (!contains_plain_variable(left, 'y') && !contains_plain_variable(right, 'y')) {
+    ok = true;
+    return "(" + left + ")-(" + right + ")";
   }
   return "";
 }

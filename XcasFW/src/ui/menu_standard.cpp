@@ -38,30 +38,6 @@ uint8_t solve_variable_bit(char value) {
   return 0;
 }
 
-bool is_known_function_name(const char* begin, size_t length) {
-  static constexpr const char* kNames[] = {
-      "abs", "acos", "asin", "atan", "cos", "det", "evalf", "exp", "graph",
-      "int", "inv", "inverse", "ln", "log", "matrix", "sin", "solve", "sqrt", "tan",
-  };
-  for (const char* name : kNames) {
-    if (std::strlen(name) != length) {
-      continue;
-    }
-    bool same = true;
-    for (size_t i = 0; i < length; ++i) {
-      if (std::tolower(static_cast<unsigned char>(begin[i])) !=
-          std::tolower(static_cast<unsigned char>(name[i]))) {
-        same = false;
-        break;
-      }
-    }
-    if (same) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool function_name_before(const char* expression, size_t cursor, size_t& begin) {
   if (expression == nullptr || cursor == 0) {
     return false;
@@ -70,190 +46,7 @@ bool function_name_before(const char* expression, size_t cursor, size_t& begin) 
   while (begin > 0 && menu_detail::is_word_char(expression[begin - 1])) {
     --begin;
   }
-  return begin < cursor && is_known_function_name(expression + begin, cursor - begin);
-}
-
-bool append_output(char* output, size_t output_size, size_t& used, char value) {
-  if (used + 1 >= output_size) {
-    return false;
-  }
-  output[used++] = value;
-  output[used] = '\0';
-  return true;
-}
-
-bool append_output(char* output, size_t output_size, size_t& used, const char* text, size_t length) {
-  if (used + length >= output_size) {
-    return false;
-  }
-  std::memcpy(output + used, text, length);
-  used += length;
-  output[used] = '\0';
-  return true;
-}
-
-bool parse_number_span(const char* input, size_t& offset) {
-  const size_t begin = offset;
-  bool saw_digit = false;
-  while (std::isdigit(static_cast<unsigned char>(input[offset])) != 0) {
-    saw_digit = true;
-    ++offset;
-  }
-  if (input[offset] == '.') {
-    ++offset;
-    while (std::isdigit(static_cast<unsigned char>(input[offset])) != 0) {
-      saw_digit = true;
-      ++offset;
-    }
-  }
-  if (saw_digit && (input[offset] == 'E' || input[offset] == 'e')) {
-    const size_t exponent = offset;
-    ++offset;
-    if (input[offset] == '+' || input[offset] == '-') {
-      ++offset;
-    }
-    bool exponent_digit = false;
-    while (std::isdigit(static_cast<unsigned char>(input[offset])) != 0) {
-      exponent_digit = true;
-      ++offset;
-    }
-    if (!exponent_digit) {
-      offset = exponent;
-    }
-  }
-  return offset > begin && saw_digit;
-}
-
-bool insert_implicit_multiplication(const char* input, char* output, size_t output_size) {
-  if (output == nullptr || output_size == 0) {
-    return false;
-  }
-  output[0] = '\0';
-  if (input == nullptr) {
-    return true;
-  }
-
-  size_t used = 0;
-  bool previous_value = false;
-  for (size_t i = 0; input[i] != '\0';) {
-    const char ch = input[i];
-    if (std::isspace(static_cast<unsigned char>(ch)) != 0) {
-      ++i;
-      continue;
-    }
-
-    if (std::isdigit(static_cast<unsigned char>(ch)) != 0 || ch == '.') {
-      const size_t begin = i;
-      if (!parse_number_span(input, i)) {
-        return false;
-      }
-      if (previous_value && !append_output(output, output_size, used, '*')) {
-        return false;
-      }
-      if (!append_output(output, output_size, used, input + begin, i - begin)) {
-        return false;
-      }
-      previous_value = true;
-      continue;
-    }
-
-    if (std::isalpha(static_cast<unsigned char>(ch)) != 0) {
-      const size_t begin = i;
-      while (std::isalpha(static_cast<unsigned char>(input[i])) != 0) {
-        ++i;
-      }
-      const size_t length = i - begin;
-      const bool function_call = input[i] == '(' && is_known_function_name(input + begin, length);
-      const bool split_variables =
-          !function_call &&
-          std::all_of(input + begin, input + i, [](char value) {
-            return is_solve_variable(static_cast<char>(
-                std::tolower(static_cast<unsigned char>(value))));
-          });
-
-      if (previous_value && !append_output(output, output_size, used, '*')) {
-        return false;
-      }
-      if (split_variables) {
-        for (size_t j = begin; j < i; ++j) {
-          if (j > begin && !append_output(output, output_size, used, '*')) {
-            return false;
-          }
-          const char variable =
-              static_cast<char>(std::tolower(static_cast<unsigned char>(input[j])));
-          if (!append_output(output, output_size, used, variable)) {
-            return false;
-          }
-        }
-      } else if (!append_output(output, output_size, used, input + begin, length)) {
-        return false;
-      }
-      previous_value = !function_call;
-      continue;
-    }
-
-    if (ch == '(' || ch == '[' || ch == '{') {
-      if (previous_value && !append_output(output, output_size, used, '*')) {
-        return false;
-      }
-      if (!append_output(output, output_size, used, ch)) {
-        return false;
-      }
-      previous_value = false;
-      ++i;
-      continue;
-    }
-
-    if (!append_output(output, output_size, used, ch)) {
-      return false;
-    }
-    previous_value = ch == ')' || ch == ']' || ch == '}';
-    if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' ||
-        ch == '=' || ch == ',' || ch == ';') {
-      previous_value = false;
-    }
-    ++i;
-  }
-  return true;
-}
-
-bool remove_empty_power_slots(const char* input, char* output, size_t output_size) {
-  if (output == nullptr || output_size == 0) {
-    return false;
-  }
-  output[0] = '\0';
-  if (input == nullptr) {
-    return true;
-  }
-
-  size_t used = 0;
-  for (size_t i = 0; input[i] != '\0';) {
-    if (input[i] == '^' && input[i + 1] == '(' && input[i + 2] == ')') {
-      i += 3;
-      continue;
-    }
-    if (input[i] == '^' && input[i + 1] == '[' && input[i + 2] == ']') {
-      i += 3;
-      continue;
-    }
-    if (!append_output(output, output_size, used, input[i])) {
-      return false;
-    }
-    ++i;
-  }
-  return true;
-}
-
-bool expand_for_math(const char* input, char* output, size_t output_size) {
-  char without_empty_slots[menu_constants::kExpandedExpressionCapacity] {};
-  char constants_expanded[menu_constants::kExpandedExpressionCapacity] {};
-  return remove_empty_power_slots(input,
-                                  without_empty_slots,
-                                  sizeof(without_empty_slots)) &&
-         constants::expand_scientific_constants(without_empty_slots,
-                                                constants_expanded,
-                                                sizeof(constants_expanded)) &&
-         insert_implicit_multiplication(constants_expanded, output, output_size);
+  return begin < cursor && menu_detail::is_known_function_name(expression + begin, cursor - begin);
 }
 
 void trim_span(const char*& begin, const char*& end) {
@@ -825,7 +618,7 @@ void MenuUi::submit_expression(bool decimal_output) {
     return;
   }
 
-  if (!expand_for_math(expression_, expanded_expression, sizeof(expanded_expression))) {
+  if (!menu_detail::expand_for_math(expression_, expanded_expression, sizeof(expanded_expression))) {
     status_ = "EXPR FULL";
     return;
   }
@@ -837,7 +630,7 @@ void MenuUi::submit_expression(bool decimal_output) {
                                   sizeof(first_arg),
                                   second_arg,
                                   sizeof(second_arg))) {
-      if (!expand_for_math(first_arg, expanded_first_arg, sizeof(expanded_first_arg))) {
+      if (!menu_detail::expand_for_math(first_arg, expanded_first_arg, sizeof(expanded_first_arg))) {
         status_ = "EXPR FULL";
         return;
       }
@@ -852,7 +645,11 @@ void MenuUi::submit_expression(bool decimal_output) {
   } else if (extract_named_call(expanded_expression, "det", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "inv", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "inverse", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "transpose", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "matrix", body, sizeof(body))) {
+    request.kind = MathJobKind::Script;
+    std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
+  } else if (std::strstr(expanded_expression, ":=") != nullptr) {
     request.kind = MathJobKind::Script;
     std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
   } else {
@@ -1394,7 +1191,7 @@ void MenuUi::move_cursor_right(bool all_the_way) {
         ++next;
       }
       if (next < expression_len_ && expression_[next] == '(' &&
-          is_known_function_name(expression_ + begin, next - begin)) {
+          menu_detail::is_known_function_name(expression_ + begin, next - begin)) {
         ++next;
         cursor_ = next;
         return;

@@ -18,6 +18,7 @@ namespace esp32calc_alt {
 class MenuMode;
 class StandardMenuMode;
 class GraphMenuMode;
+class MatrixMenuMode;
 class ConstantsMenuMode;
 class IntegralsMenuMode;
 
@@ -36,6 +37,7 @@ class MenuUi {
   enum class ModeKind : uint8_t {
     Standard,
     Graph,
+    Matrix,
     Constants,
     Integrals,
   };
@@ -48,6 +50,12 @@ class MenuUi {
   enum class ConstantMenuStage : uint8_t {
     Groups,
     Items,
+  };
+
+  enum class MatrixMenuStage : uint8_t {
+    Matrices,
+    Size,
+    Cells,
   };
 
   enum class VariablePalette : uint8_t {
@@ -75,6 +83,7 @@ class MenuUi {
   void apply_standard_key(const KeyEvent& key);
   void apply_graph_key(const KeyEvent& key);
   void apply_graph_result(const MathResult& result);
+  void apply_matrix_key(const KeyEvent& key);
   void apply_constants_key(const KeyEvent& key);
   void apply_integrals_key(const KeyEvent& key);
   void apply_math_result(const MathResult& result);
@@ -99,6 +108,17 @@ class MenuUi {
   void zoom_graph(float factor);
   bool restore_graph_cache(const char* expression);
   void store_graph_cache(const MathResult& result);
+  void move_matrix_selection(int delta);
+  void move_matrix_cell(int row_delta, int col_delta);
+  void adjust_matrix_rows(int delta);
+  void adjust_matrix_cols(int delta);
+  void fill_matrix_zero(uint8_t matrix);
+  void fill_matrix_identity(uint8_t matrix);
+  bool append_matrix_cell_token(const char* token);
+  void delete_matrix_cell_char();
+  bool build_matrix_assignment(uint8_t matrix, char* output, size_t output_size) const;
+  void commit_matrix_definition();
+  void insert_matrix_name();
   void open_variable_palette(VariablePalette palette);
   void handle_variable_palette_key(const KeyEvent& key);
   void choose_selected_variable();
@@ -129,12 +149,14 @@ class MenuUi {
   void render_mode_selector();
   void render_standard();
   void render_graph();
+  void render_matrix();
   void render_constants();
   void render_integrals();
   void render_variable_palette();
 
   friend class StandardMenuMode;
   friend class GraphMenuMode;
+  friend class MatrixMenuMode;
   friend class ConstantsMenuMode;
   friend class IntegralsMenuMode;
 
@@ -163,6 +185,7 @@ class MenuUi {
   float graph_x_max_ = 5.0f;
   float graph_y_min_ = -5.0f;
   float graph_y_max_ = 5.0f;
+  bool graph_auto_y_ = true;
   bool graph_has_result_ = false;
   bool graph_has_error_ = false;
   bool graph_show_numbers_ = false;
@@ -170,6 +193,17 @@ class MenuUi {
   size_t graph_cache_capacity_ = 0;
   uint32_t graph_cache_age_ = 0;
   GraphCacheEntry graph_cache_fallback_[kGraphFallbackCacheEntries] {};
+  MatrixMenuStage matrix_stage_ = MatrixMenuStage::Matrices;
+  uint8_t matrix_selected_ = 0;
+  uint8_t matrix_cell_row_ = 0;
+  uint8_t matrix_cell_col_ = 0;
+  bool matrix_cell_editing_ = false;
+  uint8_t matrix_rows_[menu_constants::kMatrixCount] {2, 2, 2, 2, 2, 2};
+  uint8_t matrix_cols_[menu_constants::kMatrixCount] {2, 2, 2, 2, 2, 2};
+  char matrix_cells_[menu_constants::kMatrixCount]
+                    [menu_constants::kMatrixMaxRows]
+                    [menu_constants::kMatrixMaxCols]
+                    [menu_constants::kMatrixCellCapacity] {};
   char result_text_[menu_constants::kResultCapacity] {};
   bool result_visible_ = false;
   bool result_is_error_ = false;

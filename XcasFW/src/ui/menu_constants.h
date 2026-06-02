@@ -37,13 +37,19 @@ inline constexpr int kInputTextY = 86;
 inline constexpr const char* kVariableTokens[] = {"x", "y", "z", "a", "b", "c"};
 inline constexpr size_t kVariableCount = sizeof(kVariableTokens) / sizeof(kVariableTokens[0]);
 
-inline constexpr const char* kModeLabels[] = {"STANDARD", "GRAPH", "CONST", "INTEGRALS"};
-inline constexpr const char* kModeHints[] = {"CAS", "PLOT", "SCI", "INT"};
+inline constexpr const char* kModeLabels[] = {"STANDARD", "GRAPH", "MATRIX", "CONST", "INTEGRALS"};
+inline constexpr const char* kModeHints[] = {"CAS", "PLOT", "MAT", "SCI", "INT"};
 inline constexpr size_t kModeCount = sizeof(kModeLabels) / sizeof(kModeLabels[0]);
 inline constexpr int kModeSelectorX = 8;
 inline constexpr int kModeSelectorY = 30;
 inline constexpr int kModeSelectorRowHeight = 16;
 inline constexpr int kModeSelectorRowWidth = 232;
+
+inline constexpr const char* kMatrixLabels[] = {"A", "B", "C", "D", "E", "X"};
+inline constexpr size_t kMatrixCount = sizeof(kMatrixLabels) / sizeof(kMatrixLabels[0]);
+inline constexpr size_t kMatrixMaxRows = 4;
+inline constexpr size_t kMatrixMaxCols = 4;
+inline constexpr size_t kMatrixCellCapacity = 12;
 
 inline constexpr size_t kGraphExpressionCapacity = 128;
 inline constexpr int kGraphPoints = 96;

@@ -19,10 +19,6 @@ constexpr int kGraphX = 5;
 constexpr int kGraphY = 26;
 constexpr float kRangeEpsilon = 0.0001f;
 
-bool expand_graph_expression(const char* input, char* output, size_t output_size) {
-  return constants::expand_scientific_constants(input, output, output_size);
-}
-
 bool same_range(float left, float right) {
   return std::fabs(left - right) <= kRangeEpsilon;
 }
@@ -91,6 +87,7 @@ void MenuUi::open_graph_expression(const char* expression) {
   graph_x_max_ = constants::kGraphXMax;
   graph_y_min_ = constants::kGraphYMin;
   graph_y_max_ = constants::kGraphYMax;
+  graph_auto_y_ = true;
   graph_count_ = 0;
   graph_has_result_ = false;
   graph_has_error_ = false;
@@ -106,9 +103,9 @@ void MenuUi::queue_graph_sample() {
   request.graph_x_min = graph_x_min_;
   request.graph_x_max = graph_x_max_;
   char expanded_expression[sizeof(request.expression)] {};
-  if (!expand_graph_expression(graph_expression_,
-                               expanded_expression,
-                               sizeof(expanded_expression))) {
+  if (!menu_detail::expand_for_math(graph_expression_,
+                                    expanded_expression,
+                                    sizeof(expanded_expression))) {
     status_ = "GRAPH EXPR TOO LONG";
     graph_has_error_ = true;
     return;
@@ -141,6 +138,30 @@ bool MenuUi::restore_graph_cache(const char* expression) {
     for (size_t j = 0; j < graph_count_; ++j) {
       graph_y_[j] = entry.y[j];
       graph_valid_[j] = entry.valid[j];
+    }
+    if (graph_auto_y_) {
+      bool have_range = false;
+      float y_min = 0.0f;
+      float y_max = 0.0f;
+      for (size_t j = 0; j < graph_count_; ++j) {
+        if (!graph_valid_[j] || !std::isfinite(graph_y_[j])) {
+          continue;
+        }
+        if (!have_range) {
+          y_min = graph_y_[j];
+          y_max = graph_y_[j];
+          have_range = true;
+        } else {
+          y_min = std::min(y_min, graph_y_[j]);
+          y_max = std::max(y_max, graph_y_[j]);
+        }
+      }
+      if (have_range) {
+        const float span = y_max - y_min;
+        const float pad = span > 0.0f ? span * 0.08f : 1.0f;
+        graph_y_min_ = y_min - pad;
+        graph_y_max_ = y_max + pad;
+      }
     }
     graph_has_result_ = true;
     graph_has_error_ = false;
@@ -199,6 +220,9 @@ void MenuUi::pan_graph(float dx_fraction, float dy_fraction) {
   graph_x_max_ += dx;
   graph_y_min_ += dy;
   graph_y_max_ += dy;
+  if (dy_fraction != 0.0f) {
+    graph_auto_y_ = false;
+  }
   status_ = "PAN";
   queue_graph_sample();
 }
@@ -214,6 +238,7 @@ void MenuUi::zoom_graph(float factor) {
   graph_x_max_ = x_mid + x_half;
   graph_y_min_ = y_mid - y_half;
   graph_y_max_ = y_mid + y_half;
+  graph_auto_y_ = false;
   status_ = factor < 1.0f ? "ZOOM IN" : "ZOOM OUT";
   queue_graph_sample();
 }
@@ -230,6 +255,30 @@ void MenuUi::apply_graph_result(const MathResult& result) {
   for (size_t i = 0; i < graph_count_; ++i) {
     graph_y_[i] = result.graph_y[i];
     graph_valid_[i] = result.graph_valid[i];
+  }
+  if (result.ok && graph_auto_y_) {
+    bool have_range = false;
+    float y_min = 0.0f;
+    float y_max = 0.0f;
+    for (size_t i = 0; i < graph_count_; ++i) {
+      if (!graph_valid_[i] || !std::isfinite(graph_y_[i])) {
+        continue;
+      }
+      if (!have_range) {
+        y_min = graph_y_[i];
+        y_max = graph_y_[i];
+        have_range = true;
+      } else {
+        y_min = std::min(y_min, graph_y_[i]);
+        y_max = std::max(y_max, graph_y_[i]);
+      }
+    }
+    if (have_range) {
+      const float span = y_max - y_min;
+      const float pad = span > 0.0f ? span * 0.08f : 1.0f;
+      graph_y_min_ = y_min - pad;
+      graph_y_max_ = y_max + pad;
+    }
   }
   graph_has_result_ = result.ok;
   graph_has_error_ = !result.ok;
