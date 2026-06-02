@@ -28,11 +28,11 @@ inline constexpr size_t kModeStorageAlign = alignof(std::max_align_t);
 
 inline constexpr int kCharWidth = 6;
 inline constexpr int kInputX = 5;
-inline constexpr int kInputY = 22;
+inline constexpr int kInputY = 18;
 inline constexpr int kInputWidth = 240;
-inline constexpr int kInputHeight = 27;
+inline constexpr int kInputHeight = 42;
 inline constexpr int kInputTextX = 10;
-inline constexpr int kInputTextY = 35;
+inline constexpr int kInputTextY = 38;
 
 inline constexpr const char* kVariableTokens[] = {"x", "y", "z", "a", "b", "c"};
 inline constexpr size_t kVariableCount = sizeof(kVariableTokens) / sizeof(kVariableTokens[0]);
@@ -66,8 +66,8 @@ inline constexpr char kConstantMarker = '@';
 
 inline constexpr size_t kConstantsVisibleRows = 6;
 inline constexpr int kConstantsListX = 7;
-inline constexpr int kConstantsListY = 29;
-inline constexpr int kConstantsRowHeight = 13;
+inline constexpr int kConstantsListY = 26;
+inline constexpr int kConstantsRowHeight = 12;
 inline constexpr int kConstantsRowWidth = 238;
 
 // fx-991CW / fx-991SP CW style scientific constants. Values follow CODATA 2022

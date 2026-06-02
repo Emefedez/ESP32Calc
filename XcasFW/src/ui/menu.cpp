@@ -91,10 +91,14 @@ void MenuUi::run() {
     if (xQueueReceive(app_events_, &event, pdMS_TO_TICKS(25)) == pdTRUE) {
       if (event.type == AppEventType::Key) {
         update_from_key(event.key);
+      } else if (event.type == AppEventType::Battery) {
+        battery_ = event.battery;
       }
       while (xQueueReceive(app_events_, &event, 0) == pdTRUE) {
         if (event.type == AppEventType::Key) {
           update_from_key(event.key);
+        } else if (event.type == AppEventType::Battery) {
+          battery_ = event.battery;
         }
       }
       render();
@@ -334,7 +338,9 @@ void MenuUi::render_status_bar() {
     canvas_.draw_text(107, 2, "ALPHA", 1, true);
   }
 
-  canvas_.draw_text(209, 2, "ALT", 1, true);
+  char battery_text[16] {};
+  std::snprintf(battery_text, sizeof(battery_text), "%u%%", battery_.percent);
+  canvas_.draw_text(218, 2, battery_text, 1, true);
   canvas_.hline(0, 13, MonoCanvas::kWidth, true);
 }
 

@@ -291,6 +291,15 @@ bool constant_query_has_text(const char* query) {
   return query != nullptr && query[0] != '\0';
 }
 
+bool expression_uses_natural_layout(const char* expression) {
+  if (expression == nullptr) {
+    return false;
+  }
+  return std::strchr(expression, '/') != nullptr ||
+         std::strchr(expression, '^') != nullptr ||
+         std::strstr(expression, "sqrt(") != nullptr;
+}
+
 size_t expression_operand_begin(const char* expression, size_t cursor) {
   if (expression == nullptr || cursor == 0) {
     return cursor;
@@ -1031,6 +1040,11 @@ void MenuUi::move_cursor_left(bool all_the_way) {
   if (all_the_way) {
     cursor_ = 0;
   } else if (cursor_ > 0) {
+    if (cursor_ >= 3 && expression_[cursor_ - 1] == '(' &&
+        expression_[cursor_ - 2] == '/' && expression_[cursor_ - 3] == ')') {
+      cursor_ -= 3;
+      return;
+    }
     size_t next = cursor_;
     size_t token_begin = next;
     while (token_begin > 0 &&
@@ -1066,6 +1080,15 @@ void MenuUi::move_cursor_right(bool all_the_way) {
     cursor_ = expression_len_;
   } else if (cursor_ < expression_len_) {
     size_t next = cursor_;
+    if (next + 2 < expression_len_ && expression_[next] == ')' &&
+        expression_[next + 1] == '/' && expression_[next + 2] == '(') {
+      cursor_ = next + 3;
+      return;
+    }
+    if (expression_[next] == ')' && next > 0) {
+      cursor_ = next + 1;
+      return;
+    }
     if (expression_[next] == constants::kConstantMarker) {
       size_t token_end = next + 1;
       while (token_end < expression_len_ &&
@@ -1109,7 +1132,6 @@ bool MenuUi::key_is_equals(const KeyEvent& key) const {
   return std::strcmp(def.label, "=") == 0;
 }
 void MenuUi::render_standard() {
-  canvas_.draw_text(6, 17, "CALCULATE", 1, true);
   canvas_.rect(constants::kInputX,
                constants::kInputY,
                constants::kInputWidth,
@@ -1125,22 +1147,36 @@ void MenuUi::render_standard() {
   if (visible_count > 0) {
     std::memcpy(visible_expression, expression_ + visible_start, visible_count);
   }
-  menu_detail::draw_math_text(canvas_,
-                              constants::kInputTextX,
-                              constants::kInputTextY,
-                              expression_len_ == 0 ? "0" : visible_expression);
-
   const size_t cursor_relative = cursor_ > visible_start ? cursor_ - visible_start : 0;
   const size_t cursor_cells =
       expression_len_ == 0 ? 1 : std::min(cursor_relative, constants::kVisibleExpressionChars);
-  const int cursor_x =
-      expression_len_ == 0
-          ? constants::kInputTextX + constants::kCharWidth
-          : constants::kInputTextX + menu_detail::math_text_width(visible_expression, cursor_cells);
-  canvas_.vline(cursor_x, constants::kInputTextY - 3, 13, true);
+  const bool natural_layout = expression_uses_natural_layout(visible_expression);
+  if (!natural_layout) {
+    const char* input_text = expression_len_ == 0 ? "0" : visible_expression;
+    canvas_.draw_text(constants::kInputTextX, constants::kInputTextY, input_text, 1, true);
+    const int cursor_x =
+        expression_len_ == 0
+            ? constants::kInputTextX + constants::kCharWidth
+            : constants::kInputTextX + static_cast<int>(cursor_cells) * constants::kCharWidth;
+    if (cursor_cells < std::strlen(visible_expression)) {
+      canvas_.rect(cursor_x - 1, constants::kInputTextY - 2, 8, 11, true);
+    } else {
+      canvas_.vline(cursor_x, constants::kInputTextY - 2, 11, true);
+    }
+  } else {
+    menu_detail::draw_math_text(canvas_,
+                                constants::kInputTextX,
+                                constants::kInputTextY,
+                                expression_len_ == 0 ? "0" : visible_expression);
+    menu_detail::draw_math_cursor(canvas_,
+                                  constants::kInputTextX,
+                                  constants::kInputTextY,
+                                  visible_expression,
+                                  cursor_cells);
+  }
 
   if (result_visible_) {
-    canvas_.draw_text(6, 56, result_is_error_ ? "ERR" : "=", 1, true);
+    canvas_.draw_text(6, 66, result_is_error_ ? "ERR" : "=", 1, true);
     const size_t result_len = std::strlen(result_text_);
     for (size_t line = 0; line < 3; ++line) {
       const size_t line_offset = line * constants::kVisibleResultChars;
@@ -1150,13 +1186,12 @@ void MenuUi::render_standard() {
       char line_text[constants::kVisibleResultChars + 1] {};
       const size_t line_len = std::min(constants::kVisibleResultChars, result_len - line_offset);
       std::memcpy(line_text, result_text_ + line_offset, line_len);
-      menu_detail::draw_math_text(canvas_, 28, 56 + static_cast<int>(line) * 13, line_text);
+      menu_detail::draw_math_text(canvas_, 28, 66 + static_cast<int>(line) * 11, line_text);
     }
   }
 
-  canvas_.hline(5, 96, 240, true);
-  canvas_.draw_text(6, 108, status_, 1, true);
-  canvas_.draw_text(154, 108, "S+= A+=", 1, true);
+  canvas_.hline(5, 103, 240, true);
+  canvas_.draw_text(6, 112, status_, 1, true);
 
   if (variable_palette_ != VariablePalette::None) {
     render_variable_palette();
@@ -1188,7 +1223,7 @@ void MenuUi::render_constants() {
                     group.hint);
       canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
     }
-    canvas_.draw_text(6, 108, "ARROWS/INDEX  ENTER", 1, true);
+    canvas_.draw_text(6, 112, "INDEX  ARROWS  ENTER", 1, true);
     return;
   }
 
@@ -1205,7 +1240,7 @@ void MenuUi::render_constants() {
       constants::filtered_scientific_constant_count(constant_group_selected_, constant_search_);
   if (match_count == 0) {
     canvas_.draw_text(6, 54, "NO MATCH", 1, true);
-    canvas_.draw_text(6, 108, "TYPE TO FILTER  AC BACK", 1, true);
+    canvas_.draw_text(6, 112, "TYPE TO FILTER  AC BACK", 1, true);
     return;
   }
 
@@ -1264,7 +1299,7 @@ void MenuUi::render_constants() {
     canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
   }
 
-  canvas_.draw_text(6, 108, "= COPY  DIGITS FILTER  AC BACK", 1, true);
+    canvas_.draw_text(6, 112, "= COPY  FIND  AC BACK", 1, true);
 }
 void MenuUi::render_integrals() {
   canvas_.draw_text(6, 17, "INTEGRALS", 1, true);
@@ -1292,7 +1327,7 @@ void MenuUi::render_integrals() {
                     group.hint);
       canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
     }
-    canvas_.draw_text(6, 108, "ARROWS/INDEX  ENTER", 1, true);
+    canvas_.draw_text(6, 112, "INDEX  ARROWS  ENTER", 1, true);
     return;
   }
 
@@ -1309,7 +1344,7 @@ void MenuUi::render_integrals() {
       integrals::filtered_template_count(integral_group_selected_, integral_search_);
   if (match_count == 0) {
     canvas_.draw_text(6, 54, "NO MATCH", 1, true);
-    canvas_.draw_text(6, 108, "TYPE TO FILTER  AC BACK", 1, true);
+    canvas_.draw_text(6, 112, "TYPE TO FILTER  AC BACK", 1, true);
     return;
   }
 
@@ -1363,7 +1398,7 @@ void MenuUi::render_integrals() {
     std::snprintf(token_text, sizeof(token_text), "%s", item.token);
     canvas_.draw_text(6, 96, token_text, 1, true);
   }
-  canvas_.draw_text(6, 108, "= COPY  DIGITS FILTER  AC BACK", 1, true);
+  canvas_.draw_text(6, 112, "= COPY  FIND  AC BACK", 1, true);
 }
 void MenuUi::render_variable_palette() {
   canvas_.fill_rect(73, 31, 104, 72, false);

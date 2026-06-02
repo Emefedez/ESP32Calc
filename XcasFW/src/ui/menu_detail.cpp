@@ -238,4 +238,56 @@ void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
   }
 }
 
+void draw_math_cursor(MonoCanvas& canvas, int x, int y, const char* text, size_t cursor) {
+  const size_t raw_chars = text == nullptr ? 0 : std::strlen(text);
+  if (cursor > raw_chars) {
+    cursor = raw_chars;
+  }
+
+  size_t slash = 0;
+  if (find_top_level_fraction(text, raw_chars, slash)) {
+    char numerator[48] {};
+    char denominator[48] {};
+    copy_slice(numerator, sizeof(numerator), text, 0, slash);
+    copy_slice(denominator, sizeof(denominator), text, slash + 1, raw_chars);
+    const int numerator_width = math_text_width(numerator, std::strlen(numerator));
+    const int denominator_width = math_text_width(denominator, std::strlen(denominator));
+    const int width = std::max(numerator_width, denominator_width) + 4;
+
+    size_t raw_begin = 0;
+    size_t raw_end = slash;
+    const char* slot_text = numerator;
+    int slot_x = x + (width - numerator_width) / 2;
+    int slot_y = y - 8;
+    if (cursor > slash) {
+      raw_begin = slash + 1;
+      raw_end = raw_chars;
+      slot_text = denominator;
+      slot_x = x + (width - denominator_width) / 2;
+      slot_y = y + 6;
+    }
+    if (raw_end > raw_begin + 1 && text[raw_begin] == '(' && text[raw_end - 1] == ')') {
+      ++raw_begin;
+      --raw_end;
+    }
+    const size_t slot_cursor = cursor <= raw_begin
+                                   ? 0
+                                   : std::min(cursor - raw_begin, std::strlen(slot_text));
+    const int cursor_x = slot_x + math_text_width(slot_text, slot_cursor);
+    if (slot_cursor < std::strlen(slot_text)) {
+      canvas.rect(cursor_x - 1, slot_y - 2, 8, 11, true);
+    } else {
+      canvas.vline(cursor_x, slot_y - 2, 11, true);
+    }
+    return;
+  }
+
+  const int cursor_x = x + math_text_width(text, cursor);
+  if (cursor < raw_chars) {
+    canvas.rect(cursor_x - 1, y - 2, 8, 11, true);
+  } else {
+    canvas.vline(cursor_x, y - 2, 11, true);
+  }
+}
+
 }  // namespace esp32calc_alt::menu_detail

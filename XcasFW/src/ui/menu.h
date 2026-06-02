@@ -144,6 +144,7 @@ class MenuUi {
   char result_text_[menu_constants::kResultCapacity] {};
   bool result_visible_ = false;
   bool result_is_error_ = false;
+  BatterySnapshot battery_ {};
   const char* status_ = "ENTER SENDS";
   VariablePalette variable_palette_ = VariablePalette::None;
   uint8_t variable_selected_ = 0;
