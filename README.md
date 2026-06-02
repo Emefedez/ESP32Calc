@@ -87,6 +87,4 @@ Open Source software and hardware lead to the possibility of toying around with 
 * Pressing `ALPHA + =` will result in graphing your written expression.
 
 >* Pressing `SHIFT` before trying to enter a constant will lead you to a menu in which you can choose from any of the existing constants.
->![image](/images/variable_selector.jpg)
-
-<img src="/images/variable_selector.jpg" alt="variable_selector" width="400"/>
+> <img src="/images/variable_selector.jpg" alt="variable_selector" width="500"/>

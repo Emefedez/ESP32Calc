@@ -20,6 +20,12 @@ namespace {
 namespace constants = menu_constants;
 namespace integrals = menu_integrals;
 
+struct MatrixResultView {
+  uint8_t rows = 0;
+  uint8_t cols = 0;
+  char cells[constants::kMatrixMaxRows][constants::kMatrixMaxCols][16] {};
+};
+
 bool is_solve_variable(char value) {
   for (size_t i = 0; i < kSolveVariableCount; ++i) {
     if (kSolveVariables[i] == value) {
@@ -47,6 +53,133 @@ bool function_name_before(const char* expression, size_t cursor, size_t& begin) 
     --begin;
   }
   return begin < cursor && menu_detail::is_known_function_name(expression + begin, cursor - begin);
+}
+
+void skip_spaces(const char*& cursor) {
+  while (*cursor != '\0' && std::isspace(static_cast<unsigned char>(*cursor)) != 0) {
+    ++cursor;
+  }
+}
+
+bool starts_with_word(const char* cursor, const char* word) {
+  return std::strncmp(cursor, word, std::strlen(word)) == 0;
+}
+
+bool normalize_result_matrix_text(const char* input, char* output, size_t output_size) {
+  if (input == nullptr || output == nullptr || output_size == 0) {
+    return false;
+  }
+  size_t used = 0;
+  for (size_t i = 0; input[i] != '\0';) {
+    if (starts_with_word(input + i, "poly1") || starts_with_word(input + i, "matrix")) {
+      i += starts_with_word(input + i, "poly1") ? 5 : 6;
+      continue;
+    }
+    if (used + 1 >= output_size) {
+      return false;
+    }
+    output[used++] = input[i++];
+  }
+  output[used] = '\0';
+  return true;
+}
+
+bool parse_matrix_cell(const char*& cursor, char* output, size_t output_size) {
+  skip_spaces(cursor);
+  size_t used = 0;
+  int paren_depth = 0;
+  int bracket_depth = 0;
+  while (*cursor != '\0') {
+    const char ch = *cursor;
+    if (ch == '(') {
+      ++paren_depth;
+    } else if (ch == ')' && paren_depth > 0) {
+      --paren_depth;
+    } else if (ch == '[') {
+      ++bracket_depth;
+    } else if (ch == ']' && bracket_depth > 0) {
+      --bracket_depth;
+    } else if ((ch == ',' || ch == ']') && paren_depth == 0 && bracket_depth == 0) {
+      break;
+    }
+
+    if (used + 1 < output_size && std::isspace(static_cast<unsigned char>(ch)) == 0) {
+      output[used++] = ch;
+    }
+    ++cursor;
+  }
+  output[used] = '\0';
+  return used > 0;
+}
+
+bool parse_result_matrix(const char* input, MatrixResultView& matrix) {
+  char normalized[constants::kResultCapacity] {};
+  if (!normalize_result_matrix_text(input, normalized, sizeof(normalized))) {
+    return false;
+  }
+
+  const char* cursor = normalized;
+  skip_spaces(cursor);
+  if (*cursor != '[') {
+    return false;
+  }
+  ++cursor;
+
+  uint8_t rows = 0;
+  uint8_t expected_cols = 0;
+  while (rows < constants::kMatrixMaxRows) {
+    skip_spaces(cursor);
+    if (*cursor == ']') {
+      ++cursor;
+      matrix.rows = rows;
+      matrix.cols = expected_cols;
+      skip_spaces(cursor);
+      return rows > 0 && expected_cols > 0 && *cursor == '\0';
+    }
+    if (*cursor != '[') {
+      return false;
+    }
+    ++cursor;
+
+    uint8_t cols = 0;
+    while (cols < constants::kMatrixMaxCols) {
+      if (!parse_matrix_cell(cursor, matrix.cells[rows][cols], sizeof(matrix.cells[rows][cols]))) {
+        return false;
+      }
+      ++cols;
+      skip_spaces(cursor);
+      if (*cursor == ',') {
+        ++cursor;
+        continue;
+      }
+      if (*cursor == ']') {
+        ++cursor;
+        break;
+      }
+      return false;
+    }
+    if (expected_cols == 0) {
+      expected_cols = cols;
+    } else if (cols != expected_cols) {
+      return false;
+    }
+    ++rows;
+
+    skip_spaces(cursor);
+    if (*cursor == ',') {
+      ++cursor;
+      continue;
+    }
+    if (*cursor == ']') {
+      ++cursor;
+      matrix.rows = rows;
+      matrix.cols = expected_cols;
+      skip_spaces(cursor);
+      return *cursor == '\0';
+    }
+    return false;
+  }
+  return false;
 }
 
 void trim_span(const char*& begin, const char*& end) {
