@@ -50,6 +50,12 @@ class Weact213BwDisplay {
   esp_err_t write_partial_red_buffer(const uint8_t* buffer, size_t len,
                                      uint16_t x, uint16_t y,
                                      uint16_t width, uint16_t height);
+  esp_err_t write_partial_rows(uint8_t write_cmd, const uint8_t* buffer, size_t len,
+                               uint16_t x, uint16_t y,
+                               uint16_t width, uint16_t height);
+  esp_err_t fast_partial_update_from_full(const uint8_t* buffer, size_t len,
+                                          uint16_t x, uint16_t y,
+                                          uint16_t width, uint16_t height);
   esp_err_t full_refresh();
   esp_err_t fast_refresh();
 
@@ -59,8 +65,6 @@ class Weact213BwDisplay {
   bool initial_full_refresh_done_ = false;
   uint16_t partial_updates_since_full_ = 0;
   std::array<uint8_t, config::kDisplayNativeBufferSize> packed_ {};
-  std::array<uint8_t, config::kDisplayNativeBufferSize> previous_ {};
-  std::array<uint8_t, config::kDisplayNativeBufferSize> partial_ {};
   MonoCanvas previous_canvas_ {};
 };
 

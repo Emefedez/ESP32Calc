@@ -20,6 +20,9 @@ constexpr UBaseType_t kUiTaskPriority = 6;
 // Core services stay static so boot has no hidden lifetime/order surprises.
 // Large transient memory should live in service/app internals, not globals here.
 QueueHandle_t g_app_events = nullptr;
+StaticQueue_t g_app_events_storage {};
+uint8_t g_app_events_buffer[esp32calc_alt::config::kAppEventQueueDepth *
+                            sizeof(esp32calc_alt::AppEvent)] {};
 esp32calc_alt::Weact213BwDisplay g_display;
 esp32calc_alt::KeypadMatrix g_keypad;
 esp32calc_alt::BatteryMonitor g_battery;
@@ -48,8 +51,10 @@ extern "C" void app_main(void) {
   ESP_LOGI(TAG, "ESP32Calc NeoCalculator-inspired firmware lab boot");
   log_memory("boot");
 
-  g_app_events =
-      xQueueCreate(esp32calc_alt::config::kAppEventQueueDepth, sizeof(esp32calc_alt::AppEvent));
+  g_app_events = xQueueCreateStatic(esp32calc_alt::config::kAppEventQueueDepth,
+                                    sizeof(esp32calc_alt::AppEvent),
+                                    g_app_events_buffer,
+                                    &g_app_events_storage);
   if (g_app_events == nullptr) {
     ESP_LOGE(TAG, "app event queue allocation failed");
     return;

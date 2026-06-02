@@ -162,7 +162,6 @@ esp_err_t Weact213BwDisplay::init() {
   ESP_RETURN_ON_ERROR(wait_until_idle(), TAG, "wait after init");
 
   ready_ = true;
-  previous_.fill(0xFF);
   packed_.fill(0xFF);
   previous_canvas_.clear(true);
   ESP_LOGI(TAG,
@@ -399,6 +398,44 @@ esp_err_t Weact213BwDisplay::fast_partial_update(
   return write_partial_bw_buffer(buffer, len, x, y, width, height);
 }
 
+esp_err_t Weact213BwDisplay::write_partial_rows(
+    uint8_t write_cmd, const uint8_t* buffer, size_t len,
+    uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
+  ESP_RETURN_ON_FALSE(buffer != nullptr && len == kNativeBufferSize,
+                      ESP_ERR_INVALID_ARG,
+                      TAG,
+                      "bad native partial source");
+  ESP_RETURN_ON_FALSE((x % 8) == 0 && (width % 8) == 0,
+                      ESP_ERR_INVALID_ARG,
+                      TAG,
+                      "partial row window must be byte aligned");
+  ESP_RETURN_ON_ERROR(use_partial_frame(x, y, width, height), TAG, "partial frame");
+  ESP_RETURN_ON_ERROR(command(write_cmd), TAG, "partial row command");
+
+  const uint16_t bytes_per_row = kNativeWidth / 8;
+  const uint16_t first_byte_col = x / 8;
+  const uint16_t byte_cols = width / 8;
+  for (uint16_t row = y; row < y + height; ++row) {
+    const size_t offset = static_cast<size_t>(row) * bytes_per_row + first_byte_col;
+    ESP_RETURN_ON_ERROR(data(buffer + offset, byte_cols, false), TAG, "partial row data");
+  }
+  return ESP_OK;
+}
+
+esp_err_t Weact213BwDisplay::fast_partial_update_from_full(
+    const uint8_t* buffer, size_t len,
+    uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
+  ESP_LOGD(TAG, "partial row update (%ux%u @ %u,%u)", width, height, x, y);
+  ESP_RETURN_ON_ERROR(write_partial_rows(cmd::kWriteBwData, buffer, len, x, y, width, height),
+                      TAG,
+                      "partial bw rows");
+  ESP_RETURN_ON_ERROR(fast_refresh(), TAG, "fast refresh");
+  ESP_RETURN_ON_ERROR(write_partial_rows(cmd::kWriteRedData, buffer, len, x, y, width, height),
+                      TAG,
+                      "partial red rows");
+  return write_partial_rows(cmd::kWriteBwData, buffer, len, x, y, width, height);
+}
+
 esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas) {
   const CanvasUpdateHint& hint = canvas.update_hint();
   return update_canvas(canvas,
@@ -518,19 +555,17 @@ esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode
     return ret;
   }
 
-  size_t pidx = 0;
-  for (uint16_t r = sy; r <= ey; r++) {
-    for (uint16_t bc = sb; bc <= eb; bc++) {
-      partial_[pidx++] = packed_[r * 16 + bc];
-    }
-  }
-
   esp_err_t ret;
   int64_t t_copy = esp_timer_get_time();
   if (dirty_bytes > packed_.size() / 2) {
     ret = fast_update(packed_.data(), packed_.size());
   } else {
-    ret = fast_partial_update(partial_.data(), pidx, sb * 8, sy, dirty_w2, dirty_h2);
+    ret = fast_partial_update_from_full(packed_.data(),
+                                        packed_.size(),
+                                        sb * 8,
+                                        sy,
+                                        dirty_w2,
+                                        dirty_h2);
   }
   int64_t t_end = esp_timer_get_time();
   if (ret == ESP_OK) {
@@ -549,8 +584,6 @@ esp_err_t Weact213BwDisplay::update_native_buffer(
     return ESP_ERR_INVALID_STATE;
   }
 
-  previous_ = packed_;
-  packed_ = buffer;
   previous_canvas_.clear(true);  // invalidate canvas cache for next update_canvas
 
   uint16_t first_byte_col = 0xFFFF;
@@ -563,7 +596,7 @@ esp_err_t Weact213BwDisplay::update_native_buffer(
   for (uint16_t y = 0; y < config::kDisplayNativeHeight; ++y) {
     for (uint16_t bc = 0; bc < kBytesPerRow; ++bc) {
       const size_t idx = static_cast<size_t>(y) * kBytesPerRow + bc;
-      if (packed_[idx] == previous_[idx]) {
+      if (buffer[idx] == packed_[idx]) {
         continue;
       }
 
@@ -596,25 +629,27 @@ esp_err_t Weact213BwDisplay::update_native_buffer(
       partial_updates_since_full_ >= config::kEpdFullRefreshInterval;
 
   if (mode == RefreshMode::Full || periodic_full_refresh) {
+    packed_ = buffer;
     return full_update(packed_.data(), packed_.size());
   }
 
   if (dirty_bytes > packed_.size() / 2) {
-    esp_err_t ret = fast_update(packed_.data(), packed_.size());
+    esp_err_t ret = fast_update(buffer.data(), buffer.size());
     if (ret == ESP_OK) {
+      packed_ = buffer;
       ++partial_updates_since_full_;
     }
     return ret;
   }
 
-  size_t idx = 0;
-  for (uint16_t r = sy; r <= ey; r++) {
-    for (uint16_t bc = sb; bc <= eb; bc++) {
-      partial_[idx++] = packed_[r * 16 + bc];
-    }
-  }
-  esp_err_t ret = fast_partial_update(partial_.data(), idx, sb * 8, sy, dirty_w, dirty_h);
+  esp_err_t ret = fast_partial_update_from_full(buffer.data(),
+                                                buffer.size(),
+                                                sb * 8,
+                                                sy,
+                                                dirty_w,
+                                                dirty_h);
   if (ret == ESP_OK) {
+    packed_ = buffer;
     ++partial_updates_since_full_;
   }
   return ret;

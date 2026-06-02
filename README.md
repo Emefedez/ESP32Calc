@@ -77,6 +77,24 @@ Open Source software and hardware lead to the possibility of toying around with 
 |         | 1            | FTDI FT232RL CH340N   | _Not on Board_                                                                                                                                                                                                                                   | _Not on Board_                                        |           | FT232RL CH340N         | Aitver Electronics  |                      |              | 14,3236 €             | 14,6122 €         |                  |
 ```
 
+
+## Building:
+
+1) SOLDERING: Both the power PCB and the Calculator PCB have a BOM and numbered/named parts, so the first step is getting both of these boards properly soldered with all of their needed components.
+
+2) JOINING PCBs: The Power PCB is printed as a footprint on the main board, as such, joining both devices is as simple as soldering the `SENSE` and `VOUT` pads and then fixing it in place with ground (for now).
+
+3) No exact battery spec was provided, so you should be able to make a hole in the case (I may replace it with a ready-made space, but I did not want to limit it to a specific Li-ION battery).
+
+4) Print 1x `front_panel.step`, 1x `main_body.step`, 1x `midplate_button_holder.step` and 50x `button.step`.
+
+5) Slot the PCB into the main body with the appropiate battery inserted already.
+
+6) Now also slot the buttons on the front plate, then fix them in place with the button holder (itself held by small screws).
+
+7) Finally, close both sides of the calculator with eachother, using regular screws.
+
+
 ## Usage Manual:
 * After flashing your board with `./XcasFW/platformio.ini` or manually running `pio run -e esp32-s3-n16r16` (PlatformIO extension in VSCode must be installed) you will have a calculator that boots into `Standard Mode`.
 
