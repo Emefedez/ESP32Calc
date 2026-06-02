@@ -1,5 +1,6 @@
 #include "ui/menu.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdio>
@@ -16,8 +17,9 @@ namespace constants = menu_constants;
 
 constexpr int kGraphFooterY = 116;
 constexpr int kGraphX = 5;
-constexpr int kGraphY = 26;
+constexpr int kGraphY = 29;
 constexpr float kRangeEpsilon = 0.0001f;
+constexpr float kGraphCachePadding = 1.0f;
 
 bool same_range(float left, float right) {
   return std::fabs(left - right) <= kRangeEpsilon;
@@ -100,8 +102,9 @@ void MenuUi::queue_graph_sample() {
   graph_has_error_ = false;
   MathRequest request {};
   request.kind = MathJobKind::Graph;
-  request.graph_x_min = graph_x_min_;
-  request.graph_x_max = graph_x_max_;
+  const float x_span = graph_x_max_ - graph_x_min_;
+  request.graph_x_min = graph_x_min_ - x_span * kGraphCachePadding;
+  request.graph_x_max = graph_x_max_ + x_span * kGraphCachePadding;
   char expanded_expression[sizeof(request.expression)] {};
   if (!menu_detail::expand_for_math(graph_expression_,
                                     expanded_expression,
@@ -130,38 +133,12 @@ bool MenuUi::restore_graph_cache(const char* expression) {
     GraphCacheEntry& entry = graph_cache_[i];
     if (!entry.used ||
         std::strcmp(entry.expression, expression) != 0 ||
-        !same_range(entry.x_min, graph_x_min_) ||
-        !same_range(entry.x_max, graph_x_max_)) {
+        !graph_view_inside_sample(entry.x_min, entry.x_max)) {
       continue;
     }
-    graph_count_ = entry.count > kGraphSampleCount ? kGraphSampleCount : entry.count;
-    for (size_t j = 0; j < graph_count_; ++j) {
-      graph_y_[j] = entry.y[j];
-      graph_valid_[j] = entry.valid[j];
-    }
+    copy_graph_view_from_series(entry.y, entry.valid, entry.count, entry.x_min, entry.x_max);
     if (graph_auto_y_) {
-      bool have_range = false;
-      float y_min = 0.0f;
-      float y_max = 0.0f;
-      for (size_t j = 0; j < graph_count_; ++j) {
-        if (!graph_valid_[j] || !std::isfinite(graph_y_[j])) {
-          continue;
-        }
-        if (!have_range) {
-          y_min = graph_y_[j];
-          y_max = graph_y_[j];
-          have_range = true;
-        } else {
-          y_min = std::min(y_min, graph_y_[j]);
-          y_max = std::max(y_max, graph_y_[j]);
-        }
-      }
-      if (have_range) {
-        const float span = y_max - y_min;
-        const float pad = span > 0.0f ? span * 0.08f : 1.0f;
-        graph_y_min_ = y_min - pad;
-        graph_y_max_ = y_max + pad;
-      }
+      fit_graph_y_to_visible_values();
     }
     graph_has_result_ = true;
     graph_has_error_ = false;
@@ -211,6 +188,78 @@ void MenuUi::store_graph_cache(const MathResult& result) {
     target->valid[i] = result.graph_valid[i];
   }
 }
+bool MenuUi::graph_view_inside_sample(float sample_min, float sample_max) const {
+  return sample_min <= graph_x_min_ + kRangeEpsilon &&
+         sample_max >= graph_x_max_ - kRangeEpsilon;
+}
+bool MenuUi::copy_graph_view_from_series(const float* y,
+                                         const bool* valid,
+                                         size_t count,
+                                         float sample_min,
+                                         float sample_max) {
+  graph_count_ = kGraphSampleCount;
+  if (y == nullptr || valid == nullptr || count == 0 ||
+      sample_max <= sample_min ||
+      !graph_view_inside_sample(sample_min, sample_max)) {
+    for (size_t i = 0; i < graph_count_; ++i) {
+      graph_y_[i] = 0.0f;
+      graph_valid_[i] = false;
+    }
+    return false;
+  }
+
+  const float view_span = graph_x_max_ - graph_x_min_;
+  const float sample_span = sample_max - sample_min;
+  for (size_t i = 0; i < graph_count_; ++i) {
+    const float t = graph_count_ <= 1
+                        ? 0.0f
+                        : static_cast<float>(i) / static_cast<float>(graph_count_ - 1);
+    const float x_value = graph_x_min_ + view_span * t;
+    const float sample_pos = std::clamp(
+        (x_value - sample_min) / sample_span * static_cast<float>(count - 1),
+        0.0f,
+        static_cast<float>(count - 1));
+    const size_t left = static_cast<size_t>(std::floor(sample_pos));
+    const size_t right = std::min(left + 1, count - 1);
+    const float mix = sample_pos - static_cast<float>(left);
+
+    if (left >= count || !valid[left] || !valid[right] ||
+        !std::isfinite(y[left]) || !std::isfinite(y[right])) {
+      graph_y_[i] = 0.0f;
+      graph_valid_[i] = false;
+      continue;
+    }
+
+    graph_y_[i] = y[left] + (y[right] - y[left]) * mix;
+    graph_valid_[i] = true;
+  }
+  return true;
+}
+void MenuUi::fit_graph_y_to_visible_values() {
+  bool have_range = false;
+  float y_min = 0.0f;
+  float y_max = 0.0f;
+  for (size_t i = 0; i < graph_count_; ++i) {
+    if (!graph_valid_[i] || !std::isfinite(graph_y_[i])) {
+      continue;
+    }
+    if (!have_range) {
+      y_min = graph_y_[i];
+      y_max = graph_y_[i];
+      have_range = true;
+    } else {
+      y_min = std::min(y_min, graph_y_[i]);
+      y_max = std::max(y_max, graph_y_[i]);
+    }
+  }
+  if (!have_range) {
+    return;
+  }
+  const float span = y_max - y_min;
+  const float pad = span > 0.0f ? span * 0.08f : 1.0f;
+  graph_y_min_ = y_min - pad;
+  graph_y_max_ = y_max + pad;
+}
 void MenuUi::pan_graph(float dx_fraction, float dy_fraction) {
   const float x_span = graph_x_max_ - graph_x_min_;
   const float y_span = graph_y_max_ - graph_y_min_;
@@ -247,38 +296,23 @@ void MenuUi::apply_graph_result(const MathResult& result) {
     return;
   }
   store_graph_cache(result);
-  if (!same_range(result.graph_x_min, graph_x_min_) ||
-      !same_range(result.graph_x_max, graph_x_max_)) {
+  if (!result.ok) {
+    graph_has_result_ = false;
+    graph_has_error_ = true;
+    std::snprintf(result_text_, sizeof(result_text_), "%s", result.text);
+    status_ = result_text_;
     return;
   }
-  graph_count_ = result.graph_count > kGraphSampleCount ? kGraphSampleCount : result.graph_count;
-  for (size_t i = 0; i < graph_count_; ++i) {
-    graph_y_[i] = result.graph_y[i];
-    graph_valid_[i] = result.graph_valid[i];
+  if (!graph_view_inside_sample(result.graph_x_min, result.graph_x_max)) {
+    return;
   }
+  copy_graph_view_from_series(result.graph_y,
+                              result.graph_valid,
+                              result.graph_count,
+                              result.graph_x_min,
+                              result.graph_x_max);
   if (result.ok && graph_auto_y_) {
-    bool have_range = false;
-    float y_min = 0.0f;
-    float y_max = 0.0f;
-    for (size_t i = 0; i < graph_count_; ++i) {
-      if (!graph_valid_[i] || !std::isfinite(graph_y_[i])) {
-        continue;
-      }
-      if (!have_range) {
-        y_min = graph_y_[i];
-        y_max = graph_y_[i];
-        have_range = true;
-      } else {
-        y_min = std::min(y_min, graph_y_[i]);
-        y_max = std::max(y_max, graph_y_[i]);
-      }
-    }
-    if (have_range) {
-      const float span = y_max - y_min;
-      const float pad = span > 0.0f ? span * 0.08f : 1.0f;
-      graph_y_min_ = y_min - pad;
-      graph_y_max_ = y_max + pad;
-    }
+    fit_graph_y_to_visible_values();
   }
   graph_has_result_ = result.ok;
   graph_has_error_ = !result.ok;
@@ -291,7 +325,7 @@ void MenuUi::render_graph() {
   if (len > constants::kGraphLabelChars) {
     expression_label = graph_expression_ + len - constants::kGraphLabelChars;
   }
-  menu_detail::draw_math_text(canvas_, 5, 18, expression_label);
+  menu_detail::draw_math_text(canvas_, 5, 22, expression_label);
 
   constexpr int gx = kGraphX;
   constexpr int gy = kGraphY;

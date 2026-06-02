@@ -1357,14 +1357,13 @@ void MenuUi::render_standard() {
     MatrixResultView matrix {};
     const bool matrix_result = !result_is_error_ && parse_result_matrix(result_text_, matrix);
     if (matrix_result) {
-      const int grid_x = 28;
-      const int grid_y = 25;
-      const int grid_w = 214;
-      const int grid_h = 43;
       const int rows = std::max<int>(1, matrix.rows);
       const int cols = std::max<int>(1, matrix.cols);
-      const int cell_w = grid_w / cols;
-      const int cell_h = grid_h / rows;
+      const int cell_w = std::min(50, std::max(30, 190 / cols));
+      const int cell_h = std::min(18, std::max(13, 42 / rows));
+      const int grid_w = cell_w * cols;
+      const int grid_x = 28 + std::max(0, (214 - grid_w) / 2);
+      const int grid_y = 25;
       canvas_.rect(grid_x, grid_y, cell_w * cols + 1, cell_h * rows + 1, true);
       for (int col = 1; col < cols; ++col) {
         canvas_.vline(grid_x + col * cell_w, grid_y, cell_h * rows + 1, true);

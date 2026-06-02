@@ -108,6 +108,13 @@ class MenuUi {
   void zoom_graph(float factor);
   bool restore_graph_cache(const char* expression);
   void store_graph_cache(const MathResult& result);
+  bool graph_view_inside_sample(float sample_min, float sample_max) const;
+  bool copy_graph_view_from_series(const float* y,
+                                   const bool* valid,
+                                   size_t count,
+                                   float sample_min,
+                                   float sample_max);
+  void fit_graph_y_to_visible_values();
   void move_matrix_selection(int delta);
   void move_matrix_cell(int row_delta, int col_delta);
   void adjust_matrix_rows(int delta);

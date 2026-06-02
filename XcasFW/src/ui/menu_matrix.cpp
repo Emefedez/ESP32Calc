@@ -375,14 +375,8 @@ void MenuUi::commit_matrix_definition() {
 
   const char* matrix_name = constants::kMatrixLabels[matrix_selected_];
   open_mode(ModeKind::Standard);
-  const size_t expression_length = std::strlen(request.expression);
-  if (expression_length < sizeof(expression_)) {
-    std::memcpy(expression_, request.expression, expression_length + 1);
-    expression_len_ = expression_length;
-  } else {
-    std::snprintf(expression_, sizeof(expression_), "%s:=matrix", matrix_name);
-    expression_len_ = std::strlen(expression_);
-  }
+  std::snprintf(expression_, sizeof(expression_), "%s", matrix_name);
+  expression_len_ = std::strlen(expression_);
   cursor_ = expression_len_;
   clear_result();
   status_ = "MATRIX SENT";
