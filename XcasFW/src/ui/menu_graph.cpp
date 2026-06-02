@@ -15,9 +15,16 @@ namespace {
 namespace constants = menu_constants;
 
 constexpr int kGraphFooterY = 116;
+constexpr int kGraphX = 5;
+constexpr int kGraphY = 26;
+constexpr float kRangeEpsilon = 0.0001f;
 
 bool expand_graph_expression(const char* input, char* output, size_t output_size) {
   return constants::expand_scientific_constants(input, output, output_size);
+}
+
+bool same_range(float left, float right) {
+  return std::fabs(left - right) <= kRangeEpsilon;
 }
 
 }  // namespace
@@ -106,12 +113,81 @@ void MenuUi::queue_graph_sample() {
     graph_has_error_ = true;
     return;
   }
+  if (restore_graph_cache(graph_expression_)) {
+    return;
+  }
   std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
   if (math_.submit(request)) {
     status_ = "GRAPH QUEUED";
   } else {
     status_ = "QUEUE FULL";
     graph_has_error_ = true;
+  }
+}
+bool MenuUi::restore_graph_cache(const char* expression) {
+  if (!menu_detail::has_text(expression) || graph_cache_ == nullptr) {
+    return false;
+  }
+
+  for (size_t i = 0; i < graph_cache_capacity_; ++i) {
+    GraphCacheEntry& entry = graph_cache_[i];
+    if (!entry.used ||
+        std::strcmp(entry.expression, expression) != 0 ||
+        !same_range(entry.x_min, graph_x_min_) ||
+        !same_range(entry.x_max, graph_x_max_)) {
+      continue;
+    }
+    graph_count_ = entry.count > kGraphSampleCount ? kGraphSampleCount : entry.count;
+    for (size_t j = 0; j < graph_count_; ++j) {
+      graph_y_[j] = entry.y[j];
+      graph_valid_[j] = entry.valid[j];
+    }
+    graph_has_result_ = true;
+    graph_has_error_ = false;
+    entry.age = ++graph_cache_age_;
+    status_ = "GRAPH CACHE";
+    return true;
+  }
+  return false;
+}
+void MenuUi::store_graph_cache(const MathResult& result) {
+  if (!result.ok || graph_cache_ == nullptr || graph_cache_capacity_ == 0) {
+    return;
+  }
+
+  GraphCacheEntry* target = nullptr;
+  for (size_t i = 0; i < graph_cache_capacity_; ++i) {
+    GraphCacheEntry& entry = graph_cache_[i];
+    if (entry.used &&
+        std::strcmp(entry.expression, graph_expression_) == 0 &&
+        same_range(entry.x_min, result.graph_x_min) &&
+        same_range(entry.x_max, result.graph_x_max)) {
+      target = &entry;
+      break;
+    }
+    if (!entry.used && target == nullptr) {
+      target = &entry;
+    }
+  }
+
+  if (target == nullptr) {
+    target = &graph_cache_[0];
+    for (size_t i = 1; i < graph_cache_capacity_; ++i) {
+      if (graph_cache_[i].age < target->age) {
+        target = &graph_cache_[i];
+      }
+    }
+  }
+
+  target->used = true;
+  target->age = ++graph_cache_age_;
+  target->x_min = result.graph_x_min;
+  target->x_max = result.graph_x_max;
+  target->count = result.graph_count > kGraphSampleCount ? kGraphSampleCount : result.graph_count;
+  std::snprintf(target->expression, sizeof(target->expression), "%s", graph_expression_);
+  for (size_t i = 0; i < target->count; ++i) {
+    target->y[i] = result.graph_y[i];
+    target->valid[i] = result.graph_valid[i];
   }
 }
 void MenuUi::pan_graph(float dx_fraction, float dy_fraction) {
@@ -145,6 +221,11 @@ void MenuUi::apply_graph_result(const MathResult& result) {
   if (result.kind != MathJobKind::Graph) {
     return;
   }
+  store_graph_cache(result);
+  if (!same_range(result.graph_x_min, graph_x_min_) ||
+      !same_range(result.graph_x_max, graph_x_max_)) {
+    return;
+  }
   graph_count_ = result.graph_count > kGraphSampleCount ? kGraphSampleCount : result.graph_count;
   for (size_t i = 0; i < graph_count_; ++i) {
     graph_y_[i] = result.graph_y[i];
@@ -156,19 +237,17 @@ void MenuUi::apply_graph_result(const MathResult& result) {
   status_ = result.ok ? "GRAPH READY" : result_text_;
 }
 void MenuUi::render_graph() {
-  canvas_.draw_text(4, 17, "GRAPH", 2, true);
-
   const size_t len = std::strlen(graph_expression_);
   const char* expression_label = graph_expression_;
   if (len > constants::kGraphLabelChars) {
     expression_label = graph_expression_ + len - constants::kGraphLabelChars;
   }
-  menu_detail::draw_math_text(canvas_, 88, 24, expression_label);
+  menu_detail::draw_math_text(canvas_, 5, 18, expression_label);
 
-  constexpr int gx = constants::kGraphX;
-  constexpr int gy = constants::kGraphY;
+  constexpr int gx = kGraphX;
+  constexpr int gy = kGraphY;
   const int gw = MonoCanvas::kWidth - gx * 2;
-  const int gh = MonoCanvas::kHeight - gy - 20;
+  const int gh = MonoCanvas::kHeight - gy - 18;
   const int y_axis = gx + gw / 2;
   bool has_visible_value = false;
   auto map_y = [&](float y_value) {

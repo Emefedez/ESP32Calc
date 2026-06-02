@@ -28,11 +28,11 @@ inline constexpr size_t kModeStorageAlign = alignof(std::max_align_t);
 
 inline constexpr int kCharWidth = 6;
 inline constexpr int kInputX = 5;
-inline constexpr int kInputY = 18;
+inline constexpr int kInputY = 73;
 inline constexpr int kInputWidth = 240;
-inline constexpr int kInputHeight = 42;
+inline constexpr int kInputHeight = 31;
 inline constexpr int kInputTextX = 10;
-inline constexpr int kInputTextY = 38;
+inline constexpr int kInputTextY = 86;
 
 inline constexpr const char* kVariableTokens[] = {"x", "y", "z", "a", "b", "c"};
 inline constexpr size_t kVariableCount = sizeof(kVariableTokens) / sizeof(kVariableTokens[0]);

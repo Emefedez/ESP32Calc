@@ -54,6 +54,8 @@ struct MathResult {
   float graph_y[kGraphSampleCount] {};
   bool graph_valid[kGraphSampleCount] {};
   size_t graph_count = 0;
+  float graph_x_min = -5.0f;
+  float graph_x_max = 5.0f;
 };
 
 }  // namespace esp32calc_alt

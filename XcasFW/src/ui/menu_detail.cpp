@@ -157,16 +157,17 @@ bool is_word_char(char value) {
   return std::isalpha(static_cast<unsigned char>(value)) != 0;
 }
 
-int math_text_width(const char* text, size_t raw_chars) {
+int math_text_width(const char* text, size_t raw_chars, uint8_t scale) {
+  const int char_width = 6 * static_cast<int>(std::max<uint8_t>(scale, 1));
   size_t slash = 0;
   if (find_top_level_fraction(text, raw_chars, slash)) {
     char numerator[48] {};
     char denominator[48] {};
     copy_slice(numerator, sizeof(numerator), text, 0, slash);
     copy_slice(denominator, sizeof(denominator), text, slash + 1, raw_chars);
-    return std::max(math_text_width(numerator, std::strlen(numerator)),
-                    math_text_width(denominator, std::strlen(denominator))) +
-           6;
+    return std::max(math_text_width(numerator, std::strlen(numerator), scale),
+                    math_text_width(denominator, std::strlen(denominator), scale)) +
+           6 * static_cast<int>(scale);
   }
 
   int width = 0;
@@ -174,12 +175,12 @@ int math_text_width(const char* text, size_t raw_chars) {
   for (size_t i = 0; text != nullptr && text[i] != '\0' && i < raw_chars;) {
     const size_t constant_len = marked_constant_length(text, i);
     if (constant_len > 0) {
-      width += static_cast<int>(constant_len - 1) * 6;
+      width += static_cast<int>(constant_len - 1) * char_width;
       i += constant_len;
       continue;
     }
     if (starts_with_at(text, i, "sqrt(")) {
-      width += 10;
+      width += 10 * static_cast<int>(scale);
       i += 5;
       ++sqrt_depth;
       continue;
@@ -206,7 +207,7 @@ int math_text_width(const char* text, size_t raw_chars) {
         if (inner_end > inner_begin) {
           char inner[48] {};
           copy_slice(inner, sizeof(inner), text, inner_begin, inner_end);
-          width += math_text_width(inner, std::strlen(inner));
+          width += math_text_width(inner, std::strlen(inner), scale);
         }
         if (raw_chars <= group_end) {
           break;
@@ -217,17 +218,19 @@ int math_text_width(const char* text, size_t raw_chars) {
       const size_t span = power_span_length(text, i + 1, raw_chars);
       const bool grouped =
           (text[i + 1] == '(' || text[i + 1] == '[') && span > 2;
-      width += static_cast<int>(grouped ? span - 2 : span) * 6;
+      width += static_cast<int>(grouped ? span - 2 : span) * char_width;
       i += 1 + span;
       continue;
     }
-    width += 6;
+    width += char_width;
     ++i;
   }
   return width;
 }
 
-void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
+void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text, uint8_t scale) {
+  scale = std::max<uint8_t>(scale, 1);
+  const int char_width = 6 * static_cast<int>(scale);
   const size_t raw_chars = text == nullptr ? 0 : std::strlen(text);
   size_t slash = 0;
   if (find_top_level_fraction(text, raw_chars, slash)) {
@@ -235,12 +238,12 @@ void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
     char denominator[48] {};
     copy_slice(numerator, sizeof(numerator), text, 0, slash);
     copy_slice(denominator, sizeof(denominator), text, slash + 1, raw_chars);
-    const int numerator_width = math_text_width(numerator, std::strlen(numerator));
-    const int denominator_width = math_text_width(denominator, std::strlen(denominator));
-    const int width = std::max(numerator_width, denominator_width) + 4;
-    draw_math_text(canvas, x + (width - numerator_width) / 2, y - 8, numerator);
-    canvas.hline(x, y + 3, width, true);
-    draw_math_text(canvas, x + (width - denominator_width) / 2, y + 6, denominator);
+    const int numerator_width = math_text_width(numerator, std::strlen(numerator), scale);
+    const int denominator_width = math_text_width(denominator, std::strlen(denominator), scale);
+    const int width = std::max(numerator_width, denominator_width) + 6 * static_cast<int>(scale);
+    draw_math_text(canvas, x + (width - numerator_width) / 2, y - 10 * scale, numerator, scale);
+    canvas.hline(x, y + 2 * scale, width, true);
+    draw_math_text(canvas, x + (width - denominator_width) / 2, y + 8 * scale, denominator, scale);
     return;
   }
 
@@ -250,17 +253,17 @@ void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
     const size_t constant_len = marked_constant_length(text, i);
     if (constant_len > 0) {
       for (size_t j = i + 1; j < i + constant_len; ++j) {
-        canvas.draw_char(cursor, y, text[j], 1, true);
-        cursor += 6;
+        canvas.draw_char(cursor, y, text[j], scale, true);
+        cursor += char_width;
       }
       i += constant_len;
       continue;
     }
     if (starts_with_at(text, i, "sqrt(")) {
-      canvas.line(cursor, y + 5, cursor + 3, y + 9, true);
-      canvas.line(cursor + 3, y + 9, cursor + 7, y - 1, true);
-      canvas.hline(cursor + 7, y - 1, 7, true);
-      cursor += 10;
+      canvas.line(cursor, y + 5 * scale, cursor + 3 * scale, y + 9 * scale, true);
+      canvas.line(cursor + 3 * scale, y + 9 * scale, cursor + 7 * scale, y - scale, true);
+      canvas.hline(cursor + 7 * scale, y - scale, 7 * scale, true);
+      cursor += 10 * scale;
       i += 5;
       ++sqrt_depth;
       continue;
@@ -279,19 +282,25 @@ void draw_math_text(MonoCanvas& canvas, int x, int y, const char* text) {
         --end;
       }
       for (size_t j = begin; j < end; ++j) {
-        canvas.draw_char(cursor, y - 5, text[j], 1, true);
-        cursor += 6;
+        canvas.draw_char(cursor, y - 5 * scale, text[j], scale, true);
+        cursor += char_width;
       }
       i += 1 + span;
       continue;
     }
-    canvas.draw_char(cursor, y, text[i], 1, true);
-    cursor += 6;
+    canvas.draw_char(cursor, y, text[i], scale, true);
+    cursor += char_width;
     ++i;
   }
 }
 
-void draw_math_cursor(MonoCanvas& canvas, int x, int y, const char* text, size_t cursor) {
+void draw_math_cursor(MonoCanvas& canvas,
+                      int x,
+                      int y,
+                      const char* text,
+                      size_t cursor,
+                      uint8_t scale) {
+  scale = std::max<uint8_t>(scale, 1);
   const size_t raw_chars = text == nullptr ? 0 : std::strlen(text);
   if (cursor > raw_chars) {
     cursor = raw_chars;
@@ -303,21 +312,30 @@ void draw_math_cursor(MonoCanvas& canvas, int x, int y, const char* text, size_t
     char denominator[48] {};
     copy_slice(numerator, sizeof(numerator), text, 0, slash);
     copy_slice(denominator, sizeof(denominator), text, slash + 1, raw_chars);
-    const int numerator_width = math_text_width(numerator, std::strlen(numerator));
-    const int denominator_width = math_text_width(denominator, std::strlen(denominator));
-    const int width = std::max(numerator_width, denominator_width) + 4;
+    const int numerator_width = math_text_width(numerator, std::strlen(numerator), scale);
+    const int denominator_width = math_text_width(denominator, std::strlen(denominator), scale);
+    const int width = std::max(numerator_width, denominator_width) + 6 * static_cast<int>(scale);
+
+    if (cursor == 0) {
+      canvas.vline(x - 2 * scale, y - 4 * scale, 15 * scale, true);
+      return;
+    }
+    if (cursor >= raw_chars) {
+      canvas.vline(x + width + 2 * scale, y - 4 * scale, 15 * scale, true);
+      return;
+    }
 
     size_t raw_begin = 0;
     size_t raw_end = slash;
     const char* slot_text = numerator;
     int slot_x = x + (width - numerator_width) / 2;
-    int slot_y = y - 8;
+    int slot_y = y - 10 * scale;
     if (cursor > slash) {
       raw_begin = slash + 1;
       raw_end = raw_chars;
       slot_text = denominator;
       slot_x = x + (width - denominator_width) / 2;
-      slot_y = y + 6;
+      slot_y = y + 8 * scale;
     }
     if (raw_end > raw_begin + 1 && text[raw_begin] == '(' && text[raw_end - 1] == ')') {
       ++raw_begin;
@@ -326,16 +344,16 @@ void draw_math_cursor(MonoCanvas& canvas, int x, int y, const char* text, size_t
     const size_t slot_cursor = cursor <= raw_begin
                                    ? 0
                                    : std::min(cursor - raw_begin, std::strlen(slot_text));
-    const int cursor_x = slot_x + math_text_width(slot_text, slot_cursor);
-    canvas.vline(cursor_x, slot_y - 3, 13, true);
+    const int cursor_x = slot_x + math_text_width(slot_text, slot_cursor, scale);
+    canvas.vline(cursor_x, slot_y - 3 * scale, 13 * scale, true);
     return;
   }
 
-  const int cursor_x = x + math_text_width(text, cursor);
+  const int cursor_x = x + math_text_width(text, cursor, scale);
   if (cursor_in_power_slot(text, cursor, raw_chars)) {
-    canvas.vline(cursor_x, y - 12, 12, true);
+    canvas.vline(cursor_x, y - 12 * scale, 12 * scale, true);
   } else {
-    canvas.vline(cursor_x, y - 4, 15, true);
+    canvas.vline(cursor_x, y - 4 * scale, 15 * scale, true);
   }
 }
 

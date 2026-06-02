@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <new>
 
+#include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "freertos/task.h"
 #include "hardware/keymap.h"
@@ -76,11 +77,28 @@ class IntegralsMenuMode final : public MenuMode {
 
 MenuUi::MenuUi(QueueHandle_t app_events, Weact213BwDisplay& display, MathService& math)
     : app_events_(app_events), display_(display), math_(math) {
+  graph_cache_ = static_cast<GraphCacheEntry*>(
+      heap_caps_calloc(kGraphPsramCacheEntries,
+                       sizeof(GraphCacheEntry),
+                       MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
+  if (graph_cache_ == nullptr) {
+    graph_cache_ = graph_cache_fallback_;
+    graph_cache_capacity_ = kGraphFallbackCacheEntries;
+    ESP_LOGW(constants::kLogTag, "graph cache using internal fallback");
+  } else {
+    graph_cache_capacity_ = kGraphPsramCacheEntries;
+    ESP_LOGI(constants::kLogTag,
+             "graph cache in psram: %u bytes",
+             static_cast<unsigned>(kGraphPsramCacheEntries * sizeof(GraphCacheEntry)));
+  }
   open_mode(ModeKind::Standard);
 }
 
 MenuUi::~MenuUi() {
   close_active_mode();
+  if (graph_cache_ != nullptr && graph_cache_ != graph_cache_fallback_) {
+    heap_caps_free(graph_cache_);
+  }
 }
 
 void MenuUi::run() {

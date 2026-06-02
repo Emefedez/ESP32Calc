@@ -34,6 +34,8 @@ MathResult make_giac_result(const MathRequest& request,
       (request.kind == MathJobKind::Numeric && expression_kind == ExpressionKind::Equation);
 
   if (request.kind == MathJobKind::Graph) {
+    result.graph_x_min = request.graph_x_min;
+    result.graph_x_max = request.graph_x_max;
     const giac::GiacGraphResponse graph =
         bridge.sample_graph(request.expression,
                             request.graph_x_min,

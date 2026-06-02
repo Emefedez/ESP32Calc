@@ -351,9 +351,9 @@ GiacResponse GiacBridge::solve(const char* equation, const SolveOptions& options
   } else {
     std::snprintf(command,
                   sizeof(command),
-                  "solve(%s,%c)",
+                  "solve(%s,%s)",
                   equation == nullptr ? "" : equation,
-                  first_solve_variable(options));
+                  variables);
   }
 
   return run(GiacOperation::Solve, command);

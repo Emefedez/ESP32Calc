@@ -20,10 +20,6 @@ namespace {
 namespace constants = menu_constants;
 namespace integrals = menu_integrals;
 
-bool expand_for_math(const char* input, char* output, size_t output_size) {
-  return constants::expand_scientific_constants(input, output, output_size);
-}
-
 bool is_solve_variable(char value) {
   for (size_t i = 0; i < kSolveVariableCount; ++i) {
     if (kSolveVariables[i] == value) {
@@ -40,6 +36,224 @@ uint8_t solve_variable_bit(char value) {
     }
   }
   return 0;
+}
+
+bool is_known_function_name(const char* begin, size_t length) {
+  static constexpr const char* kNames[] = {
+      "abs", "acos", "asin", "atan", "cos", "det", "evalf", "exp", "graph",
+      "int", "inv", "inverse", "ln", "log", "matrix", "sin", "solve", "sqrt", "tan",
+  };
+  for (const char* name : kNames) {
+    if (std::strlen(name) != length) {
+      continue;
+    }
+    bool same = true;
+    for (size_t i = 0; i < length; ++i) {
+      if (std::tolower(static_cast<unsigned char>(begin[i])) !=
+          std::tolower(static_cast<unsigned char>(name[i]))) {
+        same = false;
+        break;
+      }
+    }
+    if (same) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool function_name_before(const char* expression, size_t cursor, size_t& begin) {
+  if (expression == nullptr || cursor == 0) {
+    return false;
+  }
+  begin = cursor;
+  while (begin > 0 && menu_detail::is_word_char(expression[begin - 1])) {
+    --begin;
+  }
+  return begin < cursor && is_known_function_name(expression + begin, cursor - begin);
+}
+
+bool append_output(char* output, size_t output_size, size_t& used, char value) {
+  if (used + 1 >= output_size) {
+    return false;
+  }
+  output[used++] = value;
+  output[used] = '\0';
+  return true;
+}
+
+bool append_output(char* output, size_t output_size, size_t& used, const char* text, size_t length) {
+  if (used + length >= output_size) {
+    return false;
+  }
+  std::memcpy(output + used, text, length);
+  used += length;
+  output[used] = '\0';
+  return true;
+}
+
+bool parse_number_span(const char* input, size_t& offset) {
+  const size_t begin = offset;
+  bool saw_digit = false;
+  while (std::isdigit(static_cast<unsigned char>(input[offset])) != 0) {
+    saw_digit = true;
+    ++offset;
+  }
+  if (input[offset] == '.') {
+    ++offset;
+    while (std::isdigit(static_cast<unsigned char>(input[offset])) != 0) {
+      saw_digit = true;
+      ++offset;
+    }
+  }
+  if (saw_digit && (input[offset] == 'E' || input[offset] == 'e')) {
+    const size_t exponent = offset;
+    ++offset;
+    if (input[offset] == '+' || input[offset] == '-') {
+      ++offset;
+    }
+    bool exponent_digit = false;
+    while (std::isdigit(static_cast<unsigned char>(input[offset])) != 0) {
+      exponent_digit = true;
+      ++offset;
+    }
+    if (!exponent_digit) {
+      offset = exponent;
+    }
+  }
+  return offset > begin && saw_digit;
+}
+
+bool insert_implicit_multiplication(const char* input, char* output, size_t output_size) {
+  if (output == nullptr || output_size == 0) {
+    return false;
+  }
+  output[0] = '\0';
+  if (input == nullptr) {
+    return true;
+  }
+
+  size_t used = 0;
+  bool previous_value = false;
+  for (size_t i = 0; input[i] != '\0';) {
+    const char ch = input[i];
+    if (std::isspace(static_cast<unsigned char>(ch)) != 0) {
+      ++i;
+      continue;
+    }
+
+    if (std::isdigit(static_cast<unsigned char>(ch)) != 0 || ch == '.') {
+      const size_t begin = i;
+      if (!parse_number_span(input, i)) {
+        return false;
+      }
+      if (previous_value && !append_output(output, output_size, used, '*')) {
+        return false;
+      }
+      if (!append_output(output, output_size, used, input + begin, i - begin)) {
+        return false;
+      }
+      previous_value = true;
+      continue;
+    }
+
+    if (std::isalpha(static_cast<unsigned char>(ch)) != 0) {
+      const size_t begin = i;
+      while (std::isalpha(static_cast<unsigned char>(input[i])) != 0) {
+        ++i;
+      }
+      const size_t length = i - begin;
+      const bool function_call = input[i] == '(' && is_known_function_name(input + begin, length);
+      const bool split_variables =
+          !function_call &&
+          std::all_of(input + begin, input + i, [](char value) {
+            return is_solve_variable(static_cast<char>(
+                std::tolower(static_cast<unsigned char>(value))));
+          });
+
+      if (previous_value && !append_output(output, output_size, used, '*')) {
+        return false;
+      }
+      if (split_variables) {
+        for (size_t j = begin; j < i; ++j) {
+          if (j > begin && !append_output(output, output_size, used, '*')) {
+            return false;
+          }
+          const char variable =
+              static_cast<char>(std::tolower(static_cast<unsigned char>(input[j])));
+          if (!append_output(output, output_size, used, variable)) {
+            return false;
+          }
+        }
+      } else if (!append_output(output, output_size, used, input + begin, length)) {
+        return false;
+      }
+      previous_value = !function_call;
+      continue;
+    }
+
+    if (ch == '(' || ch == '[' || ch == '{') {
+      if (previous_value && !append_output(output, output_size, used, '*')) {
+        return false;
+      }
+      if (!append_output(output, output_size, used, ch)) {
+        return false;
+      }
+      previous_value = false;
+      ++i;
+      continue;
+    }
+
+    if (!append_output(output, output_size, used, ch)) {
+      return false;
+    }
+    previous_value = ch == ')' || ch == ']' || ch == '}';
+    if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' ||
+        ch == '=' || ch == ',' || ch == ';') {
+      previous_value = false;
+    }
+    ++i;
+  }
+  return true;
+}
+
+bool remove_empty_power_slots(const char* input, char* output, size_t output_size) {
+  if (output == nullptr || output_size == 0) {
+    return false;
+  }
+  output[0] = '\0';
+  if (input == nullptr) {
+    return true;
+  }
+
+  size_t used = 0;
+  for (size_t i = 0; input[i] != '\0';) {
+    if (input[i] == '^' && input[i + 1] == '(' && input[i + 2] == ')') {
+      i += 3;
+      continue;
+    }
+    if (input[i] == '^' && input[i + 1] == '[' && input[i + 2] == ']') {
+      i += 3;
+      continue;
+    }
+    if (!append_output(output, output_size, used, input[i])) {
+      return false;
+    }
+    ++i;
+  }
+  return true;
+}
+
+bool expand_for_math(const char* input, char* output, size_t output_size) {
+  char without_empty_slots[menu_constants::kExpandedExpressionCapacity] {};
+  char constants_expanded[menu_constants::kExpandedExpressionCapacity] {};
+  return remove_empty_power_slots(input,
+                                  without_empty_slots,
+                                  sizeof(without_empty_slots)) &&
+         constants::expand_scientific_constants(without_empty_slots,
+                                                constants_expanded,
+                                                sizeof(constants_expanded)) &&
+         insert_implicit_multiplication(constants_expanded, output, output_size);
 }
 
 void trim_span(const char*& begin, const char*& end) {
@@ -205,10 +419,7 @@ uint8_t infer_solve_mask_from_expression(const char* expression) {
     }
   }
 
-  if ((seen_mask & kSolveVariableY) != 0) {
-    return kSolveVariableY;
-  }
-  return first_seen;
+  return seen_mask != 0 ? seen_mask : first_seen;
 }
 
 bool expression_has_top_level_equals(const char* expression) {
@@ -315,8 +526,9 @@ size_t expression_operand_begin(const char* expression, size_t cursor) {
       } else if (expression[begin] == '(') {
         --depth;
         if (depth == 0) {
-          while (begin > 0 && menu_detail::is_word_char(expression[begin - 1])) {
-            --begin;
+          size_t function_begin = begin;
+          if (function_name_before(expression, begin, function_begin)) {
+            begin = function_begin;
           }
           return begin;
         }
@@ -415,7 +627,11 @@ void MenuUi::apply_standard_key(const KeyEvent& key) {
   }
 
   if (def.role == KeyRole::FractionToggle) {
-    status_ = "S<>D TODO";
+    if (expression_len_ == 0) {
+      status_ = "EMPTY EXPR";
+    } else {
+      submit_expression(!result_decimal_);
+    }
     return;
   }
 
@@ -450,7 +666,7 @@ void MenuUi::apply_math_result(const MathResult& result) {
   std::snprintf(result_text_, sizeof(result_text_), "%s", result.text);
   result_visible_ = true;
   result_is_error_ = !result.ok;
-  status_ = result.ok ? "DONE" : "ERROR";
+  status_ = result.ok ? (result_decimal_ ? "DECIMAL" : "DONE") : "ERROR";
 }
 bool MenuUi::append_expression(const char* token) {
   return append_expression_at_cursor(token, token == nullptr ? 0 : std::strlen(token));
@@ -525,6 +741,31 @@ void MenuUi::delete_expression_char() {
     return;
   }
 
+  if (cursor_ >= 2 && expression_[cursor_ - 2] == '^' &&
+      (expression_[cursor_ - 1] == '(' || expression_[cursor_ - 1] == '[')) {
+    const char close = expression_[cursor_ - 1] == '(' ? ')' : ']';
+    if (cursor_ < expression_len_ && expression_[cursor_] != close) {
+      std::memmove(expression_ + cursor_,
+                   expression_ + cursor_ + 1,
+                   expression_len_ - cursor_);
+      --expression_len_;
+      expression_[expression_len_] = '\0';
+      clear_result();
+      return;
+    }
+    if (cursor_ < expression_len_ && expression_[cursor_] == close) {
+      const size_t delete_begin = cursor_ - 2;
+      std::memmove(expression_ + delete_begin,
+                   expression_ + cursor_ + 1,
+                   expression_len_ - cursor_);
+      expression_len_ -= 3;
+      cursor_ = delete_begin;
+      expression_[expression_len_] = '\0';
+      clear_result();
+      return;
+    }
+  }
+
   size_t delete_begin = cursor_ - 1;
   size_t token_begin = cursor_;
   while (token_begin > 0 &&
@@ -537,12 +778,9 @@ void MenuUi::delete_expression_char() {
     delete_begin = token_begin - 1;
   } else if (expression_[delete_begin] == '(' && delete_begin > 0 &&
       menu_detail::is_word_char(expression_[delete_begin - 1])) {
-    while (delete_begin > 0 && menu_detail::is_word_char(expression_[delete_begin - 1])) {
-      --delete_begin;
-    }
-  } else if (menu_detail::is_word_char(expression_[delete_begin])) {
-    while (delete_begin > 0 && menu_detail::is_word_char(expression_[delete_begin - 1])) {
-      --delete_begin;
+    size_t function_begin = delete_begin;
+    if (function_name_before(expression_, delete_begin, function_begin)) {
+      delete_begin = function_begin;
     }
   }
 
@@ -566,8 +804,9 @@ void MenuUi::clear_result() {
   result_text_[0] = '\0';
   result_visible_ = false;
   result_is_error_ = false;
+  result_decimal_ = false;
 }
-void MenuUi::submit_expression() {
+void MenuUi::submit_expression(bool decimal_output) {
   if (expression_len_ == 0) {
     status_ = "EMPTY EXPR";
     return;
@@ -617,15 +856,33 @@ void MenuUi::submit_expression() {
     request.kind = MathJobKind::Script;
     std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
   } else {
-    std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
-    if (expression_has_top_level_equals(expanded_expression)) {
+    const bool equation = expression_has_top_level_equals(expanded_expression);
+    if (decimal_output && !equation) {
+      if (std::strlen(expanded_expression) + std::strlen("evalf()") >= sizeof(request.expression)) {
+        status_ = "EXPR FULL";
+        return;
+      }
+      std::snprintf(request.expression, sizeof(request.expression), "evalf(");
+      std::strncat(request.expression,
+                   expanded_expression,
+                   sizeof(request.expression) - std::strlen(request.expression) - 2);
+      std::strncat(request.expression,
+                   ")",
+                   sizeof(request.expression) - std::strlen(request.expression) - 1);
+    } else {
+      std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
+    }
+    if (equation) {
       request.solve_options.solve_mask = infer_solve_mask_from_expression(expanded_expression);
     }
   }
 
   if (math_.submit(request)) {
-    clear_result();
-    status_ = "QUEUED";
+    result_text_[0] = '\0';
+    result_visible_ = false;
+    result_is_error_ = false;
+    result_decimal_ = decimal_output;
+    status_ = decimal_output ? "DECIMAL QUEUED" : "QUEUED";
     ESP_LOGI(constants::kLogTag, "queued expression: %s", request.expression);
   } else {
     status_ = "QUEUE FULL";
@@ -1086,18 +1343,11 @@ void MenuUi::move_cursor_left(bool all_the_way) {
     }
     if (expression_[next - 1] == '(' && next > 1 && menu_detail::is_word_char(expression_[next - 2])) {
       --next;
-      while (next > 0 && menu_detail::is_word_char(expression_[next - 1])) {
-        --next;
+      size_t function_begin = next;
+      if (function_name_before(expression_, next, function_begin)) {
+        cursor_ = function_begin;
+        return;
       }
-      cursor_ = next;
-      return;
-    }
-    if (menu_detail::is_word_char(expression_[next - 1])) {
-      while (next > 0 && menu_detail::is_word_char(expression_[next - 1])) {
-        --next;
-      }
-      cursor_ = next;
-      return;
     }
     --cursor_;
   }
@@ -1139,13 +1389,17 @@ void MenuUi::move_cursor_right(bool all_the_way) {
       }
     }
     if (menu_detail::is_word_char(expression_[next])) {
+      const size_t begin = next;
       while (next < expression_len_ && menu_detail::is_word_char(expression_[next])) {
         ++next;
       }
-      if (next < expression_len_ && expression_[next] == '(') {
+      if (next < expression_len_ && expression_[next] == '(' &&
+          is_known_function_name(expression_ + begin, next - begin)) {
         ++next;
+        cursor_ = next;
+        return;
       }
-      cursor_ = next;
+      cursor_ = begin + 1;
       return;
     }
     ++cursor_;
@@ -1156,24 +1410,46 @@ size_t MenuUi::expression_visible_start() const {
     return 0;
   }
 
-  const size_t half_window = constants::kVisibleExpressionChars / 2;
-  if (cursor_ <= half_window) {
+  if (cursor_ < constants::kVisibleExpressionChars) {
     return 0;
   }
 
   const size_t max_start = expression_len_ - constants::kVisibleExpressionChars;
-  return std::min(cursor_ - half_window, max_start);
+  return std::min(cursor_ - constants::kVisibleExpressionChars + 1, max_start);
 }
 bool MenuUi::key_is_equals(const KeyEvent& key) const {
   const KeyDef& def = key_at(key.row, key.col);
   return std::strcmp(def.label, "=") == 0;
 }
 void MenuUi::render_standard() {
-  canvas_.rect(constants::kInputX,
-               constants::kInputY,
-               constants::kInputWidth,
-               constants::kInputHeight,
-               true);
+  if (result_visible_) {
+    canvas_.draw_text(6, 23, result_is_error_ ? "ERR" : "=", 1, true);
+    const size_t result_len = std::strlen(result_text_);
+    size_t source_offset = 0;
+    for (size_t line = 0; line < 3 && source_offset < result_len; ++line) {
+      char line_text[constants::kVisibleResultChars + 1] {};
+      size_t line_len = 0;
+      while (source_offset < result_len && result_text_[source_offset] == ' ') {
+        ++source_offset;
+      }
+      while (source_offset < result_len && line_len < constants::kVisibleResultChars) {
+        const char ch = result_text_[source_offset];
+        if (ch == '\n' || ch == ';') {
+          ++source_offset;
+          break;
+        }
+        line_text[line_len++] = ch;
+        ++source_offset;
+      }
+      line_text[line_len] = '\0';
+      while (source_offset < result_len && result_text_[source_offset] == ' ') {
+        ++source_offset;
+      }
+      canvas_.draw_text(28, 30 + static_cast<int>(line) * 14, line_text, 1, true);
+    }
+  }
+
+  canvas_.hline(5, constants::kInputY, 240, true);
 
   const size_t visible_start = expression_visible_start();
   const size_t visible_count =
@@ -1188,47 +1464,55 @@ void MenuUi::render_standard() {
   const size_t cursor_cells =
       expression_len_ == 0 ? 1 : std::min(cursor_relative, constants::kVisibleExpressionChars);
   const bool natural_layout = expression_uses_natural_layout(visible_expression);
+  const char* input_text = expression_len_ == 0 ? "0" : visible_expression;
+  const int input_right = constants::kInputX + constants::kInputWidth - 8;
+  const int available_width = input_right - constants::kInputTextX;
   if (!natural_layout) {
-    const char* input_text = expression_len_ == 0 ? "0" : visible_expression;
-    canvas_.draw_text(constants::kInputTextX, constants::kInputTextY, input_text, 1, true);
+    const int text_cells = static_cast<int>(std::strlen(input_text));
+    const uint8_t input_scale =
+        text_cells * constants::kCharWidth * 2 <= available_width ? 2 : 1;
+    const int char_width = constants::kCharWidth * input_scale;
+    const int text_width = text_cells * char_width;
+    const int text_x = std::max(constants::kInputTextX, input_right - text_width);
+    canvas_.draw_text(text_x, constants::kInputTextY, input_text, input_scale, true);
     const int cursor_x =
         expression_len_ == 0
-            ? constants::kInputTextX + constants::kCharWidth
-            : constants::kInputTextX + static_cast<int>(cursor_cells) * constants::kCharWidth;
+            ? text_x + char_width
+            : text_x + static_cast<int>(cursor_cells) * char_width;
     if (cursor_visible_) {
-      canvas_.vline(cursor_x, constants::kInputTextY - 4, 15, true);
+      canvas_.vline(cursor_x,
+                    constants::kInputTextY - (input_scale == 2 ? 6 : 4),
+                    input_scale == 2 ? 24 : 15,
+                    true);
     }
   } else {
+    const bool has_fraction = std::strchr(input_text, '/') != nullptr;
+    const uint8_t input_scale =
+        !has_fraction &&
+                menu_detail::math_text_width(input_text, std::strlen(input_text), 2) <=
+                    available_width
+            ? 2
+            : 1;
+    const int text_width =
+        menu_detail::math_text_width(input_text, std::strlen(input_text), input_scale);
+    const int text_x = std::max(constants::kInputTextX, input_right - text_width);
     menu_detail::draw_math_text(canvas_,
-                                constants::kInputTextX,
+                                text_x,
                                 constants::kInputTextY,
-                                expression_len_ == 0 ? "0" : visible_expression);
+                                input_text,
+                                input_scale);
     if (cursor_visible_) {
       menu_detail::draw_math_cursor(canvas_,
-                                    constants::kInputTextX,
+                                    text_x,
                                     constants::kInputTextY,
                                     visible_expression,
-                                    cursor_cells);
+                                    cursor_cells,
+                                    input_scale);
     }
   }
 
-  if (result_visible_) {
-    canvas_.draw_text(6, 66, result_is_error_ ? "ERR" : "=", 1, true);
-    const size_t result_len = std::strlen(result_text_);
-    for (size_t line = 0; line < 3; ++line) {
-      const size_t line_offset = line * constants::kVisibleResultChars;
-      if (line_offset >= result_len) {
-        break;
-      }
-      char line_text[constants::kVisibleResultChars + 1] {};
-      const size_t line_len = std::min(constants::kVisibleResultChars, result_len - line_offset);
-      std::memcpy(line_text, result_text_ + line_offset, line_len);
-      menu_detail::draw_math_text(canvas_, 28, 66 + static_cast<int>(line) * 11, line_text);
-    }
-  }
-
-  canvas_.hline(5, 103, 240, true);
-  canvas_.draw_text(6, 112, status_, 1, true);
+  canvas_.hline(5, 108, 240, true);
+  canvas_.draw_text(6, 116, status_, 1, true);
 
   if (variable_palette_ != VariablePalette::None) {
     render_variable_palette();

@@ -19,7 +19,7 @@ enum class GiacOperation : uint8_t {
 
 struct GiacBridgeConfig {
   bool exact = true;
-  bool allow_complex = false;
+  bool allow_complex = true;
   bool keep_steps = false;
 };
 

@@ -56,6 +56,20 @@ class MenuUi {
     Square,
   };
 
+  struct GraphCacheEntry {
+    bool used = false;
+    char expression[menu_constants::kGraphExpressionCapacity] {};
+    float x_min = 0.0f;
+    float x_max = 0.0f;
+    size_t count = 0;
+    uint32_t age = 0;
+    float y[kGraphSampleCount] {};
+    bool valid[kGraphSampleCount] {};
+  };
+
+  static constexpr size_t kGraphPsramCacheEntries = 8;
+  static constexpr size_t kGraphFallbackCacheEntries = 2;
+
   void update_from_key(const KeyEvent& key);
   void apply_selector_key(const KeyEvent& key, const KeyDef& def);
   void apply_standard_key(const KeyEvent& key);
@@ -77,12 +91,14 @@ class MenuUi {
   void delete_expression_char();
   void clear_expression();
   void clear_result();
-  void submit_expression();
+  void submit_expression(bool decimal_output = false);
   void open_graph_from_expression();
   void open_graph_expression(const char* expression);
   void queue_graph_sample();
   void pan_graph(float dx_fraction, float dy_fraction);
   void zoom_graph(float factor);
+  bool restore_graph_cache(const char* expression);
+  void store_graph_cache(const MathResult& result);
   void open_variable_palette(VariablePalette palette);
   void handle_variable_palette_key(const KeyEvent& key);
   void choose_selected_variable();
@@ -150,9 +166,14 @@ class MenuUi {
   bool graph_has_result_ = false;
   bool graph_has_error_ = false;
   bool graph_show_numbers_ = false;
+  GraphCacheEntry* graph_cache_ = nullptr;
+  size_t graph_cache_capacity_ = 0;
+  uint32_t graph_cache_age_ = 0;
+  GraphCacheEntry graph_cache_fallback_[kGraphFallbackCacheEntries] {};
   char result_text_[menu_constants::kResultCapacity] {};
   bool result_visible_ = false;
   bool result_is_error_ = false;
+  bool result_decimal_ = false;
   BatterySnapshot battery_ {};
   const char* status_ = "ENTER SENDS";
   VariablePalette variable_palette_ = VariablePalette::None;
