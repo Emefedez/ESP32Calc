@@ -80,6 +80,9 @@ class MenuUi {
   void submit_expression();
   void open_graph_from_expression();
   void open_graph_expression(const char* expression);
+  void queue_graph_sample();
+  void pan_graph(float dx_fraction, float dy_fraction);
+  void zoom_graph(float factor);
   void open_variable_palette(VariablePalette palette);
   void handle_variable_palette_key(const KeyEvent& key);
   void choose_selected_variable();
@@ -130,6 +133,7 @@ class MenuUi {
   Screen screen_ = Screen::Mode;
   bool shift_ = false;
   bool alpha_ = false;
+  bool cursor_visible_ = true;
   bool first_render_done_ = false;
   bool full_refresh_pending_ = true;
   char expression_[menu_constants::kExpressionCapacity] {};
@@ -139,8 +143,13 @@ class MenuUi {
   float graph_y_[kGraphSampleCount] {};
   bool graph_valid_[kGraphSampleCount] {};
   size_t graph_count_ = 0;
+  float graph_x_min_ = -5.0f;
+  float graph_x_max_ = 5.0f;
+  float graph_y_min_ = -5.0f;
+  float graph_y_max_ = 5.0f;
   bool graph_has_result_ = false;
   bool graph_has_error_ = false;
+  bool graph_show_numbers_ = false;
   char result_text_[menu_constants::kResultCapacity] {};
   bool result_visible_ = false;
   bool result_is_error_ = false;

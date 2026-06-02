@@ -13,6 +13,7 @@ namespace esp32calc_alt {
 namespace {
 
 namespace constants = menu_constants;
+constexpr TickType_t kCursorBlinkTicks = pdMS_TO_TICKS(650);
 
 }  // namespace
 
@@ -85,18 +86,21 @@ MenuUi::~MenuUi() {
 void MenuUi::run() {
   ESP_LOGI(constants::kLogTag, "starting alt menu");
   render();
+  TickType_t last_cursor_toggle = xTaskGetTickCount();
 
   while (true) {
     AppEvent event {};
     if (xQueueReceive(app_events_, &event, pdMS_TO_TICKS(25)) == pdTRUE) {
       if (event.type == AppEventType::Key) {
         update_from_key(event.key);
+        last_cursor_toggle = xTaskGetTickCount();
       } else if (event.type == AppEventType::Battery) {
         battery_ = event.battery;
       }
       while (xQueueReceive(app_events_, &event, 0) == pdTRUE) {
         if (event.type == AppEventType::Key) {
           update_from_key(event.key);
+          last_cursor_toggle = xTaskGetTickCount();
         } else if (event.type == AppEventType::Battery) {
           battery_ = event.battery;
         }
@@ -111,6 +115,14 @@ void MenuUi::run() {
       }
       render();
     }
+
+    const TickType_t now = xTaskGetTickCount();
+    if (screen_ == Screen::Mode && active_mode_kind_ == ModeKind::Standard &&
+        now - last_cursor_toggle >= kCursorBlinkTicks) {
+      cursor_visible_ = !cursor_visible_;
+      last_cursor_toggle = now;
+      render();
+    }
   }
 }
 
@@ -119,6 +131,7 @@ void MenuUi::update_from_key(const KeyEvent& key) {
     return;
   }
 
+  cursor_visible_ = true;
   const KeyDef& def = key_at(key.row, key.col);
   if (is_blank_key(def)) {
     return;

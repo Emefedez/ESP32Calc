@@ -14,6 +14,8 @@ namespace {
 
 namespace constants = menu_constants;
 
+constexpr int kGraphFooterY = 116;
+
 bool expand_graph_expression(const char* input, char* output, size_t output_size) {
   return constants::expand_scientific_constants(input, output, output_size);
 }
@@ -25,6 +27,37 @@ void MenuUi::apply_graph_key(const KeyEvent& key) {
 
   if (def.role == KeyRole::Clear || def.role == KeyRole::Mode) {
     open_mode(ModeKind::Standard);
+    return;
+  }
+
+  switch (def.role) {
+    case KeyRole::Left:
+      pan_graph(-0.25f, 0.0f);
+      return;
+    case KeyRole::Right:
+      pan_graph(0.25f, 0.0f);
+      return;
+    case KeyRole::Up:
+      pan_graph(0.0f, 0.25f);
+      return;
+    case KeyRole::Down:
+      pan_graph(0.0f, -0.25f);
+      return;
+    case KeyRole::FractionToggle:
+      graph_show_numbers_ = !graph_show_numbers_;
+      status_ = graph_show_numbers_ ? "NUMBERS ON" : "NUMBERS OFF";
+      return;
+    default:
+      break;
+  }
+
+  const char* token = key_input(def, key.shift, key.alpha);
+  if (token != nullptr && std::strcmp(token, "+") == 0) {
+    zoom_graph(0.5f);
+    return;
+  }
+  if (token != nullptr && std::strcmp(token, "-") == 0) {
+    zoom_graph(2.0f);
     return;
   }
 
@@ -47,12 +80,24 @@ void MenuUi::open_graph_expression(const char* expression) {
     return;
   }
   std::snprintf(graph_expression_, sizeof(graph_expression_), "%s", expression);
+  graph_x_min_ = constants::kGraphXMin;
+  graph_x_max_ = constants::kGraphXMax;
+  graph_y_min_ = constants::kGraphYMin;
+  graph_y_max_ = constants::kGraphYMax;
   graph_count_ = 0;
   graph_has_result_ = false;
   graph_has_error_ = false;
   open_mode(ModeKind::Graph);
+  queue_graph_sample();
+}
+void MenuUi::queue_graph_sample() {
+  graph_count_ = 0;
+  graph_has_result_ = false;
+  graph_has_error_ = false;
   MathRequest request {};
   request.kind = MathJobKind::Graph;
+  request.graph_x_min = graph_x_min_;
+  request.graph_x_max = graph_x_max_;
   char expanded_expression[sizeof(request.expression)] {};
   if (!expand_graph_expression(graph_expression_,
                                expanded_expression,
@@ -68,6 +113,33 @@ void MenuUi::open_graph_expression(const char* expression) {
     status_ = "QUEUE FULL";
     graph_has_error_ = true;
   }
+}
+void MenuUi::pan_graph(float dx_fraction, float dy_fraction) {
+  const float x_span = graph_x_max_ - graph_x_min_;
+  const float y_span = graph_y_max_ - graph_y_min_;
+  const float dx = x_span * dx_fraction;
+  const float dy = y_span * dy_fraction;
+  graph_x_min_ += dx;
+  graph_x_max_ += dx;
+  graph_y_min_ += dy;
+  graph_y_max_ += dy;
+  status_ = "PAN";
+  queue_graph_sample();
+}
+void MenuUi::zoom_graph(float factor) {
+  if (factor <= 0.0f) {
+    return;
+  }
+  const float x_mid = 0.5f * (graph_x_min_ + graph_x_max_);
+  const float y_mid = 0.5f * (graph_y_min_ + graph_y_max_);
+  const float x_half = 0.5f * (graph_x_max_ - graph_x_min_) * factor;
+  const float y_half = 0.5f * (graph_y_max_ - graph_y_min_) * factor;
+  graph_x_min_ = x_mid - x_half;
+  graph_x_max_ = x_mid + x_half;
+  graph_y_min_ = y_mid - y_half;
+  graph_y_max_ = y_mid + y_half;
+  status_ = factor < 1.0f ? "ZOOM IN" : "ZOOM OUT";
+  queue_graph_sample();
 }
 void MenuUi::apply_graph_result(const MathResult& result) {
   if (result.kind != MathJobKind::Graph) {
@@ -96,29 +168,34 @@ void MenuUi::render_graph() {
   constexpr int gx = constants::kGraphX;
   constexpr int gy = constants::kGraphY;
   const int gw = MonoCanvas::kWidth - gx * 2;
-  const int gh = MonoCanvas::kHeight - gy - 12;
+  const int gh = MonoCanvas::kHeight - gy - 20;
   const int y_axis = gx + gw / 2;
   bool has_visible_value = false;
   auto map_y = [&](float y_value) {
     const float top = static_cast<float>(gy + 1);
     const float bottom = static_cast<float>(gy + gh - 2);
     const float normalized =
-        (y_value - constants::kGraphYMin) / (constants::kGraphYMax - constants::kGraphYMin);
+        (y_value - graph_y_min_) / (graph_y_max_ - graph_y_min_);
     return static_cast<int>(bottom - normalized * (bottom - top));
   };
 
   const int x_axis =
-      constants::kGraphYMin <= 0.0f && constants::kGraphYMax >= 0.0f ? map_y(0.0f) : gy + gh / 2;
-  canvas_.plot_graph(gx, gy, gw, gh, x_axis, y_axis, nullptr, 0, true);
+      graph_y_min_ <= 0.0f && graph_y_max_ >= 0.0f ? map_y(0.0f) : gy + gh / 2;
+  const int y_axis_display =
+      graph_x_min_ <= 0.0f && graph_x_max_ >= 0.0f
+          ? gx + 1 + static_cast<int>((0.0f - graph_x_min_) / (graph_x_max_ - graph_x_min_) *
+                                      static_cast<float>(gw - 3))
+          : y_axis;
+  canvas_.plot_graph(gx, gy, gw, gh, x_axis, y_axis_display, nullptr, 0, true);
 
   if (graph_has_error_) {
     canvas_.draw_text(gx + 8, gy + gh / 2 - 4, status_, 1, true);
-    canvas_.draw_text(6, 108, "AC/MODE RETURNS", 1, true);
+    canvas_.draw_text(6, kGraphFooterY, "AC/MODE BACK", 1, true);
     return;
   }
   if (!graph_has_result_) {
     canvas_.draw_text(gx + 8, gy + gh / 2 - 4, "GRAPH LOADING", 1, true);
-    canvas_.draw_text(6, 108, status_, 1, true);
+    canvas_.draw_text(6, kGraphFooterY, status_, 1, true);
     return;
   }
 
@@ -126,8 +203,8 @@ void MenuUi::render_graph() {
   std::array<bool, kGraphSampleCount> visible {};
   for (size_t i = 0; i < graph_count_; ++i) {
     if (!graph_valid_[i] ||
-        graph_y_[i] < constants::kGraphYMin ||
-        graph_y_[i] > constants::kGraphYMax) {
+        graph_y_[i] < graph_y_min_ ||
+        graph_y_[i] > graph_y_max_) {
       continue;
     }
     const int px = gx + 1 +
@@ -140,7 +217,7 @@ void MenuUi::render_graph() {
 
   if (!has_visible_value) {
     canvas_.draw_text(gx + 8, gy + gh / 2 - 4, "OUT OF VIEW", 1, true);
-    canvas_.draw_text(6, 108, status_, 1, true);
+    canvas_.draw_text(6, kGraphFooterY, "ARROWS PAN  +/- ZOOM", 1, true);
     return;
   }
 
@@ -151,7 +228,29 @@ void MenuUi::render_graph() {
     }
   }
 
-  canvas_.draw_text(6, 108, status_, 1, true);
+  if (graph_show_numbers_) {
+    char xr[24] {};
+    char yr[24] {};
+    std::snprintf(xr,
+                  sizeof(xr),
+                  "X %.2g..%.2g",
+                  static_cast<double>(graph_x_min_),
+                  static_cast<double>(graph_x_max_));
+    std::snprintf(yr,
+                  sizeof(yr),
+                  "Y %.2g..%.2g",
+                  static_cast<double>(graph_y_min_),
+                  static_cast<double>(graph_y_max_));
+    canvas_.draw_text(gx + 3, gy + 3, xr, 1, true);
+    canvas_.draw_text(gx + 3, gy + gh - 10, yr, 1, true);
+  }
+
+  canvas_.draw_text(6,
+                    kGraphFooterY,
+                    graph_show_numbers_ ? "ARROWS PAN  +/- ZOOM  S<>D HIDE"
+                                        : "ARROWS PAN  +/- ZOOM  S<>D NUM",
+                    1,
+                    true);
 }
 
 }  // namespace esp32calc_alt

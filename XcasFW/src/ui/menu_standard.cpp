@@ -424,6 +424,16 @@ void MenuUi::apply_standard_key(const KeyEvent& key) {
     return;
   }
 
+  if (!key.shift && !key.alpha && std::strcmp(def.label, "xyz^a") == 0) {
+    status_ = append_expression_at_cursor("^()", 2) ? "POWER" : "EXPR FULL";
+    return;
+  }
+
+  if (!key.shift && !key.alpha && def.role == KeyRole::VariableSquare) {
+    status_ = append_expression("x^(2)") ? "ENTER SENDS" : "EXPR FULL";
+    return;
+  }
+
   if (!key.shift && !key.alpha && std::strcmp(def.label, "INT") == 0) {
     open_mode(ModeKind::Integrals);
     return;
@@ -663,7 +673,14 @@ void MenuUi::handle_variable_palette_key(const KeyEvent& key) {
 void MenuUi::choose_selected_variable() {
   char token[5] {};
   if (variable_palette_ == VariablePalette::Square) {
-    std::snprintf(token, sizeof(token), "%s^2", constants::kVariableTokens[variable_selected_]);
+    char power_token[8] {};
+    std::snprintf(power_token,
+                  sizeof(power_token),
+                  "%s^(2)",
+                  constants::kVariableTokens[variable_selected_]);
+    variable_palette_ = VariablePalette::None;
+    status_ = append_expression(power_token) ? "ENTER SENDS" : "EXPR FULL";
+    return;
   } else {
     std::snprintf(token, sizeof(token), "%s", constants::kVariableTokens[variable_selected_]);
   }
@@ -1040,6 +1057,16 @@ void MenuUi::move_cursor_left(bool all_the_way) {
   if (all_the_way) {
     cursor_ = 0;
   } else if (cursor_ > 0) {
+    if (cursor_ >= 2 && expression_[cursor_ - 2] == '^' &&
+        (expression_[cursor_ - 1] == '(' || expression_[cursor_ - 1] == '[')) {
+      cursor_ -= 2;
+      return;
+    }
+    if (cursor_ < expression_len_ && expression_[cursor_ - 1] == '^' &&
+        (expression_[cursor_] == '(' || expression_[cursor_] == '[')) {
+      --cursor_;
+      return;
+    }
     if (cursor_ >= 3 && expression_[cursor_ - 1] == '(' &&
         expression_[cursor_ - 2] == '/' && expression_[cursor_ - 3] == ')') {
       cursor_ -= 3;
@@ -1080,6 +1107,16 @@ void MenuUi::move_cursor_right(bool all_the_way) {
     cursor_ = expression_len_;
   } else if (cursor_ < expression_len_) {
     size_t next = cursor_;
+    if (next + 1 < expression_len_ && expression_[next] == '^' &&
+        (expression_[next + 1] == '(' || expression_[next + 1] == '[')) {
+      cursor_ = next + 2;
+      return;
+    }
+    if (next > 0 && (expression_[next] == '(' || expression_[next] == '[') &&
+        expression_[next - 1] == '^') {
+      cursor_ = next + 1;
+      return;
+    }
     if (next + 2 < expression_len_ && expression_[next] == ')' &&
         expression_[next + 1] == '/' && expression_[next + 2] == '(') {
       cursor_ = next + 3;
@@ -1158,21 +1195,21 @@ void MenuUi::render_standard() {
         expression_len_ == 0
             ? constants::kInputTextX + constants::kCharWidth
             : constants::kInputTextX + static_cast<int>(cursor_cells) * constants::kCharWidth;
-    if (cursor_cells < std::strlen(visible_expression)) {
-      canvas_.rect(cursor_x - 1, constants::kInputTextY - 2, 8, 11, true);
-    } else {
-      canvas_.vline(cursor_x, constants::kInputTextY - 2, 11, true);
+    if (cursor_visible_) {
+      canvas_.vline(cursor_x, constants::kInputTextY - 4, 15, true);
     }
   } else {
     menu_detail::draw_math_text(canvas_,
                                 constants::kInputTextX,
                                 constants::kInputTextY,
                                 expression_len_ == 0 ? "0" : visible_expression);
-    menu_detail::draw_math_cursor(canvas_,
-                                  constants::kInputTextX,
-                                  constants::kInputTextY,
-                                  visible_expression,
-                                  cursor_cells);
+    if (cursor_visible_) {
+      menu_detail::draw_math_cursor(canvas_,
+                                    constants::kInputTextX,
+                                    constants::kInputTextY,
+                                    visible_expression,
+                                    cursor_cells);
+    }
   }
 
   if (result_visible_) {

@@ -35,7 +35,10 @@ MathResult make_giac_result(const MathRequest& request,
 
   if (request.kind == MathJobKind::Graph) {
     const giac::GiacGraphResponse graph =
-        bridge.sample_graph(request.expression, -5.0f, 5.0f, kGraphSampleCount);
+        bridge.sample_graph(request.expression,
+                            request.graph_x_min,
+                            request.graph_x_max,
+                            kGraphSampleCount);
     result.graph_count = graph.count;
     for (size_t i = 0; i < graph.count && i < kGraphSampleCount; ++i) {
       result.graph_y[i] = graph.y[i];

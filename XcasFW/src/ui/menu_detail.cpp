@@ -70,6 +70,35 @@ size_t power_span_length(const char* text, size_t offset, size_t raw_chars) {
   return end > offset ? end - offset : 1;
 }
 
+bool cursor_in_power_slot(const char* text, size_t cursor, size_t raw_chars) {
+  if (text == nullptr) {
+    return false;
+  }
+
+  for (size_t i = 0; text[i] != '\0' && i < raw_chars; ++i) {
+    if (text[i] != '^' || i + 1 >= raw_chars) {
+      continue;
+    }
+
+    const size_t span = power_span_length(text, i + 1, raw_chars);
+    if (span == 0) {
+      continue;
+    }
+
+    size_t begin = i + 1;
+    size_t end = begin + span;
+    if ((text[begin] == '(' || text[begin] == '[') && end > begin + 1 &&
+        (text[end - 1] == ')' || text[end - 1] == ']')) {
+      ++begin;
+      --end;
+    }
+    if (cursor >= begin && cursor <= end) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool find_top_level_fraction(const char* text, size_t raw_chars, size_t& slash) {
   int paren_depth = 0;
   int bracket_depth = 0;
@@ -160,7 +189,31 @@ int math_text_width(const char* text, size_t raw_chars) {
       ++i;
       continue;
     }
-    if (text[i] == '^' && text[i + 1] != '\0' && i + 1 < raw_chars) {
+    if (text[i] == '^') {
+      if (text[i + 1] == '\0' || i + 1 >= raw_chars) {
+        break;
+      }
+      if (text[i + 1] == '(' || text[i + 1] == '[') {
+        const size_t group_begin = i + 1;
+        const size_t span = grouped_span_length(text, group_begin, std::strlen(text));
+        const size_t group_end = group_begin + span;
+        const size_t inner_begin = group_begin + 1;
+        size_t inner_end = raw_chars < group_end ? raw_chars : group_end;
+        if (inner_end > inner_begin && inner_end == group_end &&
+            (text[inner_end - 1] == ')' || text[inner_end - 1] == ']')) {
+          --inner_end;
+        }
+        if (inner_end > inner_begin) {
+          char inner[48] {};
+          copy_slice(inner, sizeof(inner), text, inner_begin, inner_end);
+          width += math_text_width(inner, std::strlen(inner));
+        }
+        if (raw_chars <= group_end) {
+          break;
+        }
+        i = group_end;
+        continue;
+      }
       const size_t span = power_span_length(text, i + 1, raw_chars);
       const bool grouped =
           (text[i + 1] == '(' || text[i + 1] == '[') && span > 2;
@@ -274,19 +327,15 @@ void draw_math_cursor(MonoCanvas& canvas, int x, int y, const char* text, size_t
                                    ? 0
                                    : std::min(cursor - raw_begin, std::strlen(slot_text));
     const int cursor_x = slot_x + math_text_width(slot_text, slot_cursor);
-    if (slot_cursor < std::strlen(slot_text)) {
-      canvas.rect(cursor_x - 1, slot_y - 2, 8, 11, true);
-    } else {
-      canvas.vline(cursor_x, slot_y - 2, 11, true);
-    }
+    canvas.vline(cursor_x, slot_y - 3, 13, true);
     return;
   }
 
   const int cursor_x = x + math_text_width(text, cursor);
-  if (cursor < raw_chars) {
-    canvas.rect(cursor_x - 1, y - 2, 8, 11, true);
+  if (cursor_in_power_slot(text, cursor, raw_chars)) {
+    canvas.vline(cursor_x, y - 12, 12, true);
   } else {
-    canvas.vline(cursor_x, y - 2, 11, true);
+    canvas.vline(cursor_x, y - 4, 15, true);
   }
 }
 
