@@ -17,6 +17,7 @@ idf_component_register(
     "ui/menu_graph.cpp"
     "ui/menu_integrals.cpp"
     "ui/menu_matrix.cpp"
+    "ui/menu_solvers.cpp"
     "ui/menu_standard.cpp"
     "ui/menu_variables.cpp"
   INCLUDE_DIRS

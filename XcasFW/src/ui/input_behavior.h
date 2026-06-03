@@ -8,6 +8,5 @@ inline constexpr bool kShiftVariableOpensSelector = true;
 inline constexpr bool kShiftVariableSquareOpensSelector = true;
 
 inline constexpr const char* kShiftEqualsToken = "=";
-inline constexpr const char* kGraphModeLabel = "GRAPH";
 
 }  // namespace esp32calc_alt::ui_behavior

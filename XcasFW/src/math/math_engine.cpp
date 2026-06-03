@@ -17,6 +17,15 @@ void set_text(MathResult& result, const char* text, bool ok) {
   std::snprintf(result.text, sizeof(result.text), "%s", text == nullptr ? "" : text);
 }
 
+char calculus_variable_from_options(const SolveOptions& options) {
+  for (size_t i = 0; i < kSolveVariableCount; ++i) {
+    if ((options.solve_mask & (1u << i)) != 0) {
+      return kSolveVariables[i];
+    }
+  }
+  return 'x';
+}
+
 MathResult make_giac_result(const MathRequest& request,
                             ExpressionKind expression_kind,
                             giac::GiacBridge& bridge) {
@@ -60,6 +69,14 @@ MathResult make_giac_result(const MathRequest& request,
       break;
     case MathJobKind::Symbolic:
       response = bridge.simplify(request.expression);
+      break;
+    case MathJobKind::Derivative:
+      response = bridge.derivative(request.expression,
+                                   calculus_variable_from_options(request.solve_options));
+      break;
+    case MathJobKind::Integral:
+      response = bridge.integral(request.expression,
+                                 calculus_variable_from_options(request.solve_options));
       break;
     case MathJobKind::Numeric:
     default:

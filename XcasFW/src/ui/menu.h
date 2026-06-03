@@ -17,7 +17,8 @@ namespace esp32calc_alt {
 
 class MenuMode;
 class StandardMenuMode;
-class GraphMenuMode;
+class GraphViewMode;
+class SolverMenuMode;
 class MatrixMenuMode;
 class ConstantsMenuMode;
 class IntegralsMenuMode;
@@ -37,6 +38,7 @@ class MenuUi {
   enum class ModeKind : uint8_t {
     Standard,
     Graph,
+    Solver,
     Matrix,
     Constants,
     Integrals,
@@ -48,6 +50,11 @@ class MenuUi {
   };
 
   enum class ConstantMenuStage : uint8_t {
+    Groups,
+    Items,
+  };
+
+  enum class SolverMenuStage : uint8_t {
     Groups,
     Items,
   };
@@ -85,6 +92,7 @@ class MenuUi {
   void apply_standard_key(const KeyEvent& key);
   void apply_graph_key(const KeyEvent& key);
   void apply_graph_result(const MathResult& result);
+  void apply_solver_key(const KeyEvent& key);
   void apply_matrix_key(const KeyEvent& key);
   void apply_constants_key(const KeyEvent& key);
   void apply_integrals_key(const KeyEvent& key);
@@ -140,6 +148,14 @@ class MenuUi {
   void backspace_constant_search();
   void append_constant_search_token(const char* token);
   void sync_constant_selection_to_filter();
+  void open_solver_group(uint8_t group);
+  void choose_selected_solver();
+  void move_solver_group_selection(int delta);
+  void move_solver_item_selection(int delta);
+  void clear_solver_search();
+  void backspace_solver_search();
+  void append_solver_search_token(const char* token);
+  void sync_solver_selection_to_filter();
   void open_integral_group(uint8_t group);
   void choose_selected_integral();
   void move_integral_group_selection(int delta);
@@ -158,13 +174,15 @@ class MenuUi {
   void render_mode_selector();
   void render_standard();
   void render_graph();
+  void render_solver();
   void render_matrix();
   void render_constants();
   void render_integrals();
   void render_variable_palette();
 
   friend class StandardMenuMode;
-  friend class GraphMenuMode;
+  friend class GraphViewMode;
+  friend class SolverMenuMode;
   friend class MatrixMenuMode;
   friend class ConstantsMenuMode;
   friend class IntegralsMenuMode;
@@ -231,6 +249,10 @@ class MenuUi {
   uint8_t constant_group_selected_ = 0;
   uint8_t constant_selected_ = 0;
   char constant_search_[12] {};
+  SolverMenuStage solver_stage_ = SolverMenuStage::Groups;
+  uint8_t solver_group_selected_ = 0;
+  uint8_t solver_selected_ = 0;
+  char solver_search_[12] {};
   IntegralMenuStage integral_stage_ = IntegralMenuStage::Groups;
   uint8_t integral_group_selected_ = 0;
   uint8_t integral_selected_ = 0;

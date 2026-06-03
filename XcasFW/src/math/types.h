@@ -8,6 +8,8 @@ namespace esp32calc_alt {
 enum class MathJobKind : uint8_t {
   Numeric,
   Symbolic,
+  Derivative,
+  Integral,
   Solve,
   Graph,
   Script,

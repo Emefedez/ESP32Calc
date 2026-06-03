@@ -12,6 +12,7 @@
 #include "ui/menu_constants.h"
 #include "ui/menu_detail.h"
 #include "ui/menu_integrals.h"
+#include "ui/menu_solvers.h"
 
 namespace esp32calc_alt {
 
@@ -19,6 +20,7 @@ namespace {
 
 namespace constants = menu_constants;
 namespace integrals = menu_integrals;
+namespace solvers = menu_solvers;
 
 struct MatrixResultView {
   uint8_t rows = 0;
@@ -242,6 +244,43 @@ bool extract_named_call(const char* input, const char* name, char* body, size_t 
   return copy_span(body, body_size, body_begin, body_end);
 }
 
+bool extract_prefix_call(const char* input, const char* prefix, char* body, size_t body_size) {
+  if (!menu_detail::has_text(input) || !menu_detail::has_text(prefix)) {
+    return false;
+  }
+
+  const char* begin = input;
+  const char* end = input + std::strlen(input);
+  trim_span(begin, end);
+
+  const size_t prefix_len = std::strlen(prefix);
+  if (static_cast<size_t>(end - begin) < prefix_len + 1 ||
+      strncasecmp(begin, prefix, prefix_len) != 0 ||
+      *(end - 1) != ')') {
+    return false;
+  }
+
+  int depth = 0;
+  for (const char* p = begin + prefix_len - 1; p < end; ++p) {
+    if (*p == '(' || *p == '[' || *p == '{') {
+      ++depth;
+    } else if (*p == ')' || *p == ']' || *p == '}') {
+      --depth;
+      if (depth == 0 && p != end - 1) {
+        return false;
+      }
+      if (depth < 0) {
+        return false;
+      }
+    }
+  }
+
+  const char* body_begin = begin + prefix_len;
+  const char* body_end = end - 1;
+  trim_span(body_begin, body_end);
+  return copy_span(body, body_size, body_begin, body_end);
+}
+
 bool split_first_top_level_arg(const char* body,
                                char* first,
                                size_t first_size,
@@ -301,6 +340,88 @@ bool split_first_top_level_arg(const char* body,
   }
 
   return copy_span(first, first_size, begin, end);
+}
+
+bool split_calculus_args(const char* body,
+                         char* expression,
+                         size_t expression_size,
+                         char* variable,
+                         size_t variable_size,
+                         bool& has_extra_args) {
+  if (!menu_detail::has_text(body)) {
+    return false;
+  }
+
+  has_extra_args = false;
+  if (variable != nullptr && variable_size > 0) {
+    variable[0] = '\0';
+  }
+
+  const char* begin = body;
+  const char* end = body + std::strlen(body);
+  int paren_depth = 0;
+  int bracket_depth = 0;
+  int brace_depth = 0;
+
+  const char* first_comma = nullptr;
+  const char* second_comma = nullptr;
+  for (const char* p = begin; p < end; ++p) {
+    switch (*p) {
+      case '(':
+        ++paren_depth;
+        break;
+      case ')':
+        if (paren_depth > 0) {
+          --paren_depth;
+        }
+        break;
+      case '[':
+        ++bracket_depth;
+        break;
+      case ']':
+        if (bracket_depth > 0) {
+          --bracket_depth;
+        }
+        break;
+      case '{':
+        ++brace_depth;
+        break;
+      case '}':
+        if (brace_depth > 0) {
+          --brace_depth;
+        }
+        break;
+      case ',':
+        if (paren_depth == 0 && bracket_depth == 0 && brace_depth == 0) {
+          if (first_comma == nullptr) {
+            first_comma = p;
+          } else {
+            second_comma = p;
+            has_extra_args = true;
+            p = end - 1;
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  const char* expr_begin = begin;
+  const char* expr_end = first_comma == nullptr ? end : first_comma;
+  trim_span(expr_begin, expr_end);
+  if (!copy_span(expression, expression_size, expr_begin, expr_end)) {
+    return false;
+  }
+
+  if (first_comma == nullptr) {
+    return true;
+  }
+
+  const char* var_begin = first_comma + 1;
+  const char* var_end = second_comma == nullptr ? end : second_comma;
+  trim_span(var_begin, var_end);
+  return copy_span(variable, variable_size, var_begin, var_end);
 }
 
 uint8_t solve_mask_from_variable_list(const char* text) {
@@ -406,6 +527,25 @@ int integral_selected_ordinal(uint8_t group, const char* query, uint8_t selected
 }
 
 bool integral_query_has_text(const char* query) {
+  return query != nullptr && query[0] != '\0';
+}
+
+int solver_selected_ordinal(uint8_t group, const char* query, uint8_t selected_index) {
+  int ordinal = 0;
+  for (size_t i = 0; i < solvers::template_count(); ++i) {
+    const auto& item = solvers::template_at(i);
+    if (!solvers::template_matches(item, group, query)) {
+      continue;
+    }
+    if (i == selected_index) {
+      return ordinal;
+    }
+    ++ordinal;
+  }
+  return -1;
+}
+
+bool solver_query_has_text(const char* query) {
   return query != nullptr && query[0] != '\0';
 }
 
@@ -581,6 +721,11 @@ void MenuUi::apply_standard_key(const KeyEvent& key) {
     return;
   }
 
+  if (!key.shift && !key.alpha && std::strcmp(def.label, "dx") == 0) {
+    status_ = append_expression_at_cursor("diff(,x)", 5) ? "DERIVATIVE" : "EXPR FULL";
+    return;
+  }
+
   const char* token = key_input(def, key.shift, key.alpha);
   if (append_expression(token)) {
     status_ = "ENTER SENDS";
@@ -745,18 +890,31 @@ void MenuUi::submit_expression(bool decimal_output) {
   char first_arg[sizeof(request.expression)] {};
   char expanded_first_arg[sizeof(request.expression)] {};
   char second_arg[24] {};
+  bool has_extra_args = false;
 
   if (extract_named_call(expression_, "graph", body, sizeof(body))) {
     open_graph_expression(body);
     return;
   }
 
-  if (!menu_detail::expand_for_math(expression_, expanded_expression, sizeof(expanded_expression))) {
+  if (extract_prefix_call(expression_, "d/dx(", body, sizeof(body))) {
+    request.kind = MathJobKind::Derivative;
+    if (!menu_detail::expand_for_math(body, expanded_first_arg, sizeof(expanded_first_arg))) {
+      status_ = "EXPR FULL";
+      return;
+    }
+    std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_first_arg);
+    request.solve_options.solve_mask = kSolveVariableX;
+  } else if (!menu_detail::expand_for_math(expression_,
+                                           expanded_expression,
+                                           sizeof(expanded_expression))) {
     status_ = "EXPR FULL";
     return;
   }
 
-  if (extract_named_call(expanded_expression, "solve", body, sizeof(body))) {
+  if (request.kind == MathJobKind::Derivative) {
+    // d/dx(...) alias was shaped before generic expansion.
+  } else if (extract_named_call(expanded_expression, "solve", body, sizeof(body))) {
     request.kind = MathJobKind::Solve;
     if (split_first_top_level_arg(body,
                                   first_arg,
@@ -775,10 +933,60 @@ void MenuUi::submit_expression(bool decimal_output) {
     if (request.solve_options.solve_mask == 0) {
       request.solve_options.solve_mask = infer_solve_mask_from_expression(request.expression);
     }
+  } else if (extract_named_call(expanded_expression, "diff", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "derive", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "deriv", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "derivative", body, sizeof(body))) {
+    if (split_calculus_args(body,
+                            first_arg,
+                            sizeof(first_arg),
+                            second_arg,
+                            sizeof(second_arg),
+                            has_extra_args) &&
+        !has_extra_args) {
+      request.kind = MathJobKind::Derivative;
+      if (!menu_detail::expand_for_math(first_arg, expanded_first_arg, sizeof(expanded_first_arg))) {
+        status_ = "EXPR FULL";
+        return;
+      }
+      std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_first_arg);
+      request.solve_options.solve_mask = solve_mask_from_variable_list(second_arg);
+      if (request.solve_options.solve_mask == 0) {
+        request.solve_options.solve_mask = infer_solve_mask_from_expression(request.expression);
+      }
+    } else {
+      request.kind = MathJobKind::Script;
+      std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
+    }
+  } else if (extract_named_call(expanded_expression, "int", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "integrate", body, sizeof(body))) {
+    if (split_calculus_args(body,
+                            first_arg,
+                            sizeof(first_arg),
+                            second_arg,
+                            sizeof(second_arg),
+                            has_extra_args) &&
+        !has_extra_args) {
+      request.kind = MathJobKind::Integral;
+      if (!menu_detail::expand_for_math(first_arg, expanded_first_arg, sizeof(expanded_first_arg))) {
+        status_ = "EXPR FULL";
+        return;
+      }
+      std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_first_arg);
+      request.solve_options.solve_mask = solve_mask_from_variable_list(second_arg);
+      if (request.solve_options.solve_mask == 0) {
+        request.solve_options.solve_mask = infer_solve_mask_from_expression(request.expression);
+      }
+    } else {
+      request.kind = MathJobKind::Script;
+      std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
+    }
   } else if (extract_named_call(expanded_expression, "det", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "inv", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "inverse", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "transpose", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "fsolve", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "linsolve", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "matrix", body, sizeof(body))) {
     request.kind = MathJobKind::Script;
     std::snprintf(request.expression, sizeof(request.expression), "%s", expanded_expression);
@@ -994,6 +1202,182 @@ void MenuUi::sync_constant_selection_to_filter() {
       constants::filtered_scientific_constant_index(constant_group_selected_, constant_search_, 0);
   if (first >= 0) {
     constant_selected_ = static_cast<uint8_t>(first);
+    status_ = "SEARCH / = COPY";
+  } else {
+    status_ = "NO MATCH";
+  }
+}
+void MenuUi::apply_solver_key(const KeyEvent& key) {
+  const KeyDef& def = key_at(key.row, key.col);
+  const int digit = key_digit(def);
+
+  if (solver_stage_ == SolverMenuStage::Groups) {
+    if (digit >= 0 && static_cast<size_t>(digit) < solvers::group_count()) {
+      open_solver_group(static_cast<uint8_t>(digit));
+      return;
+    }
+
+    switch (def.role) {
+      case KeyRole::Left:
+      case KeyRole::Up:
+        move_solver_group_selection(-1);
+        status_ = "PICK GROUP";
+        return;
+      case KeyRole::Right:
+      case KeyRole::Down:
+        move_solver_group_selection(1);
+        status_ = "PICK GROUP";
+        return;
+      case KeyRole::Enter:
+        open_solver_group(solver_group_selected_);
+        return;
+      case KeyRole::Clear:
+        open_mode(ModeKind::Standard);
+        return;
+      default:
+        return;
+    }
+  }
+
+  if (def.role == KeyRole::Clear) {
+    if (solver_query_has_text(solver_search_)) {
+      backspace_solver_search();
+    } else {
+      solver_stage_ = SolverMenuStage::Groups;
+      status_ = "PICK GROUP";
+    }
+    return;
+  }
+
+  if (def.role == KeyRole::Delete) {
+    backspace_solver_search();
+    return;
+  }
+
+  switch (def.role) {
+    case KeyRole::Left:
+      move_solver_group_selection(-1);
+      open_solver_group(solver_group_selected_);
+      return;
+    case KeyRole::Right:
+      move_solver_group_selection(1);
+      open_solver_group(solver_group_selected_);
+      return;
+    case KeyRole::Up:
+      move_solver_item_selection(-1);
+      return;
+    case KeyRole::Down:
+      move_solver_item_selection(1);
+      return;
+    case KeyRole::Enter:
+      choose_selected_solver();
+      return;
+    default:
+      break;
+  }
+
+  const char* token = key_input(def, key.shift, key.alpha);
+  append_solver_search_token(token);
+}
+void MenuUi::open_solver_group(uint8_t group) {
+  solver_group_selected_ = group;
+  solver_stage_ = SolverMenuStage::Items;
+  clear_solver_search();
+  const int first = solvers::first_template_for_group(solver_group_selected_);
+  if (first >= 0) {
+    solver_selected_ = static_cast<uint8_t>(first);
+  }
+  status_ = "SEARCH / = COPY";
+}
+void MenuUi::choose_selected_solver() {
+  if (solver_selected_ >= solvers::template_count() ||
+      !solvers::template_matches(solvers::template_at(solver_selected_),
+                                 solver_group_selected_,
+                                 solver_search_)) {
+    status_ = "NO MATCH";
+    return;
+  }
+
+  const auto& item = solvers::template_at(solver_selected_);
+  const bool inserted = append_expression_at_cursor(item.token, item.cursor);
+  open_mode(ModeKind::Standard);
+  status_ = inserted ? item.label : "EXPR FULL";
+}
+void MenuUi::move_solver_group_selection(int delta) {
+  const int count = static_cast<int>(solvers::group_count());
+  int next = static_cast<int>(solver_group_selected_) + delta;
+  while (next < 0) {
+    next += count;
+  }
+  solver_group_selected_ = static_cast<uint8_t>(next % count);
+}
+void MenuUi::move_solver_item_selection(int delta) {
+  const size_t count =
+      solvers::filtered_template_count(solver_group_selected_, solver_search_);
+  if (count == 0) {
+    status_ = "NO MATCH";
+    return;
+  }
+
+  int ordinal = solver_selected_ordinal(solver_group_selected_, solver_search_, solver_selected_);
+  if (ordinal < 0) {
+    ordinal = 0;
+  } else {
+    ordinal += delta;
+  }
+  while (ordinal < 0) {
+    ordinal += static_cast<int>(count);
+  }
+  ordinal %= static_cast<int>(count);
+
+  const int selected =
+      solvers::filtered_template_index(solver_group_selected_, solver_search_, ordinal);
+  if (selected >= 0) {
+    solver_selected_ = static_cast<uint8_t>(selected);
+    status_ = "SEARCH / = COPY";
+  }
+}
+void MenuUi::clear_solver_search() {
+  solver_search_[0] = '\0';
+}
+void MenuUi::backspace_solver_search() {
+  const size_t len = std::strlen(solver_search_);
+  if (len == 0) {
+    status_ = "SEARCH / = COPY";
+    return;
+  }
+  solver_search_[len - 1] = '\0';
+  sync_solver_selection_to_filter();
+}
+void MenuUi::append_solver_search_token(const char* token) {
+  char clean[8] {};
+  solvers::sanitize_search_token(token, clean, sizeof(clean));
+  if (!menu_detail::has_text(clean)) {
+    return;
+  }
+
+  const size_t query_len = std::strlen(solver_search_);
+  const size_t clean_len = std::strlen(clean);
+  const size_t available = sizeof(solver_search_) - query_len - 1;
+  if (available == 0) {
+    status_ = "SEARCH FULL";
+    return;
+  }
+  std::strncat(solver_search_, clean, available < clean_len ? available : clean_len);
+  sync_solver_selection_to_filter();
+}
+void MenuUi::sync_solver_selection_to_filter() {
+  if (solver_selected_ < solvers::template_count() &&
+      solvers::template_matches(solvers::template_at(solver_selected_),
+                                solver_group_selected_,
+                                solver_search_)) {
+    status_ = "SEARCH / = COPY";
+    return;
+  }
+
+  const int first = solvers::filtered_template_index(solver_group_selected_, solver_search_, 0);
+  if (first >= 0) {
+    solver_selected_ = static_cast<uint8_t>(first);
     status_ = "SEARCH / = COPY";
   } else {
     status_ = "NO MATCH";
@@ -1518,8 +1902,107 @@ void MenuUi::render_constants() {
 
     canvas_.draw_text(6, 112, "= COPY  FIND  AC BACK", 1, true);
 }
+void MenuUi::render_solver() {
+  canvas_.draw_text(6, 17, "SOLVER", 1, true);
+
+  if (solver_stage_ == SolverMenuStage::Groups) {
+    for (size_t i = 0; i < solvers::group_count(); ++i) {
+      const int y = constants::kConstantsListY +
+                    static_cast<int>(i) * constants::kConstantsRowHeight;
+      const bool selected = i == solver_group_selected_;
+      if (selected) {
+        canvas_.fill_rect(constants::kConstantsListX - 3,
+                          y - 3,
+                          constants::kConstantsRowWidth,
+                          11,
+                          true);
+      }
+
+      const auto& group = solvers::group_at(i);
+      char row_text[40] {};
+      std::snprintf(row_text,
+                    sizeof(row_text),
+                    "%u %-10s %s",
+                    static_cast<unsigned>(i),
+                    group.label,
+                    group.hint);
+      canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
+    }
+    canvas_.draw_text(6, 112, "INDEX  ARROWS  ENTER", 1, true);
+    return;
+  }
+
+  const auto& group = solvers::group_at(solver_group_selected_);
+  char title[40] {};
+  std::snprintf(title,
+                sizeof(title),
+                "%s  FIND:%s",
+                group.label,
+                solver_query_has_text(solver_search_) ? solver_search_ : "-");
+  canvas_.draw_text(72, 17, title, 1, true);
+
+  const size_t match_count =
+      solvers::filtered_template_count(solver_group_selected_, solver_search_);
+  if (match_count == 0) {
+    canvas_.draw_text(6, 54, "NO MATCH", 1, true);
+    canvas_.draw_text(6, 112, "TYPE TO FILTER  AC BACK", 1, true);
+    return;
+  }
+
+  int selected_ordinal =
+      solver_selected_ordinal(solver_group_selected_, solver_search_, solver_selected_);
+  if (selected_ordinal < 0) {
+    selected_ordinal = 0;
+  }
+
+  size_t first_ordinal = 0;
+  if (selected_ordinal >= static_cast<int>(constants::kConstantsVisibleRows / 2)) {
+    first_ordinal =
+        static_cast<size_t>(selected_ordinal) - constants::kConstantsVisibleRows / 2;
+  }
+  if (first_ordinal + constants::kConstantsVisibleRows > match_count) {
+    first_ordinal = match_count > constants::kConstantsVisibleRows
+                        ? match_count - constants::kConstantsVisibleRows
+                        : 0;
+  }
+
+  for (size_t row = 0; row < constants::kConstantsVisibleRows; ++row) {
+    const size_t ordinal = first_ordinal + row;
+    if (ordinal >= match_count) {
+      break;
+    }
+    const int index =
+        solvers::filtered_template_index(solver_group_selected_, solver_search_, ordinal);
+    if (index < 0) {
+      break;
+    }
+    const auto& item = solvers::template_at(static_cast<size_t>(index));
+    const int y = constants::kConstantsListY +
+                  static_cast<int>(row) * constants::kConstantsRowHeight;
+    const bool selected = index == solver_selected_;
+    if (selected) {
+      canvas_.fill_rect(constants::kConstantsListX - 3,
+                        y - 3,
+                        constants::kConstantsRowWidth,
+                        11,
+                        true);
+    }
+
+    char row_text[44] {};
+    std::snprintf(row_text, sizeof(row_text), "%s %-18s", item.code, item.label);
+    canvas_.draw_text(constants::kConstantsListX, y, row_text, 1, !selected);
+  }
+
+  if (solver_selected_ < solvers::template_count()) {
+    const auto& item = solvers::template_at(solver_selected_);
+    char token_text[42] {};
+    std::snprintf(token_text, sizeof(token_text), "%s", item.token);
+    canvas_.draw_text(6, 96, token_text, 1, true);
+  }
+  canvas_.draw_text(6, 112, "= COPY  FIND  AC BACK", 1, true);
+}
 void MenuUi::render_integrals() {
-  canvas_.draw_text(6, 17, "INTEGRALS", 1, true);
+  canvas_.draw_text(6, 17, "CALCULUS", 1, true);
 
   if (integral_stage_ == IntegralMenuStage::Groups) {
     for (size_t i = 0; i < integrals::group_count(); ++i) {

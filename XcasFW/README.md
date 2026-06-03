@@ -12,7 +12,7 @@ Current lab slice:
 - ESP-IDF + PlatformIO target for ESP32-S3 N16R16.
 - Wokwi target copied from current firmware: e-paper custom chip + keypad matrix wiring.
 - Static FreeRTOS math service, bounded queues.
-- Minimal Standard + Graph UI test flows.
+- Minimal Standard + Solver + Graph-view UI test flows.
 - Hardware/display/keypad canvas path adapted from current firmware.
 - Real Giac/Xcas bridge linked as ESP-IDF component; explicit math-domain methods, no generic backend factory.
 - NeoCalculator Giac/KhiCAS + libtommath sources vendored under `components/giac` and `components/libtommath`.
@@ -84,6 +84,9 @@ Alt UI only covers behavior needed to exercise migrated math path:
 - `ALPHA` then `=` opens Graph screen with current expression.
 - `SHIFT` then `xyz` opens variable selector for `x y z a b c`.
 - `SHIFT` then `xyz^2` opens same selector and inserts chosen variable squared.
+- `MODE` then `SOLVER` opens equation and `Sistemas de ecuaciones` templates.
+- `ALPHA` then `=` opens Graph view from the Standard expression; Graph is no
+  longer a standalone mode selector entry.
 - `ENTER`/`CALC` evaluates through `MathService`.
 
 ## Current Priority Notes

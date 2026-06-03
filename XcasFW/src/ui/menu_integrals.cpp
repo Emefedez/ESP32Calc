@@ -12,6 +12,7 @@ inline constexpr IntegralGroup kGroups[] = {
     {"TRIG", "sin/cos"},
     {"EXP LOG", "e/ln"},
     {"SPECIAL", "parts"},
+    {"DERIV", "diff"},
 };
 
 inline constexpr IntegralTemplate kTemplates[] = {
@@ -40,6 +41,13 @@ inline constexpr IntegralTemplate kTemplates[] = {
     {4, "41", "Substitution shell", "subst(int(,x),x=)", 10, "change variable"},
     {4, "42", "Partial fractions", "partfrac()", 9, "rational decomposition"},
     {4, "43", "Assume positive", "assume(x>0);int(,x)", 18, "domain"},
+    {5, "50", "Derivative", "diff(,x)", 5, "derivative differential"},
+    {5, "51", "Power rule", "diff(x^,x)", 7, "power polynomial derivative"},
+    {5, "52", "Second derivative", "diff(,x,2)", 5, "second derivative"},
+    {5, "53", "sin(x)", "diff(sin(x),x)", 14, "trigonometric sine derivative"},
+    {5, "54", "cos(x)", "diff(cos(x),x)", 14, "trigonometric cosine derivative"},
+    {5, "55", "exp(x)", "diff(exp(x),x)", 14, "exponential derivative"},
+    {5, "56", "ln(x)", "diff(ln(x),x)", 13, "logarithm derivative"},
 };
 
 bool has_text(const char* text) {

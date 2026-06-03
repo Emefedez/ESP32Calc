@@ -41,13 +41,24 @@ class StandardMenuMode final : public MenuMode {
   MenuUi& owner_;
 };
 
-class GraphMenuMode final : public MenuMode {
+class GraphViewMode final : public MenuMode {
  public:
-  explicit GraphMenuMode(MenuUi& owner) : owner_(owner) {}
-  const char* name() const override { return "GRAPH"; }
+  explicit GraphViewMode(MenuUi& owner) : owner_(owner) {}
+  const char* name() const override { return "GRAPH VIEW"; }
   void handle_key(const KeyEvent& key) override { owner_.apply_graph_key(key); }
   void handle_math_result(const MathResult& result) override { owner_.apply_graph_result(result); }
   void render(MonoCanvas&) override { owner_.render_graph(); }
+
+ private:
+  MenuUi& owner_;
+};
+
+class SolverMenuMode final : public MenuMode {
+ public:
+  explicit SolverMenuMode(MenuUi& owner) : owner_(owner) {}
+  const char* name() const override { return "SOLVER"; }
+  void handle_key(const KeyEvent& key) override { owner_.apply_solver_key(key); }
+  void render(MonoCanvas&) override { owner_.render_solver(); }
 
  private:
   MenuUi& owner_;
@@ -78,7 +89,7 @@ class ConstantsMenuMode final : public MenuMode {
 class IntegralsMenuMode final : public MenuMode {
  public:
   explicit IntegralsMenuMode(MenuUi& owner) : owner_(owner) {}
-  const char* name() const override { return "INTEGRALS"; }
+  const char* name() const override { return "CALCULUS"; }
   void handle_key(const KeyEvent& key) override { owner_.apply_integrals_key(key); }
   void render(MonoCanvas&) override { owner_.render_integrals(); }
 
@@ -248,7 +259,7 @@ void MenuUi::consume_modifiers() {
 MenuUi::ModeKind MenuUi::mode_from_index(uint8_t index) const {
   switch (index) {
     case 1:
-      return ModeKind::Graph;
+      return ModeKind::Solver;
     case 2:
       return ModeKind::Matrix;
     case 3:
@@ -264,6 +275,8 @@ MenuUi::ModeKind MenuUi::mode_from_index(uint8_t index) const {
 uint8_t MenuUi::index_from_mode(ModeKind kind) const {
   switch (kind) {
     case ModeKind::Graph:
+      return 0;
+    case ModeKind::Solver:
       return 1;
     case ModeKind::Matrix:
       return 2;
@@ -291,6 +304,13 @@ void MenuUi::open_mode(ModeKind kind) {
       clear_integral_search();
       status_ = "PICK GROUP";
       break;
+    case ModeKind::Solver:
+      static_assert(sizeof(SolverMenuMode) <= constants::kModeStorageSize);
+      active_mode_ = new (mode_storage_) SolverMenuMode(*this);
+      solver_stage_ = SolverMenuStage::Groups;
+      clear_solver_search();
+      status_ = "PICK GROUP";
+      break;
     case ModeKind::Constants:
       static_assert(sizeof(ConstantsMenuMode) <= constants::kModeStorageSize);
       active_mode_ = new (mode_storage_) ConstantsMenuMode(*this);
@@ -308,9 +328,9 @@ void MenuUi::open_mode(ModeKind kind) {
       status_ = "PICK MATRIX";
       break;
     case ModeKind::Graph:
-      static_assert(sizeof(GraphMenuMode) <= constants::kModeStorageSize);
-      active_mode_ = new (mode_storage_) GraphMenuMode(*this);
-      status_ = "GRAPH MODE";
+      static_assert(sizeof(GraphViewMode) <= constants::kModeStorageSize);
+      active_mode_ = new (mode_storage_) GraphViewMode(*this);
+      status_ = "GRAPH VIEW";
       break;
     case ModeKind::Standard:
     default:
@@ -330,11 +350,14 @@ void MenuUi::close_active_mode() {
       case ModeKind::Integrals:
         static_cast<IntegralsMenuMode*>(active_mode_)->~IntegralsMenuMode();
         break;
+      case ModeKind::Solver:
+        static_cast<SolverMenuMode*>(active_mode_)->~SolverMenuMode();
+        break;
       case ModeKind::Constants:
         static_cast<ConstantsMenuMode*>(active_mode_)->~ConstantsMenuMode();
         break;
       case ModeKind::Graph:
-        static_cast<GraphMenuMode*>(active_mode_)->~GraphMenuMode();
+        static_cast<GraphViewMode*>(active_mode_)->~GraphViewMode();
         break;
       case ModeKind::Matrix:
         static_cast<MatrixMenuMode*>(active_mode_)->~MatrixMenuMode();

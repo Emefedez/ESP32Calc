@@ -71,8 +71,8 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_0_5",
-      "top": 236.6,
-      "left": -326.4,
+      "top": -22.6,
+      "left": -355.2,
       "attrs": { "label": "CALC", "key": "c" }
     },
     {
@@ -197,8 +197,8 @@
     {
       "type": "wokwi-pushbutton",
       "id": "btn_3_5",
-      "top": 323,
-      "left": 259.2,
+      "top": -80.2,
+      "left": -355.2,
       "attrs": { "label": "S<>D", "color": "grey" }
     },
     {
@@ -233,7 +233,7 @@
       "type": "wokwi-pushbutton",
       "id": "btn_4_4",
       "top": 236.6,
-      "left": -384,
+      "left": -336,
       "attrs": { "label": "DEL", "key": "Backspace" }
     },
     {

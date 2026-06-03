@@ -84,7 +84,7 @@ Open Source software and hardware lead to the possibility of toying around with 
 
 2) JOINING PCBs: The Power PCB is printed as a footprint on the main board, as such, joining both devices is as simple as soldering the `SENSE` and `VOUT` pads and then fixing it in place with ground (for now).
 
-3) BATTERY: No exact battery spec was provided, so you should be able to make a hole in the case (I may replace it with a ready-made space, but I did not want to limit it to a specific Li-ION battery).
+3) BATTERY: No exact battery spec was provided, so I made the battery spacing decently big.
 
 4) PRINTING: Print 1x `front_panel.step`, 1x `main_body.step`, 1x `midplate_button_holder.step` and 50x `button.step`.
 

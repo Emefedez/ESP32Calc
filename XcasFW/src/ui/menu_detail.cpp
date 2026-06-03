@@ -340,9 +340,10 @@ bool is_word_char(char value) {
 
 bool is_known_function_name(const char* begin, size_t length) {
   static constexpr const char* kNames[] = {
-      "abs", "acos", "asin", "atan", "cos", "det", "evalf", "exp", "graph",
-      "int", "inv", "inverse", "ln", "log", "matrix", "sin", "solve", "sqrt", "tan",
-      "transpose",
+      "abs", "acos", "asin", "atan", "cos", "deriv", "derive", "derivative",
+      "det", "diff", "evalf", "exp", "factor", "fsolve", "graph", "int", "integrate",
+      "inv", "inverse", "linsolve", "ln", "log", "matrix", "poly1", "sin", "solve",
+      "sqrt", "tan", "transpose",
   };
   for (const char* name : kNames) {
     if (std::strlen(name) != length) {

@@ -11,6 +11,8 @@ namespace esp32calc_alt::giac {
 enum class GiacOperation : uint8_t {
   Evaluate,
   Simplify,
+  Derivative,
+  Integral,
   Solve,
   Matrix,
   Graph,
@@ -57,6 +59,8 @@ class GiacBridge {
 
   GiacResponse evaluate(const char* expression);
   GiacResponse simplify(const char* expression);
+  GiacResponse derivative(const char* expression, char variable = 'x');
+  GiacResponse integral(const char* expression, char variable = 'x');
   GiacResponse solve(const char* equation, const SolveOptions& options = {});
   GiacResponse matrix(const char* expression);
   GiacResponse determinant(const char* matrix_expression);

@@ -71,6 +71,16 @@ bool contains_char(const char* text, char target) {
   return text != nullptr && std::strchr(text, target) != nullptr;
 }
 
+char calculus_variable_or_default(char variable) {
+  const char lower = static_cast<char>(std::tolower(static_cast<unsigned char>(variable)));
+  for (size_t i = 0; i < kSolveVariableCount; ++i) {
+    if (lower == kSolveVariables[i]) {
+      return lower;
+    }
+  }
+  return 'x';
+}
+
 #if ESP32CALC_USE_GIAC && ESP32CALC_GIAC_COMPILED
 
 ::giac::context* as_context(void* context) {
@@ -360,6 +370,26 @@ GiacResponse GiacBridge::simplify(const char* expression) {
   char command[256] {};
   std::snprintf(command, sizeof(command), "simplify(%s)", expression == nullptr ? "" : expression);
   return run(GiacOperation::Simplify, command);
+}
+
+GiacResponse GiacBridge::derivative(const char* expression, char variable) {
+  char command[256] {};
+  std::snprintf(command,
+                sizeof(command),
+                "simplify(diff(%s,%c))",
+                expression == nullptr ? "" : expression,
+                calculus_variable_or_default(variable));
+  return run(GiacOperation::Derivative, command);
+}
+
+GiacResponse GiacBridge::integral(const char* expression, char variable) {
+  char command[256] {};
+  std::snprintf(command,
+                sizeof(command),
+                "simplify(int(%s,%c))",
+                expression == nullptr ? "" : expression,
+                calculus_variable_or_default(variable));
+  return run(GiacOperation::Integral, command);
 }
 
 GiacResponse GiacBridge::solve(const char* equation, const SolveOptions& options) {
