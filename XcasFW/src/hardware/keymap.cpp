@@ -1,7 +1,21 @@
 #include "hardware/keymap.h"
 
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+#include <strings.h>
+
 namespace esp32calc_alt {
 namespace {
+
+struct KeyOverrideStorage {
+  bool active = false;
+  KeyDef key {};
+  char label[16] {};
+  char normal[32] {};
+  char shift[32] {};
+  char alpha[32] {};
+};
 
 constexpr KeyDef key(uint8_t row, uint8_t col, const char* label, KeyRole role) {
   return KeyDef {row, col, label, role, {}};
@@ -28,6 +42,32 @@ constexpr KeyDef input_key(uint8_t row,
 
 bool has_text(const char* text) {
   return text != nullptr && text[0] != '\0';
+}
+
+void copy_text(char* output, size_t output_size, const char* input) {
+  if (output == nullptr || output_size == 0) {
+    return;
+  }
+  if (input == nullptr) {
+    output[0] = '\0';
+    return;
+  }
+  std::snprintf(output, output_size, "%s", input);
+}
+
+bool valid_position(uint8_t row, uint8_t col) {
+  return row < kMatrixRowCount && col < kMatrixColCount;
+}
+
+KeyOverrideStorage g_overrides[kMatrixRowCount][kMatrixColCount] {};
+
+KeyOverrideStorage& ensure_override(uint8_t row, uint8_t col) {
+  KeyOverrideStorage& storage = g_overrides[row][col];
+  if (!storage.active) {
+    storage.key = kKeyList[row][col];
+    storage.active = true;
+  }
+  return storage;
 }
 
 }  // namespace
@@ -90,6 +130,9 @@ const std::array<std::array<KeyDef, kMatrixColCount>, kMatrixRowCount> kKeyList 
 }};
 
 const KeyDef& key_at(uint8_t row, uint8_t col) {
+  if (valid_position(row, col) && g_overrides[row][col].active) {
+    return g_overrides[row][col].key;
+  }
   return kKeyList[row][col];
 }
 
@@ -116,6 +159,128 @@ int key_digit(const KeyDef& key) {
     return -1;
   }
   return token[0] - '0';
+}
+
+KeyRole key_role_from_name(const char* name, KeyRole fallback) {
+  if (!has_text(name)) {
+    return fallback;
+  }
+  if (strcasecmp(name, "normal") == 0) {
+    return KeyRole::Normal;
+  }
+  if (strcasecmp(name, "shift") == 0) {
+    return KeyRole::Shift;
+  }
+  if (strcasecmp(name, "alpha") == 0) {
+    return KeyRole::Alpha;
+  }
+  if (strcasecmp(name, "mode") == 0) {
+    return KeyRole::Mode;
+  }
+  if (strcasecmp(name, "up") == 0) {
+    return KeyRole::Up;
+  }
+  if (strcasecmp(name, "down") == 0) {
+    return KeyRole::Down;
+  }
+  if (strcasecmp(name, "left") == 0) {
+    return KeyRole::Left;
+  }
+  if (strcasecmp(name, "right") == 0) {
+    return KeyRole::Right;
+  }
+  if (strcasecmp(name, "enter") == 0) {
+    return KeyRole::Enter;
+  }
+  if (strcasecmp(name, "delete") == 0) {
+    return KeyRole::Delete;
+  }
+  if (strcasecmp(name, "clear") == 0) {
+    return KeyRole::Clear;
+  }
+  if (strcasecmp(name, "variable") == 0) {
+    return KeyRole::Variable;
+  }
+  if (strcasecmp(name, "variablesquare") == 0 || strcasecmp(name, "variable_square") == 0) {
+    return KeyRole::VariableSquare;
+  }
+  if (strcasecmp(name, "fractiontoggle") == 0 || strcasecmp(name, "fraction_toggle") == 0) {
+    return KeyRole::FractionToggle;
+  }
+  return fallback;
+}
+
+void clear_key_overrides() {
+  for (auto& row : g_overrides) {
+    for (auto& item : row) {
+      item = KeyOverrideStorage {};
+    }
+  }
+}
+
+bool set_key_override(uint8_t row,
+                      uint8_t col,
+                      const char* label,
+                      KeyRole role,
+                      const char* normal,
+                      const char* shift,
+                      const char* alpha) {
+  if (!valid_position(row, col)) {
+    return false;
+  }
+
+  KeyOverrideStorage& storage = ensure_override(row, col);
+  storage.key.role = role;
+  if (label != nullptr) {
+    copy_text(storage.label, sizeof(storage.label), label);
+    storage.key.label = storage.label;
+  }
+  if (normal != nullptr) {
+    copy_text(storage.normal, sizeof(storage.normal), normal);
+    storage.key.input.normal = storage.normal;
+  }
+  if (shift != nullptr) {
+    copy_text(storage.shift, sizeof(storage.shift), shift);
+    storage.key.input.shift = storage.shift;
+  }
+  if (alpha != nullptr) {
+    copy_text(storage.alpha, sizeof(storage.alpha), alpha);
+    storage.key.input.alpha = storage.alpha;
+  }
+  return true;
+}
+
+bool set_key_override_field(uint8_t row, uint8_t col, const char* field, const char* value) {
+  if (!valid_position(row, col) || !has_text(field)) {
+    return false;
+  }
+
+  KeyOverrideStorage& storage = ensure_override(row, col);
+  if (strcasecmp(field, "label") == 0) {
+    copy_text(storage.label, sizeof(storage.label), value);
+    storage.key.label = storage.label;
+    return true;
+  }
+  if (strcasecmp(field, "normal") == 0) {
+    copy_text(storage.normal, sizeof(storage.normal), value);
+    storage.key.input.normal = storage.normal;
+    return true;
+  }
+  if (strcasecmp(field, "shift") == 0) {
+    copy_text(storage.shift, sizeof(storage.shift), value);
+    storage.key.input.shift = storage.shift;
+    return true;
+  }
+  if (strcasecmp(field, "alpha") == 0) {
+    copy_text(storage.alpha, sizeof(storage.alpha), value);
+    storage.key.input.alpha = storage.alpha;
+    return true;
+  }
+  if (strcasecmp(field, "role") == 0) {
+    storage.key.role = key_role_from_name(value, storage.key.role);
+    return true;
+  }
+  return false;
 }
 
 }  // namespace esp32calc_alt

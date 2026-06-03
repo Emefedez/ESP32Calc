@@ -1,0 +1,4 @@
+# Rename to wifi.ini on SD card.
+ssid=YourWifiName
+password=YourWifiPassword
+hostname=esp32calc

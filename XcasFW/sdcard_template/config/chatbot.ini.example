@@ -1,0 +1,6 @@
+# Rename to chatbot.ini on SD card.
+provider=openai
+endpoint=https://api.openai.com/v1/chat/completions
+model=gpt-4.1-mini
+api_key=sk-your-api-key
+system_prompt=You are a concise calculator assistant.

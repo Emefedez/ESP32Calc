@@ -13,6 +13,7 @@ Current lab slice:
 - Wokwi target copied from current firmware: e-paper custom chip + keypad matrix wiring.
 - Static FreeRTOS math service, bounded queues.
 - Minimal Standard + Solver + Graph-view UI test flows.
+- SD SPI storage foundation: `/sdcard/config`, `/sdcard/programs`, internal FAT mirror at `/internal/programs`.
 - Hardware/display/keypad canvas path adapted from current firmware.
 - Real Giac/Xcas bridge linked as ESP-IDF component; explicit math-domain methods, no generic backend factory.
 - NeoCalculator Giac/KhiCAS + libtommath sources vendored under `components/giac` and `components/libtommath`.
@@ -25,6 +26,8 @@ Current lab slice:
 - Avoid GPLv3 code copy until license/attribution boundaries explicit. Main repo AGPLv3 can be compatible with GPLv3, but obligations deliberate.
 - Prefer small reimplementations behind own tests/interfaces before replacing current firmware paths.
 - Giac/Xcas = source of truth for symbolic math, solving, matrices, calculus. Local math only shape requests, expose small tests, or tight helpers; no second CAS.
+- SD card programs are external app manifests plus payload files. Internal flash can mirror flat program folders for offline launch later.
+- WiFi/chatbot secrets are read from SD config files, not compiled into firmware.
 - Split old monolithic `calc_engine` into smaller layers:
   - `math/input`: tokenize, parse, expression classification.
   - `math/giac`: canonical Xcas/Giac bridge and only evaluator.
@@ -88,6 +91,27 @@ Alt UI only covers behavior needed to exercise migrated math path:
 - `ALPHA` then `=` opens Graph view from the Standard expression; Graph is no
   longer a standalone mode selector entry.
 - `ENTER`/`CALC` evaluates through `MathService`.
+
+## SD Card Layout
+
+Templates live in `sdcard_template/`.
+
+```text
+/sdcard/
+  config/
+    wifi.ini       ssid/password/hostname
+    chatbot.ini    provider/endpoint/model/api_key/system_prompt
+    keymap.ini     optional boot key overrides
+  programs/
+    chatbot/
+      app.ini      external app manifest
+      keymap.ini   per-app key overrides
+      chatbot.app  app payload placeholder
+```
+
+Key remaps use `key.<row>.<col>.<field>=value`. Fields: `label`, `role`,
+`normal`, `shift`, `alpha`. External apps can remap keys only when manifest has
+`allow_keymap=true`.
 
 ## Current Priority Notes
 

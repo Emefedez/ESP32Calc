@@ -1,0 +1,5 @@
+# Optional global boot keymap overrides.
+# Format: key.<row>.<col>.<field>=value
+# Fields: label, role, normal, shift, alpha
+key.8.1.label=AI
+key.8.1.normal=:app.chatbot

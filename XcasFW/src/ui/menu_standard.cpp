@@ -727,6 +727,9 @@ void MenuUi::apply_standard_key(const KeyEvent& key) {
   }
 
   const char* token = key_input(def, key.shift, key.alpha);
+  if (app_command(token)) {
+    return;
+  }
   if (append_expression(token)) {
     status_ = "ENTER SENDS";
   } else if (menu_detail::has_text(token)) {

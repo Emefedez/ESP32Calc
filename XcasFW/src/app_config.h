@@ -70,5 +70,10 @@ constexpr uint16_t kBatteryFullMv = 4200;
 
 constexpr const char* kSdMountPoint = "/sdcard";
 constexpr const char* kProgramsPath = "/sdcard/programs";
+constexpr const char* kInternalMountPoint = "/internal";
+constexpr const char* kInternalProgramsPath = "/internal/programs";
+constexpr const char* kWifiConfigPath = "/sdcard/config/wifi.ini";
+constexpr const char* kChatbotConfigPath = "/sdcard/config/chatbot.ini";
+constexpr const char* kGlobalKeymapPath = "/sdcard/config/keymap.ini";
 
 }  // namespace esp32calc_alt::config

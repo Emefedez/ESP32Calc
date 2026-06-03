@@ -11,6 +11,9 @@ idf_component_register(
     "math/math_engine.cpp"
     "math/math_service.cpp"
     "math/solve/solve_result_formatter.cpp"
+    "system/chatbot_service.cpp"
+    "system/storage_manager.cpp"
+    "system/wifi_manager.cpp"
     "ui/menu.cpp"
     "ui/menu_constants.cpp"
     "ui/menu_detail.cpp"
@@ -27,11 +30,21 @@ idf_component_register(
     "graphics"
     "hardware"
     "math"
+    "system"
     "ui"
   REQUIRES
+    esp_driver_sdspi
     esp_adc
+    esp_event
+    esp_http_client
     esp_lcd
+    esp_netif
+    esp_wifi
+    fatfs
     giac
+    nvs_flash
+    sdmmc
+    wear_levelling
 )
 
 target_compile_options(${COMPONENT_LIB}

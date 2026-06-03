@@ -44,7 +44,7 @@ Open Source software and hardware lead to the possibility of toying around with 
 > Bicuadratic ecuation solved with the calculator `XCas` based firmware.
 ![image](/images/bicuadratic_ecuation.jpg)
 
-![image](/images/poster.png)
+![image](/images/zine.png)
 
 
 > [!WARNING]
