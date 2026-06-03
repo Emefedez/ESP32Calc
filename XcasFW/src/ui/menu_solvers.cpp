@@ -8,7 +8,7 @@ namespace {
 
 inline constexpr SolverGroup kGroups[] = {
     {"EQUATIONS", "solve"},
-    {"SISTEMAS", "2x2/3x3"},
+    {"SYSTEMS", "2x2/3x3"},
     {"POLY", "roots"},
     {"NUMERIC", "fsolve"},
     {"LINEAR", "matrix"},
@@ -19,10 +19,10 @@ inline constexpr SolverTemplate kTemplates[] = {
     {0, "01", "Solve for y", "solve(,y)", 6, "equation y variable"},
     {0, "02", "Solve x,y", "solve(,[x,y])", 6, "two variables"},
     {0, "03", "Isolate expression", "solve(=,x)", 6, "isolate equation"},
-    {1, "10", "Sistema 2x2", "sistemas(x+y=;x-y=,[x,y])", 12, "sistema ecuaciones"},
-    {1, "11", "Sistema 3x3", "sistemas(x+y+z=;x-y+z=;x+y-z=,[x,y,z])", 14, "sistema ecuaciones"},
-    {1, "12", "Blank 2 eq", "sistemas(=;=,[x,y])", 10, "sistema blank"},
-    {1, "13", "Blank 3 eq", "sistemas(=;=;=,[x,y,z])", 10, "sistema blank"},
+    {1, "10", "System 2x2", "system(x+y=;x-y=,[x,y])", 11, "system equations"},
+    {1, "11", "System 3x3", "system(x+y+z=;x-y+z=;x+y-z=,[x,y,z])", 13, "system equations"},
+    {1, "12", "Blank 2 eq", "system(=;=,[x,y])", 9, "system blank"},
+    {1, "13", "Blank 3 eq", "system(=;=;=,[x,y,z])", 9, "system blank"},
     {2, "20", "Quadratic roots", "solve(a*x^2+b*x+c=0,x)", 6, "polynomial quadratic"},
     {2, "21", "Polynomial roots", "solve(poly1([,,]),x)", 12, "polynomial coefficients"},
     {2, "22", "Factor then solve", "solve(factor()=0,x)", 13, "factor roots"},

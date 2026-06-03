@@ -920,8 +920,7 @@ void MenuUi::submit_expression(bool decimal_output) {
     // d/dx(...) alias was shaped before generic expansion.
   } else if (extract_named_call(expanded_expression, "solve", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "system", body, sizeof(body)) ||
-             extract_named_call(expanded_expression, "sistema", body, sizeof(body)) ||
-             extract_named_call(expanded_expression, "sistemas", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "systems", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "sys", body, sizeof(body))) {
     request.kind = MathJobKind::Solve;
     if (split_first_top_level_arg(body,

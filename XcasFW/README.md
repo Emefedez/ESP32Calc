@@ -87,7 +87,7 @@ Alt UI only covers behavior needed to exercise migrated math path:
 - `ALPHA` then `=` opens Graph screen with current expression.
 - `SHIFT` then `xyz` opens variable selector for `x y z a b c`.
 - `SHIFT` then `xyz^2` opens same selector and inserts chosen variable squared.
-- `MODE` then `SOLVER` opens equation and `Sistemas de ecuaciones` templates.
+- `MODE` then `SOLVER` opens equation and systems-of-equations templates.
 - `ALPHA` then `=` opens Graph view from the Standard expression; Graph is no
   longer a standalone mode selector entry.
 - `ENTER`/`CALC` evaluates through `MathService`.

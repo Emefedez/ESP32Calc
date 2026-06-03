@@ -64,6 +64,7 @@ class StorageManager {
                          const char* root_path,
                          bool on_sd,
                          ExternalAppManifest& manifest);
+  void seed_builtin_chatbot_app();
   void merge_app_manifest(const ExternalAppManifest& manifest);
   esp_err_t apply_keymap_file(const char* path);
   esp_err_t copy_flat_directory(const char* source, const char* destination);
