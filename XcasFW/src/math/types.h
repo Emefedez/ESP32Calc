@@ -46,6 +46,7 @@ struct MathRequest {
   MathJobKind kind = MathJobKind::Numeric; // default state which may be changed
   char expression[224] {};
   SolveOptions solve_options {};
+  bool decimal_output = false;
   float graph_x_min = -5.0f;
   float graph_x_max = 5.0f;
 };

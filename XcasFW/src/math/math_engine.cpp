@@ -91,6 +91,13 @@ MathResult make_giac_result(const MathRequest& request,
   }
 
   if (response.ok) {
+    if (request.decimal_output && is_solve_request) {
+      char command[256] {};
+      const int written = std::snprintf(command, sizeof(command), "evalf(%s)", response.command);
+      if (written > 0 && static_cast<size_t>(written) < sizeof(command)) {
+        response = bridge.raw(command);
+      }
+    }
     if (is_solve_request) {
       const solve::SolvePresentation presentation =
           solve::present_giac_solve_result(response.plain,

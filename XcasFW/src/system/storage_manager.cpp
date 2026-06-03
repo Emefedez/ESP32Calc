@@ -85,6 +85,20 @@ bool file_exists(const char* path) {
   return path != nullptr && stat(path, &st) == 0 && S_ISREG(st.st_mode);
 }
 
+FILE* open_with_example_fallback(const char* path) {
+  FILE* file = std::fopen(path, "r");
+  if (file != nullptr) {
+    return file;
+  }
+  char fallback[160] {};
+  std::snprintf(fallback, sizeof(fallback), "%s.example", path);
+  file = std::fopen(fallback, "r");
+  if (file != nullptr) {
+    ESP_LOGW(TAG, "using example config fallback: %s", fallback);
+  }
+  return file;
+}
+
 bool is_dir_path(const char* path) {
   struct stat st {};
   return path != nullptr && stat(path, &st) == 0 && S_ISDIR(st.st_mode);
@@ -144,10 +158,6 @@ esp_err_t StorageManager::init() {
 }
 
 esp_err_t StorageManager::mount_sd() {
-#if ESP32CALC_WOKWI
-  ESP_LOGI(TAG, "Wokwi SD mount disabled");
-  return ESP_ERR_NOT_SUPPORTED;
-#else
   esp_vfs_fat_sdmmc_mount_config_t mount_config {};
   mount_config.format_if_mount_failed = false;
   mount_config.max_files = 8;
@@ -183,7 +193,6 @@ esp_err_t StorageManager::mount_sd() {
     ESP_LOGI(TAG, "SD mounted at %s", config::kSdMountPoint);
   }
   return err;
-#endif
 }
 
 esp_err_t StorageManager::mount_internal() {
@@ -206,7 +215,7 @@ esp_err_t StorageManager::mount_internal() {
 
 void StorageManager::load_configs() {
   if (sd_mounted_) {
-    FILE* wifi_file = std::fopen(config::kWifiConfigPath, "r");
+    FILE* wifi_file = open_with_example_fallback(config::kWifiConfigPath);
     if (wifi_file != nullptr) {
       char line[kLineCapacity] {};
       while (std::fgets(line, sizeof(line), wifi_file) != nullptr) {
@@ -228,7 +237,7 @@ void StorageManager::load_configs() {
       ESP_LOGI(TAG, "wifi config %s", wifi_.loaded ? "loaded" : "missing ssid");
     }
 
-    FILE* chatbot_file = std::fopen(config::kChatbotConfigPath, "r");
+    FILE* chatbot_file = open_with_example_fallback(config::kChatbotConfigPath);
     if (chatbot_file != nullptr) {
       char line[kLineCapacity] {};
       while (std::fgets(line, sizeof(line), chatbot_file) != nullptr) {

@@ -406,6 +406,12 @@ GiacResponse GiacBridge::solve(const char* equation, const SolveOptions& options
       return response;
     }
     std::snprintf(command, sizeof(command), "solve([%s],%s)", equations, variables);
+  } else if (equation != nullptr && equation[0] == '[') {
+    std::snprintf(command,
+                  sizeof(command),
+                  "solve(%s,%s)",
+                  equation,
+                  variables);
   } else {
     std::snprintf(command,
                   sizeof(command),

@@ -564,7 +564,7 @@ void MenuUi::render_mode_selector() {
     canvas_.draw_text(166, y, constants::kModeHints[i], 1, !selected);
   }
 
-  canvas_.draw_text(6, 108, "ARROWS/INDEX/ENTER", 1, true);
+  canvas_.draw_text(6, 114, "ARROWS/INDEX/ENTER", 1, true);
 }
 
 void MenuUi::apply_apps_key(const KeyEvent& key) {

@@ -888,6 +888,7 @@ void MenuUi::submit_expression(bool decimal_output) {
 
   MathRequest request {};
   request.kind = MathJobKind::Numeric;
+  request.decimal_output = decimal_output;
   char body[sizeof(request.expression)] {};
   char expanded_expression[sizeof(request.expression)] {};
   char first_arg[sizeof(request.expression)] {};
@@ -917,7 +918,11 @@ void MenuUi::submit_expression(bool decimal_output) {
 
   if (request.kind == MathJobKind::Derivative) {
     // d/dx(...) alias was shaped before generic expansion.
-  } else if (extract_named_call(expanded_expression, "solve", body, sizeof(body))) {
+  } else if (extract_named_call(expanded_expression, "solve", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "system", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "sistema", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "sistemas", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "sys", body, sizeof(body))) {
     request.kind = MathJobKind::Solve;
     if (split_first_top_level_arg(body,
                                   first_arg,

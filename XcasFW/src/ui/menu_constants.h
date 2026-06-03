@@ -37,12 +37,12 @@ inline constexpr int kInputTextY = 86;
 inline constexpr const char* kVariableTokens[] = {"x", "y", "z", "a", "b", "c"};
 inline constexpr size_t kVariableCount = sizeof(kVariableTokens) / sizeof(kVariableTokens[0]);
 
-inline constexpr const char* kModeLabels[] = {"STANDARD", "SOLVER", "MATRIX", "CONST", "CALCULUS", "APPS"};
+inline constexpr const char* kModeLabels[] = {"STANDARD", "SOLVER", "MATRIX", "CONST", "CALCULUS", "SD APPS"};
 inline constexpr const char* kModeHints[] = {"CAS", "EQ/SYS", "MAT", "SCI", "d/int", "SD"};
 inline constexpr size_t kModeCount = sizeof(kModeLabels) / sizeof(kModeLabels[0]);
 inline constexpr int kModeSelectorX = 8;
-inline constexpr int kModeSelectorY = 30;
-inline constexpr int kModeSelectorRowHeight = 16;
+inline constexpr int kModeSelectorY = 28;
+inline constexpr int kModeSelectorRowHeight = 14;
 inline constexpr int kModeSelectorRowWidth = 232;
 
 inline constexpr const char* kMatrixLabels[] = {"A", "B", "C", "D", "E", "X"};
