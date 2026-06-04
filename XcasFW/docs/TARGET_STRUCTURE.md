@@ -50,13 +50,11 @@ src/
       graph_app.*
       matrix_app.*
       external_app.*       SD/internal app manifest + payload lifecycle
-      chatbot_app.*        network-backed external app using SD secrets
       settings_app.*
 
   scripting/
     script_service.*
-    lua_runtime.*          first scripting target
-    micropython_runtime.*  optional later
+    micropython_runtime.*  external app payload runtime
 ```
 
 ## Current Firmware Migration Map
@@ -80,9 +78,11 @@ src/
 - Lua/Python runtimes talk to same math service; no reaching into UI internals.
 - External apps load from `/sdcard/programs/<id>/app.ini` or mirrored
   `/internal/programs/<id>/app.ini`. App manifests can request keymap remaps;
-  remaps are active-app state, not permanent firmware changes.
-- WiFi and API secrets come from `/sdcard/config/*.ini` so firmware images do
-  not embed credentials.
+  remaps are active-app state, not permanent firmware changes. App payload
+  runtime opens only when an app is launched and closes on app exit or when SD
+  APPS mode is left.
+- WiFi settings come from `/sdcard/config/*.ini` so firmware images do not
+  embed credentials.
 
 ## First Milestone
 
@@ -140,7 +140,7 @@ Alt firmware has enough UI to test engine on simulated keypad/display:
 - `ui/menu.*` intentionally small: Standard expression entry, Graph screen, variable selector.
 - `ui/input_behavior.h` makes calculator modifier rules explicit: `SHIFT+=` inserts `=`, `ALPHA+=` opens Graph, `SHIFT+xyz` opens variable selector.
 - `system/storage_manager.*` mounts SD over SPI, mounts internal FAT storage,
-  reads `wifi.ini`/`chatbot.ini`, scans external app manifests, and exposes
+  reads `wifi.ini`, scans external app manifests, and exposes
   copy-to-internal/keymap-remap hooks.
 - Squared numbers should display natural (`x` with small raised `2`), with automatic parentheses so following numbers do not accidentally join exponent.
 - Divisions should display natural Casio-style by default; UI must enter/exit sub-operations like `sqrt()`, `(/)`, `x^n`, `logab`, etc.

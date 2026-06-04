@@ -104,6 +104,20 @@ void glyph_for(char in, uint8_t (&out)[5]) {
   static constexpr uint8_t less_than[5] = {0x08, 0x14, 0x22, 0x41, 0x00};
   static constexpr uint8_t greater_than[5] = {0x00, 0x41, 0x22, 0x14, 0x08};
   static constexpr uint8_t apostrophe[5] = {0x00, 0x05, 0x03, 0x00, 0x00};
+  static constexpr uint8_t double_quote[5] = {0x00, 0x07, 0x00, 0x07, 0x00};
+  static constexpr uint8_t exclamation[5] = {0x00, 0x00, 0x5F, 0x00, 0x00};
+  static constexpr uint8_t question[5] = {0x02, 0x01, 0x51, 0x09, 0x06};
+  static constexpr uint8_t underscore[5] = {0x40, 0x40, 0x40, 0x40, 0x40};
+  static constexpr uint8_t at_sign[5] = {0x3E, 0x41, 0x5D, 0x55, 0x5E};
+  static constexpr uint8_t hash[5] = {0x14, 0x7F, 0x14, 0x7F, 0x14};
+  static constexpr uint8_t dollar[5] = {0x24, 0x2A, 0x7F, 0x2A, 0x12};
+  static constexpr uint8_t ampersand[5] = {0x36, 0x49, 0x55, 0x22, 0x50};
+  static constexpr uint8_t backslash[5] = {0x02, 0x04, 0x08, 0x10, 0x20};
+  static constexpr uint8_t left_brace[5] = {0x08, 0x36, 0x41, 0x41, 0x00};
+  static constexpr uint8_t right_brace[5] = {0x00, 0x41, 0x41, 0x36, 0x08};
+  static constexpr uint8_t pipe[5] = {0x00, 0x00, 0x7F, 0x00, 0x00};
+  static constexpr uint8_t tilde[5] = {0x02, 0x01, 0x02, 0x04, 0x02};
+  static constexpr uint8_t backtick[5] = {0x00, 0x03, 0x05, 0x00, 0x00};
 
   if (c >= 'a' && c <= 'z') {
     glyph = lower_letters[c - 'a'];
@@ -139,11 +153,66 @@ void glyph_for(char in, uint8_t (&out)[5]) {
       case '<': glyph = less_than; break;
       case '>': glyph = greater_than; break;
       case '\'': glyph = apostrophe; break;
+      case '"': glyph = double_quote; break;
+      case '!': glyph = exclamation; break;
+      case '?': glyph = question; break;
+      case '_': glyph = underscore; break;
+      case '@': glyph = at_sign; break;
+      case '#': glyph = hash; break;
+      case '$': glyph = dollar; break;
+      case '&': glyph = ampersand; break;
+      case '\\': glyph = backslash; break;
+      case '{': glyph = left_brace; break;
+      case '}': glyph = right_brace; break;
+      case '|': glyph = pipe; break;
+      case '~': glyph = tilde; break;
+      case '`': glyph = backtick; break;
       default: glyph = unknown; break;
     }
   }
 
   std::memcpy(out, glyph, sizeof(out));
+}
+
+char read_text_char(const char*& text) {
+  const unsigned char first = static_cast<unsigned char>(*text++);
+  if (first < 0x80) {
+    return static_cast<char>(first);
+  }
+
+  uint32_t codepoint = 0;
+  if ((first & 0xE0) == 0xC0 && text[0] != '\0') {
+    const unsigned char second = static_cast<unsigned char>(*text++);
+    codepoint = ((first & 0x1F) << 6) | (second & 0x3F);
+  } else if ((first & 0xF0) == 0xE0 && text[0] != '\0' && text[1] != '\0') {
+    const unsigned char second = static_cast<unsigned char>(*text++);
+    const unsigned char third = static_cast<unsigned char>(*text++);
+    codepoint = ((first & 0x0F) << 12) | ((second & 0x3F) << 6) | (third & 0x3F);
+  } else {
+    while (*text != '\0' && (static_cast<unsigned char>(*text) & 0xC0) == 0x80) {
+      ++text;
+    }
+    return '?';
+  }
+
+  switch (codepoint) {
+    case 0x00B0: return 'o';  // degree
+    case 0x00B1: return '+';
+    case 0x00B2: return '2';
+    case 0x00B3: return '3';
+    case 0x00B5: return 'u';
+    case 0x03C0: return 'p';
+    case 0x03C3: return 's';
+    case 0x03C4: return 't';
+    case 0x03BB: return 'l';
+    case 0x03A9: return 'O';
+    case 0x221E: return '8';
+    case 0x2212: return '-';
+    case 0x00D7: return 'x';
+    case 0x00F7: return '/';
+    case 0x2022: return '*';
+    default: return '?';
+  }
 }
 
 }  // namespace
@@ -441,9 +510,8 @@ void MonoCanvas::draw_text(int x, int y, const char* text, uint8_t scale, bool b
   const uint8_t s = std::max<uint8_t>(scale, 1);
   int cursor = x;
   while (*text != '\0') {
-    draw_char(cursor, y, *text, s, black);
+    draw_char(cursor, y, read_text_char(text), s, black);
     cursor += 6 * s;
-    ++text;
   }
 }
 

@@ -11,7 +11,8 @@ idf_component_register(
     "math/math_engine.cpp"
     "math/math_service.cpp"
     "math/solve/solve_result_formatter.cpp"
-    "system/chatbot_service.cpp"
+    "system/app_runtime.cpp"
+    "system/micropython_runtime.cpp"
     "system/storage_manager.cpp"
     "system/wifi_manager.cpp"
     "ui/menu.cpp"
@@ -36,12 +37,12 @@ idf_component_register(
     esp_driver_sdspi
     esp_adc
     esp_event
-    esp_http_client
     esp_lcd
     esp_netif
     esp_wifi
     fatfs
     giac
+    micropython_embed
     nvs_flash
     sdmmc
     wear_levelling

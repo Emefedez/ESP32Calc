@@ -7,7 +7,6 @@ namespace esp32calc_alt {
 enum class AppEventType : uint8_t {
   Key,
   Battery,
-  Chatbot,
 };
 
 enum class KeyPhase : uint8_t {
@@ -30,16 +29,10 @@ struct BatterySnapshot {
   uint8_t percent = 0;
 };
 
-struct ChatbotResult {
-  bool ok = false;
-  char text[192] {};
-};
-
 struct AppEvent {
   AppEventType type = AppEventType::Key;
   KeyEvent key {};
   BatterySnapshot battery {};
-  ChatbotResult chatbot {};
 };
 
 }  // namespace esp32calc_alt

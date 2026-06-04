@@ -39,6 +39,18 @@
 #define ESP32CALC_BATTERY_POLL_PERIOD_MS 30000
 #endif
 
+#ifndef ESP32CALC_APP_RUNTIME_SOFT_REBOOT_ON_CLOSE
+#define ESP32CALC_APP_RUNTIME_SOFT_REBOOT_ON_CLOSE 0
+#endif
+
+#ifndef ESP32CALC_MICROPYTHON_HEAP_BYTES
+#define ESP32CALC_MICROPYTHON_HEAP_BYTES (32 * 1024)
+#endif
+
+#ifndef ESP32CALC_MICROPYTHON_SOURCE_BYTES
+#define ESP32CALC_MICROPYTHON_SOURCE_BYTES 2048
+#endif
+
 namespace esp32calc_alt::config {
 
 constexpr uint16_t kDisplayLogicalWidth = 250;
@@ -73,7 +85,6 @@ constexpr const char* kProgramsPath = "/sdcard/programs";
 constexpr const char* kInternalMountPoint = "/internal";
 constexpr const char* kInternalProgramsPath = "/internal/programs";
 constexpr const char* kWifiConfigPath = "/sdcard/config/wifi.ini";
-constexpr const char* kChatbotConfigPath = "/sdcard/config/chatbot.ini";
 constexpr const char* kGlobalKeymapPath = "/sdcard/config/keymap.ini";
 
 }  // namespace esp32calc_alt::config

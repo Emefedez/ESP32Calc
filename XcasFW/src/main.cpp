@@ -4,7 +4,6 @@
 #include "display/weact_213_bw.h"
 #include "hardware/keypad_matrix.h"
 #include "math/math_service.h"
-#include "system/chatbot_service.h"
 #include "system/storage_manager.h"
 #include "system/wifi_manager.h"
 #include "ui/menu.h"
@@ -32,7 +31,6 @@ esp32calc_alt::BatteryMonitor g_battery;
 esp32calc_alt::MathService g_math_service;
 esp32calc_alt::StorageManager g_storage;
 esp32calc_alt::WifiManager g_wifi;
-esp32calc_alt::ChatbotService g_chatbot;
 
 // Log both free total and largest block: total heap can look healthy while
 // fragmentation makes one Giac/UI allocation fail.
@@ -47,7 +45,7 @@ void log_memory(const char* label) {
 }
 
 void ui_task(void*) {
-  static esp32calc_alt::MenuUi ui(g_app_events, g_display, g_math_service, g_storage, g_chatbot);
+  static esp32calc_alt::MenuUi ui(g_app_events, g_display, g_math_service, g_storage);
   ui.run();
 }
 
@@ -71,12 +69,11 @@ extern "C" void app_main(void) {
     ESP_LOGW(TAG, "storage init partial/failed: %s", esp_err_to_name(err));
   } else {
     ESP_LOGI(TAG,
-             "storage ready sd=%d internal=%d apps=%u wifi=%d chatbot=%d",
+             "storage ready sd=%d internal=%d apps=%u wifi=%d",
              g_storage.sd_mounted(),
              g_storage.internal_mounted(),
              static_cast<unsigned>(g_storage.app_count()),
-             g_storage.wifi().loaded,
-             g_storage.chatbot().loaded);
+             g_storage.wifi().loaded);
   }
 
   if (g_storage.wifi().loaded) {
@@ -84,11 +81,6 @@ extern "C" void app_main(void) {
     if (err != ESP_OK) {
       ESP_LOGW(TAG, "wifi start failed: %s", esp_err_to_name(err));
     }
-  }
-
-  err = g_chatbot.start(g_app_events, g_wifi);
-  if (err != ESP_OK) {
-    ESP_LOGW(TAG, "chatbot service start failed: %s", esp_err_to_name(err));
   }
 
   err = g_display.init();

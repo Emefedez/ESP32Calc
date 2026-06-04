@@ -25,27 +25,9 @@ constexpr size_t kLineCapacity = 256;
 constexpr size_t kCopyBufferSize = 512;
 
 #if ESP32CALC_WOKWI
-constexpr const char* kWokwiProgramsPath = "/sdcard/sd-card/programs";
-constexpr const char* kWokwiWifiConfigPath = "/sdcard/sd-card/config/wifi.ini";
-constexpr const char* kWokwiChatbotConfigPath = "/sdcard/sd-card/config/chatbot.ini";
-constexpr const char* kWokwiGlobalKeymapPath = "/sdcard/sd-card/config/keymap.ini";
+constexpr const char* kWokwiSdConfigPath = "/sdcard/config";
+constexpr const char* kWokwiSdHelloPath = "/sdcard/programs/hello_mpy";
 #endif
-
-const char* secondary_wifi_config_path() {
-#if ESP32CALC_WOKWI
-  return kWokwiWifiConfigPath;
-#else
-  return nullptr;
-#endif
-}
-
-const char* secondary_chatbot_config_path() {
-#if ESP32CALC_WOKWI
-  return kWokwiChatbotConfigPath;
-#else
-  return nullptr;
-#endif
-}
 
 bool has_text(const char* text) {
   return text != nullptr && text[0] != '\0';
@@ -108,6 +90,7 @@ bool file_exists(const char* path) {
   return path != nullptr && stat(path, &st) == 0 && S_ISREG(st.st_mode);
 }
 
+#if ESP32CALC_WOKWI
 bool write_text_file_if_missing(const char* path, const char* text) {
   if (file_exists(path)) {
     return true;
@@ -120,32 +103,7 @@ bool write_text_file_if_missing(const char* path, const char* text) {
   std::fclose(file);
   return ok;
 }
-
-FILE* open_with_example_fallback(const char* path) {
-  FILE* file = std::fopen(path, "r");
-  if (file != nullptr) {
-    return file;
-  }
-  char fallback[160] {};
-  std::snprintf(fallback, sizeof(fallback), "%s.example", path);
-  file = std::fopen(fallback, "r");
-  if (file != nullptr) {
-    ESP_LOGW(TAG, "using example config fallback: %s", fallback);
-  }
-  return file;
-}
-
-FILE* open_with_secondary_fallback(const char* primary_path, const char* secondary_path) {
-  FILE* file = open_with_example_fallback(primary_path);
-  if (file != nullptr || !has_text(secondary_path)) {
-    return file;
-  }
-  file = open_with_example_fallback(secondary_path);
-  if (file != nullptr) {
-    ESP_LOGW(TAG, "using alternate SD path: %s", secondary_path);
-  }
-  return file;
-}
+#endif
 
 bool is_dir_path(const char* path) {
   struct stat st {};
@@ -154,6 +112,75 @@ bool is_dir_path(const char* path) {
 
 void append_path(char* output, size_t output_size, const char* base, const char* leaf) {
   std::snprintf(output, output_size, "%s/%s", base, leaf);
+}
+
+#if ESP32CALC_WOKWI
+size_t count_dir_entries(const char* path) {
+  DIR* dir = opendir(path);
+  if (dir == nullptr) {
+    return 0;
+  }
+  dirent* entry = nullptr;
+  size_t count = 0;
+  while ((entry = readdir(dir)) != nullptr) {
+    if (entry->d_name[0] != '.') {
+      ++count;
+    }
+  }
+  closedir(dir);
+  return count;
+}
+
+void seed_wokwi_sd_if_empty() {
+  if (count_dir_entries(config::kSdMountPoint) > 0) {
+    return;
+  }
+  if (!ensure_dir(kWokwiSdConfigPath) ||
+      !ensure_dir(config::kProgramsPath) ||
+      !ensure_dir(kWokwiSdHelloPath)) {
+    ESP_LOGW(TAG, "wokwi SD fixture dirs failed");
+    return;
+  }
+
+  char path[160] {};
+  append_path(path, sizeof(path), kWokwiSdConfigPath, "wifi.ini");
+  bool ok = write_text_file_if_missing(path,
+                                       "# Wokwi/dev default. Replace on real SD card.\n"
+                                       "ssid=Wokwi-GUEST\n"
+                                       "password=\n"
+                                       "hostname=esp32calc\n");
+  append_path(path, sizeof(path), kWokwiSdConfigPath, "keymap.ini");
+  ok = write_text_file_if_missing(path,
+                                  "# Wokwi SD keymap.\n"
+                                  "key.8.1.label=APP\n"
+                                  "key.8.1.normal=:app.hello_mpy\n") &&
+       ok;
+  append_path(path, sizeof(path), kWokwiSdHelloPath, "app.ini");
+  ok = write_text_file_if_missing(path,
+                                  "id=hello_mpy\n"
+                                  "name=Hello MPY\n"
+                                  "kind=micropython\n"
+                                  "entry=main.py\n"
+                                  "allow_keymap=true\n") &&
+       ok;
+  append_path(path, sizeof(path), kWokwiSdHelloPath, "main.py");
+  ok = write_text_file_if_missing(path,
+                                  "# Minimal SD app payload.\n"
+                                  "# AppRuntime opens this file only after launch.\n"
+                                  "print(\"hello from ESP32Calc\")\n") &&
+       ok;
+  append_path(path, sizeof(path), kWokwiSdHelloPath, "keymap.ini");
+  ok = write_text_file_if_missing(path,
+                                  "# Active while MicroPython app owns input.\n"
+                                  "key.8.0.label=BACK\n"
+                                  "key.8.0.normal=:app.exit\n") &&
+       ok;
+  ESP_LOGI(TAG, "wokwi SD fixture %s", ok ? "seeded" : "partial");
+}
+#endif
+
+FILE* open_text_file(const char* path) {
+  return has_text(path) ? std::fopen(path, "r") : nullptr;
 }
 
 bool parse_bool(const char* value) {
@@ -263,69 +290,46 @@ esp_err_t StorageManager::mount_internal() {
 
 void StorageManager::load_configs() {
   if (sd_mounted_) {
-    FILE* wifi_file =
-        open_with_secondary_fallback(config::kWifiConfigPath, secondary_wifi_config_path());
-    if (wifi_file != nullptr) {
-      char line[kLineCapacity] {};
-      while (std::fgets(line, sizeof(line), wifi_file) != nullptr) {
-        char* key = nullptr;
-        char* value = nullptr;
-        if (!split_kv(line, key, value)) {
-          continue;
-        }
-        if (strcasecmp(key, "ssid") == 0) {
-          copy_text(wifi_.ssid, sizeof(wifi_.ssid), value);
-        } else if (strcasecmp(key, "password") == 0) {
-          copy_text(wifi_.password, sizeof(wifi_.password), value);
-        } else if (strcasecmp(key, "hostname") == 0) {
-          copy_text(wifi_.hostname, sizeof(wifi_.hostname), value);
-        }
-      }
-      std::fclose(wifi_file);
-      wifi_.loaded = has_text(wifi_.ssid);
-      ESP_LOGI(TAG, "wifi config %s", wifi_.loaded ? "loaded" : "missing ssid");
-    }
-
-    FILE* chatbot_file =
-        open_with_secondary_fallback(config::kChatbotConfigPath, secondary_chatbot_config_path());
-    if (chatbot_file != nullptr) {
-      char line[kLineCapacity] {};
-      while (std::fgets(line, sizeof(line), chatbot_file) != nullptr) {
-        char* key = nullptr;
-        char* value = nullptr;
-        if (!split_kv(line, key, value)) {
-          continue;
-        }
-        if (strcasecmp(key, "provider") == 0) {
-          copy_text(chatbot_.provider, sizeof(chatbot_.provider), value);
-        } else if (strcasecmp(key, "endpoint") == 0) {
-          copy_text(chatbot_.endpoint, sizeof(chatbot_.endpoint), value);
-        } else if (strcasecmp(key, "model") == 0) {
-          copy_text(chatbot_.model, sizeof(chatbot_.model), value);
-        } else if (strcasecmp(key, "api_key") == 0) {
-          copy_text(chatbot_.api_key, sizeof(chatbot_.api_key), value);
-        } else if (strcasecmp(key, "system_prompt") == 0) {
-          copy_text(chatbot_.system_prompt, sizeof(chatbot_.system_prompt), value);
-        }
-      }
-      std::fclose(chatbot_file);
-      chatbot_.loaded = has_text(chatbot_.api_key) && has_text(chatbot_.endpoint);
-      ESP_LOGI(TAG, "chatbot config %s", chatbot_.loaded ? "loaded" : "incomplete");
-    }
-
-    apply_global_keymap();
-    scan_program_root(config::kProgramsPath, true);
 #if ESP32CALC_WOKWI
-    scan_program_root(kWokwiProgramsPath, true);
+    seed_wokwi_sd_if_empty();
 #endif
+    load_wifi_config();
+    apply_global_keymap();
+  }
+  scan_programs();
+}
+
+void StorageManager::load_wifi_config() {
+  FILE* wifi_file = open_text_file(config::kWifiConfigPath);
+  if (wifi_file == nullptr) {
+    return;
   }
 
+  char line[kLineCapacity] {};
+  while (std::fgets(line, sizeof(line), wifi_file) != nullptr) {
+    char* key = nullptr;
+    char* value = nullptr;
+    if (!split_kv(line, key, value)) {
+      continue;
+    }
+    if (strcasecmp(key, "ssid") == 0) {
+      copy_text(wifi_.ssid, sizeof(wifi_.ssid), value);
+    } else if (strcasecmp(key, "password") == 0) {
+      copy_text(wifi_.password, sizeof(wifi_.password), value);
+    } else if (strcasecmp(key, "hostname") == 0) {
+      copy_text(wifi_.hostname, sizeof(wifi_.hostname), value);
+    }
+  }
+  std::fclose(wifi_file);
+  wifi_.loaded = has_text(wifi_.ssid);
+  ESP_LOGI(TAG, "wifi config %s", wifi_.loaded ? "loaded" : "missing ssid");
+}
+
+void StorageManager::scan_programs() {
+  if (sd_mounted_) {
+    scan_program_root(config::kProgramsPath, true);
+  }
   if (internal_mounted_) {
-    scan_program_root(config::kInternalProgramsPath, false);
-  }
-
-  if (app_count_ == 0 && internal_mounted_) {
-    seed_builtin_chatbot_app();
     scan_program_root(config::kInternalProgramsPath, false);
   }
 }
@@ -389,16 +393,6 @@ bool StorageManager::load_app_manifest(const char* manifest_path,
       copy_text(manifest.entry, sizeof(manifest.entry), value);
     } else if (strcasecmp(key, "allow_keymap") == 0) {
       manifest.allow_keymap = parse_bool(value);
-    } else if (strcasecmp(key, "chatbot.provider") == 0) {
-      copy_text(manifest.chatbot.provider, sizeof(manifest.chatbot.provider), value);
-    } else if (strcasecmp(key, "chatbot.endpoint") == 0) {
-      copy_text(manifest.chatbot.endpoint, sizeof(manifest.chatbot.endpoint), value);
-    } else if (strcasecmp(key, "chatbot.model") == 0) {
-      copy_text(manifest.chatbot.model, sizeof(manifest.chatbot.model), value);
-    } else if (strcasecmp(key, "chatbot.api_key") == 0) {
-      copy_text(manifest.chatbot.api_key, sizeof(manifest.chatbot.api_key), value);
-    } else if (strcasecmp(key, "chatbot.system_prompt") == 0) {
-      copy_text(manifest.chatbot.system_prompt, sizeof(manifest.chatbot.system_prompt), value);
     }
   }
   std::fclose(file);
@@ -410,58 +404,17 @@ bool StorageManager::load_app_manifest(const char* manifest_path,
     copy_text(manifest.name, sizeof(manifest.name), manifest.id);
   }
   if (!has_text(manifest.kind)) {
-    copy_text(manifest.kind, sizeof(manifest.kind), "external");
+    copy_text(manifest.kind, sizeof(manifest.kind), "micropython");
   }
-  if (!has_text(manifest.chatbot.endpoint)) {
-    copy_text(manifest.chatbot.endpoint, sizeof(manifest.chatbot.endpoint), chatbot_.endpoint);
+  if (!has_text(manifest.entry)) {
+    copy_text(manifest.entry, sizeof(manifest.entry), "main.py");
   }
-  if (!has_text(manifest.chatbot.model)) {
-    copy_text(manifest.chatbot.model, sizeof(manifest.chatbot.model), chatbot_.model);
-  }
-  if (!has_text(manifest.chatbot.api_key)) {
-    copy_text(manifest.chatbot.api_key, sizeof(manifest.chatbot.api_key), chatbot_.api_key);
-  }
-  manifest.chatbot.loaded =
-      has_text(manifest.chatbot.endpoint) && has_text(manifest.chatbot.api_key);
   std::snprintf(manifest.internal_path,
                 sizeof(manifest.internal_path),
                 "%s/%s",
                 config::kInternalProgramsPath,
                 manifest.id);
   return true;
-}
-
-void StorageManager::seed_builtin_chatbot_app() {
-  char app_dir[128] {};
-  append_path(app_dir, sizeof(app_dir), config::kInternalProgramsPath, "chatbot");
-  if (!ensure_dir(config::kInternalProgramsPath) || !ensure_dir(app_dir)) {
-    return;
-  }
-
-  char app_ini[160] {};
-  char keymap_ini[160] {};
-  char payload[160] {};
-  append_path(app_ini, sizeof(app_ini), app_dir, "app.ini");
-  append_path(keymap_ini, sizeof(keymap_ini), app_dir, "keymap.ini");
-  append_path(payload, sizeof(payload), app_dir, "chatbot.app");
-
-  write_text_file_if_missing(app_ini,
-                             "id=chatbot\n"
-                             "name=AI Chatbot\n"
-                             "kind=chatbot\n"
-                             "entry=chatbot.app\n"
-                             "allow_keymap=true\n"
-                             "chatbot.provider=openai\n"
-                             "chatbot.endpoint=https://api.openai.com/v1/chat/completions\n"
-                             "chatbot.model=gpt-4.1-mini\n");
-  write_text_file_if_missing(keymap_ini,
-                             "key.7.5.label=ASK\n"
-                             "key.7.5.role=enter\n"
-                             "key.8.0.label=BACK\n"
-                             "key.8.0.normal=:app.exit\n");
-  write_text_file_if_missing(payload,
-                             "# Built-in fallback app seeded when SD has no manifests.\n");
-  ESP_LOGW(TAG, "seeded built-in chatbot app in internal storage");
 }
 
 void StorageManager::merge_app_manifest(const ExternalAppManifest& manifest) {
@@ -478,7 +431,7 @@ void StorageManager::merge_app_manifest(const ExternalAppManifest& manifest) {
 }
 
 esp_err_t StorageManager::apply_keymap_file(const char* path) {
-  FILE* file = open_with_example_fallback(path);
+  FILE* file = open_text_file(path);
   if (file == nullptr) {
     return ESP_ERR_NOT_FOUND;
   }
@@ -506,13 +459,7 @@ esp_err_t StorageManager::apply_global_keymap() {
   if (!sd_mounted_) {
     return ESP_ERR_INVALID_STATE;
   }
-  esp_err_t err = apply_keymap_file(config::kGlobalKeymapPath);
-#if ESP32CALC_WOKWI
-  if (err == ESP_ERR_NOT_FOUND) {
-    err = apply_keymap_file(kWokwiGlobalKeymapPath);
-  }
-#endif
-  return err;
+  return apply_keymap_file(config::kGlobalKeymapPath);
 }
 
 esp_err_t StorageManager::apply_app_keymap(const char* app_id) {

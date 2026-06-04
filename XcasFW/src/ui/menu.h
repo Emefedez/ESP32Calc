@@ -11,7 +11,7 @@
 #include "graphics/mono_canvas.h"
 #include "hardware/keymap.h"
 #include "math/math_service.h"
-#include "system/chatbot_service.h"
+#include "system/app_runtime.h"
 #include "system/storage_manager.h"
 #include "ui/menu_constants.h"
 
@@ -31,8 +31,7 @@ class MenuUi {
   MenuUi(QueueHandle_t app_events,
          Weact213BwDisplay& display,
          MathService& math,
-         StorageManager& storage,
-         ChatbotService& chatbot);
+         StorageManager& storage);
   ~MenuUi();
   [[noreturn]] void run();
 
@@ -75,9 +74,7 @@ class MenuUi {
 
   enum class AppMenuStage : uint8_t {
     List,
-    ChatQuestion,
-    ChatWaiting,
-    ChatAnswer,
+    Running,
   };
 
   enum class VariablePalette : uint8_t {
@@ -113,7 +110,6 @@ class MenuUi {
   void apply_integrals_key(const KeyEvent& key);
   void apply_apps_key(const KeyEvent& key);
   void apply_math_result(const MathResult& result);
-  void apply_chatbot_result(const ChatbotResult& result);
   void consume_modifiers();
   ModeKind mode_from_index(uint8_t index) const;
   uint8_t index_from_mode(ModeKind kind) const;
@@ -189,9 +185,6 @@ class MenuUi {
   void move_cursor_right(bool all_the_way);
   size_t expression_visible_start() const;
   bool key_is_equals(const KeyEvent& key) const;
-  void append_chatbot_question_token(const char* token);
-  void delete_chatbot_question_char();
-  void submit_chatbot_question();
 
   void render();
   void render_status_bar();
@@ -217,7 +210,7 @@ class MenuUi {
   Weact213BwDisplay& display_;
   MathService& math_;
   StorageManager& storage_;
-  ChatbotService& chatbot_;
+  AppRuntime app_runtime_ {};
   MonoCanvas canvas_ {};
   // One active mode object, placement-new into fixed storage. Menus do not all
   // stay live, matching the active-only memory policy.
@@ -288,9 +281,6 @@ class MenuUi {
   AppMenuStage app_stage_ = AppMenuStage::List;
   uint8_t app_selected_ = 0;
   uint8_t active_app_index_ = 0;
-  char chatbot_question_[128] {};
-  char chatbot_answer_[192] {};
-  bool chatbot_answer_error_ = false;
 };
 
 }  // namespace esp32calc_alt

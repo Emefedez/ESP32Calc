@@ -112,13 +112,11 @@ class AppsMenuMode final : public MenuMode {
 MenuUi::MenuUi(QueueHandle_t app_events,
                Weact213BwDisplay& display,
                MathService& math,
-               StorageManager& storage,
-               ChatbotService& chatbot)
+               StorageManager& storage)
     : app_events_(app_events),
       display_(display),
       math_(math),
-      storage_(storage),
-      chatbot_(chatbot) {
+      storage_(storage) {
   // Graph cache is the one intentionally large UI allocation. Prefer PSRAM;
   // fall back to two internal entries so Wokwi/no-PSRAM still behaves.
   graph_cache_ = static_cast<GraphCacheEntry*>(
@@ -159,8 +157,6 @@ void MenuUi::run() {
         last_cursor_toggle = xTaskGetTickCount();
       } else if (event.type == AppEventType::Battery) {
         battery_ = event.battery;
-      } else if (event.type == AppEventType::Chatbot) {
-        apply_chatbot_result(event.chatbot);
       }
       while (xQueueReceive(app_events_, &event, 0) == pdTRUE) {
         if (event.type == AppEventType::Key) {
@@ -168,8 +164,6 @@ void MenuUi::run() {
           last_cursor_toggle = xTaskGetTickCount();
         } else if (event.type == AppEventType::Battery) {
           battery_ = event.battery;
-        } else if (event.type == AppEventType::Chatbot) {
-          apply_chatbot_result(event.chatbot);
         }
       }
       render();
@@ -395,6 +389,7 @@ void MenuUi::close_active_mode() {
         break;
       case ModeKind::Apps:
         static_cast<AppsMenuMode*>(active_mode_)->~AppsMenuMode();
+        app_runtime_.close();
         clear_key_overrides();
         storage_.apply_global_keymap();
         break;
@@ -444,23 +439,14 @@ void MenuUi::open_selected_app() {
   clear_key_overrides();
   storage_.apply_global_keymap();
   storage_.apply_app_keymap(app.id);
-
-  if (std::strcmp(app.kind, "chatbot") == 0) {
-    app_stage_ = AppMenuStage::ChatQuestion;
-    chatbot_question_[0] = '\0';
-    chatbot_answer_[0] = '\0';
-    chatbot_answer_error_ = false;
-    status_ = app.chatbot.loaded ? "ASK AI" : "NO API KEY";
-  } else {
-    app_stage_ = AppMenuStage::ChatAnswer;
-    std::snprintf(chatbot_answer_, sizeof(chatbot_answer_), "Unsupported app: %s", app.kind);
-    chatbot_answer_error_ = true;
-    status_ = "APP TYPE";
-  }
+  const esp_err_t err = app_runtime_.open(app);
+  app_stage_ = AppMenuStage::Running;
+  status_ = err == ESP_OK ? "APP RUN" : "APP ERROR";
   full_refresh_pending_ = true;
 }
 
 void MenuUi::return_to_app_list() {
+  app_runtime_.close();
   clear_key_overrides();
   storage_.apply_global_keymap();
   app_stage_ = AppMenuStage::List;
@@ -612,87 +598,8 @@ void MenuUi::apply_apps_key(const KeyEvent& key) {
   }
 
   if (def.role == KeyRole::Clear) {
-    if (app_stage_ == AppMenuStage::ChatQuestion && chatbot_question_[0] != '\0') {
-      delete_chatbot_question_char();
-      status_ = "ASK AI";
-    } else {
-      return_to_app_list();
-    }
+    return_to_app_list();
     return;
-  }
-  if (def.role == KeyRole::Delete) {
-    delete_chatbot_question_char();
-    status_ = "ASK AI";
-    return;
-  }
-  if (def.role == KeyRole::Enter) {
-    submit_chatbot_question();
-    return;
-  }
-  if (app_stage_ == AppMenuStage::ChatQuestion) {
-    append_chatbot_question_token(token);
-  }
-}
-
-void MenuUi::apply_chatbot_result(const ChatbotResult& result) {
-  std::snprintf(chatbot_answer_, sizeof(chatbot_answer_), "%s", result.text);
-  chatbot_answer_error_ = !result.ok;
-  if (active_mode_kind_ == ModeKind::Apps) {
-    app_stage_ = AppMenuStage::ChatAnswer;
-    status_ = result.ok ? "AI DONE" : "AI ERROR";
-    full_refresh_pending_ = true;
-  }
-}
-
-void MenuUi::append_chatbot_question_token(const char* token) {
-  if (token == nullptr || token[0] == '\0' || std::strncmp(token, ":app.", 5) == 0) {
-    return;
-  }
-  const size_t used = std::strlen(chatbot_question_);
-  const size_t token_len = std::strlen(token);
-  if (used + token_len + 1 >= sizeof(chatbot_question_)) {
-    status_ = "Q FULL";
-    return;
-  }
-  std::memcpy(chatbot_question_ + used, token, token_len + 1);
-  status_ = "ASK AI";
-}
-
-void MenuUi::delete_chatbot_question_char() {
-  const size_t used = std::strlen(chatbot_question_);
-  if (used > 0) {
-    chatbot_question_[used - 1] = '\0';
-  }
-}
-
-void MenuUi::submit_chatbot_question() {
-  if (app_stage_ == AppMenuStage::ChatAnswer) {
-    app_stage_ = AppMenuStage::ChatQuestion;
-    chatbot_question_[0] = '\0';
-    status_ = "ASK AI";
-    return;
-  }
-  if (app_stage_ != AppMenuStage::ChatQuestion || active_app_index_ >= storage_.app_count()) {
-    return;
-  }
-  const ExternalAppManifest& app = storage_.app(active_app_index_);
-  if (!app.chatbot.loaded) {
-    status_ = "NO API KEY";
-    return;
-  }
-  if (chatbot_question_[0] == '\0') {
-    status_ = "EMPTY Q";
-    return;
-  }
-  const esp_err_t err = chatbot_.ask(app.chatbot, chatbot_question_);
-  if (err == ESP_OK) {
-    app_stage_ = AppMenuStage::ChatWaiting;
-    status_ = "AI WAIT";
-  } else {
-    std::snprintf(chatbot_answer_, sizeof(chatbot_answer_), "Queue error: %s", esp_err_to_name(err));
-    chatbot_answer_error_ = true;
-    app_stage_ = AppMenuStage::ChatAnswer;
-    status_ = "AI ERROR";
   }
 }
 
@@ -723,22 +630,27 @@ void MenuUi::render_apps() {
     return;
   }
 
-  const ExternalAppManifest& app = storage_.app(active_app_index_);
-  canvas_.draw_text(6, 18, app.name, 1, true);
-  if (app_stage_ == AppMenuStage::ChatQuestion) {
-    canvas_.draw_text(6, 34, "Q:", 1, true);
-    canvas_.rect(5, 45, 240, 36, true);
-    canvas_.draw_text(9, 52, chatbot_question_, 1, true);
-    canvas_.draw_text(6, 96, "ENTER SENDS, AC BACK", 1, true);
-  } else if (app_stage_ == AppMenuStage::ChatWaiting) {
-    canvas_.draw_text(6, 44, "Waiting for API...", 1, true);
-    canvas_.draw_text(6, 62, "WiFi + SD key required", 1, true);
-  } else {
-    canvas_.draw_text(6, 34, chatbot_answer_error_ ? "ERR:" : "AI:", 1, true);
-    canvas_.rect(5, 45, 240, 61, true);
-    canvas_.draw_text(9, 52, chatbot_answer_, 1, true);
-    canvas_.draw_text(6, 112, "ENTER NEW, AC BACK", 1, true);
+  const char* title = app_runtime_.active_name();
+  if (title[0] == '\0' && active_app_index_ < storage_.app_count()) {
+    title = storage_.app(active_app_index_).name;
   }
+  canvas_.draw_text(6, 18, title, 1, true);
+  const bool running = app_runtime_.state() == AppRuntimeState::Running;
+  canvas_.draw_text(6, 34, running ? "MPY RUNTIME ACTIVE" : "APP ERROR", 1, true);
+  char entry_line[80] {};
+  const char* entry_name = std::strrchr(app_runtime_.entry_path(), '/');
+  entry_name = entry_name == nullptr ? app_runtime_.entry_path() : entry_name + 1;
+  std::snprintf(entry_line, sizeof(entry_line), "entry=%.32s", entry_name);
+  canvas_.draw_text(6, 48, entry_line, 1, true);
+  char message_line[48] {};
+  std::snprintf(message_line, sizeof(message_line), "%.36s", app_runtime_.message());
+  canvas_.draw_text(6, 66, message_line, 1, true);
+  if (running) {
+    char preview_line[48] {};
+    std::snprintf(preview_line, sizeof(preview_line), "%.36s", app_runtime_.preview());
+    canvas_.draw_text(6, 80, preview_line, 1, true);
+  }
+  canvas_.draw_text(6, 112, "AC CLOSE", 1, true);
 }
 
 }  // namespace esp32calc_alt
