@@ -17,7 +17,6 @@ namespace esp32calc_alt {
 namespace {
 
 constexpr const char* TAG = "app_runtime";
-constexpr size_t kMicroPythonHeapBytes = ESP32CALC_MICROPYTHON_HEAP_BYTES;
 constexpr size_t kMicroPythonSourceBytes = ESP32CALC_MICROPYTHON_SOURCE_BYTES;
 
 bool has_text(const char* text) {
@@ -29,29 +28,6 @@ void copy_text(char* output, size_t output_size, const char* input) {
     return;
   }
   std::snprintf(output, output_size, "%s", input == nullptr ? "" : input);
-}
-
-char* trim(char* text) {
-  if (text == nullptr) {
-    return text;
-  }
-  while (*text == ' ' || *text == '\t' || *text == '\r' || *text == '\n') {
-    ++text;
-  }
-  char* end = text + std::strlen(text);
-  while (end > text && (end[-1] == ' ' || end[-1] == '\t' ||
-                        end[-1] == '\r' || end[-1] == '\n')) {
-    --end;
-  }
-  *end = '\0';
-  return text;
-}
-
-void trim_in_place(char* text) {
-  char* trimmed = trim(text);
-  if (trimmed != text) {
-    std::memmove(text, trimmed, std::strlen(trimmed) + 1);
-  }
 }
 
 bool build_entry_path(char* output,
@@ -90,9 +66,22 @@ esp_err_t read_source_file(const char* path, char* output, size_t output_size) {
   return ESP_OK;
 }
 
-void* allocate_mpy_heap(size_t size) {
+size_t pick_mpy_heap_size() {
+  size_t size = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+  if (size < ESP32CALC_MICROPYTHON_HEAP_BYTES) {
+    size = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    if (size < ESP32CALC_MICROPYTHON_HEAP_BYTES) {
+      size = ESP32CALC_MICROPYTHON_HEAP_BYTES;
+    }
+  }
+  return size;
+}
+
+void* allocate_mpy_heap(size_t& size) {
+  size = pick_mpy_heap_size();
   void* heap = heap_caps_malloc(size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
   if (heap == nullptr) {
+    size = ESP32CALC_MICROPYTHON_HEAP_BYTES;
     heap = heap_caps_malloc(size, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
   }
   return heap;
@@ -132,7 +121,8 @@ esp_err_t AppRuntime::open(const ExternalAppManifest& manifest) {
     return read_err;
   }
 
-  mpy_heap_ = allocate_mpy_heap(kMicroPythonHeapBytes);
+  size_t mpy_heap_size = 0;
+  mpy_heap_ = allocate_mpy_heap(mpy_heap_size);
   if (mpy_heap_ == nullptr) {
     set_error("MicroPython heap failed");
     return ESP_ERR_NO_MEM;
@@ -140,9 +130,8 @@ esp_err_t AppRuntime::open(const ExternalAppManifest& manifest) {
 
   bool script_ok = false;
   const esp_err_t run_err = micropython_runtime_start(
-      mpy_heap_, kMicroPythonHeapBytes, source, manifest.source_path, preview_, sizeof(preview_), &script_ok);
+      mpy_heap_, mpy_heap_size, source, manifest.source_path, &script_ok);
   mpy_started_ = run_err == ESP_OK;
-  trim_in_place(preview_);
 
   if (run_err != ESP_OK) {
     release_vm();
@@ -157,10 +146,7 @@ esp_err_t AppRuntime::open(const ExternalAppManifest& manifest) {
 
   state_ = AppRuntimeState::Running;
   copy_text(message_, sizeof(message_), "MicroPython executed");
-  if (!has_text(preview_)) {
-    copy_text(preview_, sizeof(preview_), "no output");
-  }
-  ESP_LOGI(TAG, "open id=%s entry=%s heap=%u", active_id(), entry_path_, static_cast<unsigned>(kMicroPythonHeapBytes));
+  ESP_LOGI(TAG, "open id=%s entry=%s heap=%u", active_id(), entry_path_, static_cast<unsigned>(mpy_heap_size));
   return ESP_OK;
 }
 
@@ -207,15 +193,11 @@ void AppRuntime::reset() {
   manifest_ = nullptr;
   entry_path_[0] = '\0';
   message_[0] = '\0';
-  preview_[0] = '\0';
 }
 
-void AppRuntime::set_error(const char* message, bool clear_preview) {
+void AppRuntime::set_error(const char* message, bool) {
   state_ = AppRuntimeState::Error;
   copy_text(message_, sizeof(message_), message);
-  if (clear_preview) {
-    preview_[0] = '\0';
-  }
   ESP_LOGW(TAG, "open failed id=%s: %s", active_id(), message_);
 }
 

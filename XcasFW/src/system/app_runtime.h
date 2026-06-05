@@ -26,7 +26,6 @@ class AppRuntime {
   const char* active_name() const { return manifest_ ? manifest_->name : ""; }
   const char* entry_path() const { return entry_path_; }
   const char* message() const { return message_; }
-  const char* preview() const { return preview_; }
 
  private:
   void release_vm();
@@ -39,7 +38,6 @@ class AppRuntime {
   const ExternalAppManifest* manifest_ = nullptr;
   char entry_path_[160] {};
   char message_[48] {};
-  char preview_[64] {};
 };
 
 }  // namespace esp32calc_alt

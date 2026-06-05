@@ -8,8 +8,10 @@
 #include "app_config.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
+#include "esp_system.h"
 #include "freertos/task.h"
 #include "hardware/keymap.h"
+#include "system/boot_mode.h"
 #include "ui/menu_constants.h"
 
 namespace esp32calc_alt {
@@ -464,10 +466,12 @@ void MenuUi::open_selected_app() {
     return;
 #endif
   }
-  const esp_err_t err = app_runtime_.open(app);
-  app_stage_ = AppMenuStage::Running;
-  status_ = err == ESP_OK ? "APP RUN" : "APP ERROR";
+  boot::set_mode(boot::Mode::MicroPython, app.id);
+  status_ = "REBOOTING...";
   full_refresh_pending_ = true;
+  render();
+  vTaskDelay(pdMS_TO_TICKS(500));
+  esp_restart();
 }
 
 void MenuUi::return_to_app_list() {
@@ -673,30 +677,11 @@ void MenuUi::render_apps() {
     return;
   }
 
-  const char* title = app_runtime_.active_name();
-  if (title[0] == '\0' && active_app_index_ < storage_.app_count()) {
-    title = storage_.app(active_app_index_).name;
-  }
+  const char* title = active_app_index_ < storage_.app_count()
+                          ? storage_.app(active_app_index_).name
+                          : "";
   canvas_.draw_text(6, 18, title, 1, true);
-  const bool running = app_runtime_.state() == AppRuntimeState::Running;
-  canvas_.draw_text(6, 34, running ? "MPY RUNTIME ACTIVE" : "APP ERROR", 1, true);
-  char entry_line[80] {};
-  const char* entry_name = std::strrchr(app_runtime_.entry_path(), '/');
-  entry_name = entry_name == nullptr ? app_runtime_.entry_path() : entry_name + 1;
-  std::snprintf(entry_line, sizeof(entry_line), "entry=%.32s", entry_name);
-  canvas_.draw_text(6, 48, entry_line, 1, true);
-  char message_line[48] {};
-  const char* message = app_runtime_.message();
-  if (message[0] == '\0') {
-    message = status_;
-  }
-  std::snprintf(message_line, sizeof(message_line), "%.36s", message);
-  canvas_.draw_text(6, 66, message_line, 1, true);
-  if (running) {
-    char preview_line[48] {};
-    std::snprintf(preview_line, sizeof(preview_line), "%.36s", app_runtime_.preview());
-    canvas_.draw_text(6, 80, preview_line, 1, true);
-  }
+  canvas_.draw_text(6, 40, status_, 1, true);
   canvas_.draw_text(6, 112, "AC CLOSE", 1, true);
 }
 

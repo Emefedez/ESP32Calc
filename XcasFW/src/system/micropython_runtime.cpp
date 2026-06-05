@@ -13,69 +13,15 @@ extern "C" {
 #include "py/runtime.h"
 }
 
-static char* g_output = nullptr;
-static size_t g_output_size = 0;
-static size_t g_output_used = 0;
-static bool g_output_truncated = false;
+#include "esp_log.h"
+
 static bool g_runtime_active = false;
 static mp_obj_t g_handle_key = mp_const_none;
-
-static void output_append_char(char ch) {
-  if (g_output == nullptr || g_output_size == 0) {
-    return;
-  }
-  if (g_output_used + 1 >= g_output_size) {
-    g_output_truncated = true;
-    return;
-  }
-  g_output[g_output_used++] = ch;
-  g_output[g_output_used] = '\0';
-}
-
-static void output_append_text(const char* text) {
-  while (text != nullptr && *text != '\0') {
-    output_append_char(*text++);
-  }
-}
-
-static void output_reset(char* output, size_t output_size) {
-  g_output = output;
-  g_output_size = output_size;
-  g_output_used = 0;
-  g_output_truncated = false;
-  if (g_output != nullptr && g_output_size > 0) {
-    g_output[0] = '\0';
-  }
-}
-
-static void output_trim(void) {
-  if (g_output == nullptr || g_output_size == 0) {
-    return;
-  }
-  while (g_output_used > 0 &&
-         (g_output[g_output_used - 1] == ' ' || g_output[g_output_used - 1] == '\n' ||
-          g_output[g_output_used - 1] == '\r' || g_output[g_output_used - 1] == '\t')) {
-    --g_output_used;
-  }
-  g_output[g_output_used] = '\0';
-}
+static mp_stdout_cb_t g_stdout_cb = nullptr;
 
 extern "C" void esp32calc_mpy_stdout_tx(const char* str, size_t len) {
-  bool last_was_space = g_output_used > 0 && g_output[g_output_used - 1] == ' ';
-  for (size_t i = 0; i < len; ++i) {
-    const unsigned char ch = (unsigned char)str[i];
-    if (ch == '\r') {
-      continue;
-    }
-    if (ch == '\n' || ch == '\t') {
-      if (!last_was_space && g_output_used > 0) {
-        output_append_char(' ');
-        last_was_space = true;
-      }
-      continue;
-    }
-    output_append_char((ch >= 32 && ch <= 126) ? (char)ch : '?');
-    last_was_space = ch == ' ';
+  if (g_stdout_cb != nullptr) {
+    g_stdout_cb(str, len);
   }
 }
 
@@ -139,8 +85,6 @@ esp_err_t micropython_runtime_start(void* heap,
                                     size_t heap_size,
                                     const char* source,
                                     const char* import_path,
-                                    char* output,
-                                    size_t output_size,
                                     bool* script_ok) {
   if (heap == nullptr || heap_size == 0 || source == nullptr) {
     return ESP_ERR_INVALID_ARG;
@@ -149,17 +93,12 @@ esp_err_t micropython_runtime_start(void* heap,
     micropython_runtime_stop();
   }
 
-  output_reset(output, output_size);
   int stack_anchor = 0;
   mp_embed_init(heap, heap_size, &stack_anchor);
   g_runtime_active = true;
   add_import_path(import_path);
 
   const bool ok = exec_source(source);
-  output_trim();
-  if (g_output_truncated) {
-    output_append_text("...");
-  }
   if (script_ok != nullptr) {
     *script_ok = ok;
   }
@@ -176,7 +115,6 @@ void micropython_runtime_stop(void) {
   g_handle_key = mp_const_none;
   mp_embed_deinit();
   g_runtime_active = false;
-  output_reset(nullptr, 0);
 }
 
 bool micropython_runtime_active(void) {
@@ -188,4 +126,8 @@ void micropython_runtime_on_key(const char* token) {
     return;
   }
   call_handle_key(token);
+}
+
+void micropython_runtime_set_stdout_callback(mp_stdout_cb_t cb) {
+  g_stdout_cb = cb;
 }

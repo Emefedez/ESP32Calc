@@ -342,8 +342,7 @@ bool is_known_function_name(const char* begin, size_t length) {
   static constexpr const char* kNames[] = {
       "abs", "acos", "asin", "atan", "cos", "deriv", "derive", "derivative",
       "det", "diff", "evalf", "exp", "factor", "fsolve", "graph", "int", "integrate",
-      "inv", "inverse", "linsolve", "ln", "log", "matrix", "poly1", "sin", "sistema",
-      "sistemas", "solve", "sqrt", "sys", "system", "systems", "tan", "transpose",
+      "inv", "inverse", "linsolve", "ln", "log", "matrix", "poly1", "sin", "solve", "sqrt", "sys", "system", "systems", "tan", "transpose",
   };
   for (const char* name : kNames) {
     if (std::strlen(name) != length) {

@@ -4,6 +4,8 @@
 #include "display/weact_213_bw.h"
 #include "hardware/keypad_matrix.h"
 #include "math/math_service.h"
+#include "system/boot_mode.h"
+#include "system/mpy_mode.h"
 #include "system/storage_manager.h"
 #include "system/wifi_manager.h"
 #include "ui/menu.h"
@@ -73,6 +75,22 @@ extern "C" void app_main(void) {
              g_storage.internal_mounted(),
              static_cast<unsigned>(g_storage.app_count()),
              g_storage.wifi().loaded);
+  }
+
+  if (esp32calc_alt::boot::current_mode() == esp32calc_alt::boot::Mode::MicroPython) {
+    err = g_display.init();
+    if (err != ESP_OK) { ESP_LOGE(TAG, "display init failed"); return; }
+    err = g_keypad.init();
+    if (err != ESP_OK) { ESP_LOGE(TAG, "keypad init failed"); return; }
+    err = g_battery.init();
+    if (err != ESP_OK) { ESP_LOGW(TAG, "battery init failed"); }
+    err = g_keypad.start(g_app_events);
+    if (err != ESP_OK) { ESP_LOGE(TAG, "keypad start failed"); return; }
+    err = g_battery.start(g_app_events);
+    if (err != ESP_OK) { ESP_LOGW(TAG, "battery start failed"); }
+    esp32calc_alt::run_mpy_mode(g_storage, g_display, g_app_events);
+    esp32calc_alt::boot::set_mode(esp32calc_alt::boot::Mode::Calculator);
+    esp_restart();
   }
 
   err = g_math_service.start();
