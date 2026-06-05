@@ -370,7 +370,7 @@ void MenuUi::commit_matrix_definition() {
     status_ = "MATRIX BIG";
     return;
   }
-  if (!math_.submit(request)) {
+  if (math_.busy() || !math_.submit(request)) {
     status_ = "MATH BUSY";
     return;
   }

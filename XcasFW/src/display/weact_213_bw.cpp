@@ -439,8 +439,7 @@ esp_err_t Weact213BwDisplay::fast_partial_update_from_full(
 esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas) {
   const CanvasUpdateHint& hint = canvas.update_hint();
   return update_canvas(canvas,
-                       hint.kind == CanvasRefreshKind::Full ? RefreshMode::Full
-                                                            : RefreshMode::Partial);
+                       hint.full_refresh ? RefreshMode::Full : RefreshMode::Partial);
 }
 
 esp_err_t Weact213BwDisplay::update_canvas(const MonoCanvas& canvas, RefreshMode mode) {

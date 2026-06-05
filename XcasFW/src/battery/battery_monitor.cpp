@@ -30,13 +30,17 @@ esp_err_t BatteryMonitor::init() {
                       "configure battery adc");
 
   adc_handle_ = handle;
-  latest_ = sample();
+  uint16_t adc_mv = 0;
+  uint16_t pack_mv = 0;
+  uint8_t percent = 0;
+  latest_ = sample(&adc_mv, &pack_mv, &percent);
   ESP_LOGI(TAG,
-           "adc ready on GPIO%d, adc=%umV pack=%umV charge=%u%%",
+           "adc ready on GPIO%d, adc=%umV pack=%umV charge=%u%% bars=%u/5",
            pins::kBatterySense,
-           latest_.adc_mv,
-           latest_.pack_mv,
-           latest_.percent);
+           adc_mv,
+           pack_mv,
+           percent,
+           latest_.bars);
   return ESP_OK;
 }
 
@@ -59,25 +63,31 @@ void BatteryMonitor::task_trampoline(void* arg) {
 
 void BatteryMonitor::task() {
   while (true) {
-    latest_ = sample();
+    uint16_t adc_mv = 0;
+    uint16_t pack_mv = 0;
+    uint8_t percent = 0;
+    latest_ = sample(&adc_mv, &pack_mv, &percent);
 
     AppEvent event {};
-    event.type = AppEventType::Battery;
+    event.is_key = false;
     event.battery = latest_;
     if (app_events_ != nullptr) {
       xQueueSend(app_events_, &event, 0);
     }
 
     ESP_LOGD(TAG,
-             "adc=%umV pack=%umV charge=%u%%",
-             latest_.adc_mv,
-             latest_.pack_mv,
-             latest_.percent);
+             "adc=%umV pack=%umV charge=%u%% bars=%u/5",
+             adc_mv,
+             pack_mv,
+             percent,
+             latest_.bars);
     vTaskDelay(pdMS_TO_TICKS(config::kBatteryPollPeriodMs));
   }
 }
 
-BatterySnapshot BatteryMonitor::sample() {
+BatterySnapshot BatteryMonitor::sample(uint16_t* adc_mv_out,
+                                       uint16_t* pack_mv_out,
+                                       uint8_t* percent_out) {
   auto* handle = static_cast<adc_oneshot_unit_handle_t>(adc_handle_);
   int raw = 0;
   if (handle != nullptr) {
@@ -98,13 +108,23 @@ BatterySnapshot BatteryMonitor::sample() {
   const uint16_t pack_mv = static_cast<uint16_t>(
       std::lround(static_cast<float>(adc_mv) * config::kBatteryDividerRatio));
 #endif
-  const int percent = ((static_cast<int>(pack_mv) - config::kBatteryEmptyMv) * 100) /
-                      (config::kBatteryFullMv - config::kBatteryEmptyMv);
+  const int percent = std::clamp(
+      ((static_cast<int>(pack_mv) - config::kBatteryEmptyMv) * 100) /
+          (config::kBatteryFullMv - config::kBatteryEmptyMv),
+      0,
+      100);
+  if (adc_mv_out != nullptr) {
+    *adc_mv_out = adc_mv;
+  }
+  if (pack_mv_out != nullptr) {
+    *pack_mv_out = pack_mv;
+  }
+  if (percent_out != nullptr) {
+    *percent_out = static_cast<uint8_t>(percent);
+  }
 
   BatterySnapshot snapshot {};
-  snapshot.adc_mv = adc_mv;
-  snapshot.pack_mv = pack_mv;
-  snapshot.percent = static_cast<uint8_t>(std::clamp(percent, 0, 100));
+  snapshot.bars = static_cast<uint8_t>(std::clamp((percent + 10) / 20, 0, 5));
   return snapshot;
 }
 

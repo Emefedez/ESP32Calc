@@ -45,14 +45,13 @@ void log_memory(const char* label) {
 }
 
 void ui_task(void*) {
-  static esp32calc_alt::MenuUi ui(g_app_events, g_display, g_math_service, g_storage);
+  static esp32calc_alt::MenuUi ui(g_app_events, g_display, g_math_service, g_storage, g_wifi);
   ui.run();
 }
 
 }  // namespace
 
 extern "C" void app_main(void) {
-  ESP_LOGI(TAG, "ESP32Calc NeoCalculator-inspired firmware lab boot");
   log_memory("boot");
 
   g_app_events = xQueueCreateStatic(esp32calc_alt::config::kAppEventQueueDepth,
@@ -76,11 +75,14 @@ extern "C" void app_main(void) {
              g_storage.wifi().loaded);
   }
 
+  err = g_math_service.start();
+  if (err != ESP_OK) {
+    ESP_LOGE(TAG, "math service start failed: %s", esp_err_to_name(err));
+    return;
+  }
+
   if (g_storage.wifi().loaded) {
-    err = g_wifi.start(g_storage.wifi());
-    if (err != ESP_OK) {
-      ESP_LOGW(TAG, "wifi start failed: %s", esp_err_to_name(err));
-    }
+    ESP_LOGI(TAG, "wifi config present; waiting for app request");
   }
 
   err = g_display.init();
@@ -98,12 +100,6 @@ extern "C" void app_main(void) {
   err = g_battery.init();
   if (err != ESP_OK) {
     ESP_LOGW(TAG, "battery init failed: %s", esp_err_to_name(err));
-  }
-
-  err = g_math_service.start();
-  if (err != ESP_OK) {
-    ESP_LOGE(TAG, "math service start failed: %s", esp_err_to_name(err));
-    return;
   }
 
   err = g_keypad.start(g_app_events);

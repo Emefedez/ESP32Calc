@@ -133,17 +133,15 @@ esp_err_t AppRuntime::open(const ExternalAppManifest& manifest) {
     return read_err;
   }
 
-  mpy_heap_size_ = kMicroPythonHeapBytes;
-  mpy_heap_ = allocate_mpy_heap(mpy_heap_size_);
+  mpy_heap_ = allocate_mpy_heap(kMicroPythonHeapBytes);
   if (mpy_heap_ == nullptr) {
-    mpy_heap_size_ = 0;
     set_error("MicroPython heap failed");
     return ESP_ERR_NO_MEM;
   }
 
   bool script_ok = false;
   const esp_err_t run_err = micropython_runtime_start(
-      mpy_heap_, mpy_heap_size_, source, manifest.source_path, preview_, sizeof(preview_), &script_ok);
+      mpy_heap_, kMicroPythonHeapBytes, source, manifest.source_path, preview_, sizeof(preview_), &script_ok);
   mpy_started_ = run_err == ESP_OK;
   trim_in_place(preview_);
 
@@ -163,7 +161,7 @@ esp_err_t AppRuntime::open(const ExternalAppManifest& manifest) {
   if (!has_text(preview_)) {
     copy_text(preview_, sizeof(preview_), "no output");
   }
-  ESP_LOGI(TAG, "open id=%s entry=%s heap=%u", active_id_, entry_path_, static_cast<unsigned>(mpy_heap_size_));
+  ESP_LOGI(TAG, "open id=%s entry=%s heap=%u", active_id_, entry_path_, static_cast<unsigned>(kMicroPythonHeapBytes));
   return ESP_OK;
 }
 
@@ -194,13 +192,11 @@ void AppRuntime::release_vm() {
     heap_caps_free(mpy_heap_);
     mpy_heap_ = nullptr;
   }
-  mpy_heap_size_ = 0;
 }
 
 void AppRuntime::reset() {
   state_ = AppRuntimeState::Idle;
   mpy_heap_ = nullptr;
-  mpy_heap_size_ = 0;
   mpy_started_ = false;
   active_id_[0] = '\0';
   active_name_[0] = '\0';

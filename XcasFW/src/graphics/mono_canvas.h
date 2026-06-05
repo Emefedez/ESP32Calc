@@ -13,13 +13,8 @@ struct MonoPoint {
   int y;
 };
 
-enum class CanvasRefreshKind : uint8_t {
-  Partial,
-  Full,
-};
-
 struct CanvasUpdateHint {
-  CanvasRefreshKind kind = CanvasRefreshKind::Partial;
+  bool full_refresh = false;
   int x = 0;
   int y = 0;
   int width = 0;
@@ -35,7 +30,7 @@ class MonoCanvas {
   static constexpr size_t kBufferSize = ((kWidth + 7) / 8) * kHeight;
   static constexpr size_t kNativeBufferSize = config::kDisplayNativeBufferSize;
 
-  void begin_frame(CanvasRefreshKind kind = CanvasRefreshKind::Partial);
+  void begin_frame(bool full_refresh = false);
   const CanvasUpdateHint& update_hint() const { return update_hint_; }
   void request_full_refresh();
   void request_partial_refresh(int x, int y, int width, int height);

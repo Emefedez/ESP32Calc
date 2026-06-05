@@ -21,7 +21,7 @@ class KeypadMatrix {
   static void task_trampoline(void* arg);
   void task();
   void scan_raw(bool (&pressed)[kRows][kCols]);
-  void publish_key(uint8_t row, uint8_t col, KeyPhase phase);
+  void publish_key(uint8_t row, uint8_t col, bool pressed);
 
   QueueHandle_t app_events_ = nullptr;
   bool stable_[kRows][kCols] {};

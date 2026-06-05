@@ -19,11 +19,11 @@ esp_err_t MathService::start() {
     return ESP_OK;
   }
 
-  request_queue_ = xQueueCreateStatic(kQueueDepth,
+  request_queue_ = xQueueCreateStatic(kRequestQueueDepth,
                                       sizeof(MathRequest),
                                       request_queue_buffer_,
                                       &request_queue_storage_);
-  result_queue_ = xQueueCreateStatic(kQueueDepth,
+  result_queue_ = xQueueCreateStatic(kResultQueueDepth,
                                      sizeof(MathResult),
                                      result_queue_buffer_,
                                      &result_queue_storage_);
@@ -58,7 +58,17 @@ bool MathService::submit(const MathRequest& request) {
   if (request_queue_ == nullptr) {
     return false;
   }
+  if (busy_.load(std::memory_order_acquire) || uxQueueMessagesWaiting(request_queue_) > 0) {
+    return false;
+  }
   return xQueueSend(request_queue_, &request, 0) == pdTRUE;
+}
+
+bool MathService::busy() const {
+  if (request_queue_ == nullptr) {
+    return false;
+  }
+  return busy_.load(std::memory_order_acquire) || uxQueueMessagesWaiting(request_queue_) > 0;
 }
 
 bool MathService::poll_result(MathResult& result, TickType_t wait_ticks) {
@@ -100,7 +110,9 @@ void MathService::task() {
     }
 
     MathResult result {};
+    busy_.store(true, std::memory_order_release);
     handle_request(request, result);
+    busy_.store(false, std::memory_order_release);
     if (xQueueSend(result_queue_, &result, 0) != pdTRUE) {
       ESP_LOGW(TAG, "result queue full");
     }

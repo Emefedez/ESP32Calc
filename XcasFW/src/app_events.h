@@ -4,35 +4,26 @@
 
 namespace esp32calc_alt {
 
-enum class AppEventType : uint8_t {
-  Key,
-  Battery,
-};
-
-enum class KeyPhase : uint8_t {
-  Pressed,
-  Released,
-};
-
 struct KeyEvent {
-  uint8_t row = 0;
-  uint8_t col = 0;
-  const char* label = "";
-  KeyPhase phase = KeyPhase::Pressed;
-  bool shift = false;
-  bool alpha = false;
+  uint8_t row;
+  uint8_t col;
+  bool pressed : 1;
+  bool shift : 1;
+  bool alpha : 1;
 };
 
 struct BatterySnapshot {
-  uint16_t adc_mv = 0;
-  uint16_t pack_mv = 0;
-  uint8_t percent = 0;
+  uint8_t bars;
 };
 
 struct AppEvent {
-  AppEventType type = AppEventType::Key;
-  KeyEvent key {};
-  BatterySnapshot battery {};
+  bool is_key : 1;
+  union {
+    KeyEvent key;
+    BatterySnapshot battery;
+  };
 };
+
+static_assert(sizeof(BatterySnapshot) == 1);
 
 }  // namespace esp32calc_alt

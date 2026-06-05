@@ -5,6 +5,7 @@
 #include <cstring>
 #include <new>
 
+#include "app_config.h"
 #include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "freertos/task.h"
@@ -112,11 +113,13 @@ class AppsMenuMode final : public MenuMode {
 MenuUi::MenuUi(QueueHandle_t app_events,
                Weact213BwDisplay& display,
                MathService& math,
-               StorageManager& storage)
+               StorageManager& storage,
+               WifiManager& wifi)
     : app_events_(app_events),
       display_(display),
       math_(math),
-      storage_(storage) {
+      storage_(storage),
+      wifi_(wifi) {
   // Graph cache is the one intentionally large UI allocation. Prefer PSRAM;
   // fall back to two internal entries so Wokwi/no-PSRAM still behaves.
   graph_cache_ = static_cast<GraphCacheEntry*>(
@@ -152,17 +155,17 @@ void MenuUi::run() {
   while (true) {
     AppEvent event {};
     if (xQueueReceive(app_events_, &event, pdMS_TO_TICKS(25)) == pdTRUE) {
-      if (event.type == AppEventType::Key) {
+      if (event.is_key) {
         update_from_key(event.key);
         last_cursor_toggle = xTaskGetTickCount();
-      } else if (event.type == AppEventType::Battery) {
+      } else {
         battery_ = event.battery;
       }
       while (xQueueReceive(app_events_, &event, 0) == pdTRUE) {
-        if (event.type == AppEventType::Key) {
+        if (event.is_key) {
           update_from_key(event.key);
           last_cursor_toggle = xTaskGetTickCount();
-        } else if (event.type == AppEventType::Battery) {
+        } else {
           battery_ = event.battery;
         }
       }
@@ -190,7 +193,7 @@ void MenuUi::run() {
 }
 
 void MenuUi::update_from_key(const KeyEvent& key) {
-  if (key.phase != KeyPhase::Pressed) {
+  if (!key.pressed) {
     return;
   }
 
@@ -439,6 +442,28 @@ void MenuUi::open_selected_app() {
   clear_key_overrides();
   storage_.apply_global_keymap();
   storage_.apply_app_keymap(app.id);
+  if (app.wants_wifi) {
+#if ESP32CALC_ENABLE_WIFI_APPS
+    if (!storage_.wifi().loaded) {
+      app_stage_ = AppMenuStage::Running;
+      status_ = "NO WIFI CFG";
+      full_refresh_pending_ = true;
+      return;
+    }
+    const esp_err_t wifi_err = wifi_.start(storage_.wifi());
+    if (wifi_err != ESP_OK) {
+      app_stage_ = AppMenuStage::Running;
+      status_ = "WIFI ERROR";
+      full_refresh_pending_ = true;
+      return;
+    }
+#else
+    app_stage_ = AppMenuStage::Running;
+    status_ = "WIFI OFF";
+    full_refresh_pending_ = true;
+    return;
+#endif
+  }
   const esp_err_t err = app_runtime_.open(app);
   app_stage_ = AppMenuStage::Running;
   status_ = err == ESP_OK ? "APP RUN" : "APP ERROR";
@@ -513,9 +538,16 @@ void MenuUi::render_status_bar() {
     canvas_.draw_text(107, 2, "ALPHA", 1, true);
   }
 
-  char battery_text[16] {};
-  std::snprintf(battery_text, sizeof(battery_text), "%u%%", battery_.percent);
-  canvas_.draw_text(218, 2, battery_text, 1, true);
+  constexpr int kBatteryX = 217;
+  constexpr int kBatteryY = 2;
+  constexpr int kBatterySlotW = 5;
+  for (uint8_t i = 0; i < 5; ++i) {
+    const int x = kBatteryX + static_cast<int>(i) * kBatterySlotW;
+    canvas_.rect(x, kBatteryY, 4, 8, true);
+    if (i < battery_.bars) {
+      canvas_.fill_rect(x + 1, kBatteryY + 1, 2, 6, true);
+    }
+  }
   canvas_.hline(0, 13, MonoCanvas::kWidth, true);
 }
 
@@ -643,7 +675,11 @@ void MenuUi::render_apps() {
   std::snprintf(entry_line, sizeof(entry_line), "entry=%.32s", entry_name);
   canvas_.draw_text(6, 48, entry_line, 1, true);
   char message_line[48] {};
-  std::snprintf(message_line, sizeof(message_line), "%.36s", app_runtime_.message());
+  const char* message = app_runtime_.message();
+  if (message[0] == '\0') {
+    message = status_;
+  }
+  std::snprintf(message_line, sizeof(message_line), "%.36s", message);
   canvas_.draw_text(6, 66, message_line, 1, true);
   if (running) {
     char preview_line[48] {};

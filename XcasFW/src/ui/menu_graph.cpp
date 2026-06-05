@@ -97,6 +97,11 @@ void MenuUi::open_graph_expression(const char* expression) {
   queue_graph_sample();
 }
 void MenuUi::queue_graph_sample() {
+  if (math_.busy()) {
+    status_ = "MATH BUSY";
+    graph_has_error_ = true;
+    return;
+  }
   graph_count_ = 0;
   graph_has_result_ = false;
   graph_has_error_ = false;
@@ -120,7 +125,7 @@ void MenuUi::queue_graph_sample() {
   if (math_.submit(request)) {
     status_ = "GRAPH QUEUED";
   } else {
-    status_ = "QUEUE FULL";
+    status_ = math_.busy() ? "MATH BUSY" : "QUEUE FULL";
     graph_has_error_ = true;
   }
 }

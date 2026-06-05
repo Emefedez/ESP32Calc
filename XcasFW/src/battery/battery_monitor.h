@@ -16,7 +16,9 @@ class BatteryMonitor {
  private:
   static void task_trampoline(void* arg);
   void task();
-  BatterySnapshot sample();
+  BatterySnapshot sample(uint16_t* adc_mv = nullptr,
+                         uint16_t* pack_mv = nullptr,
+                         uint8_t* percent = nullptr);
 
   QueueHandle_t app_events_ = nullptr;
   BatterySnapshot latest_ {};
@@ -24,4 +26,3 @@ class BatteryMonitor {
 };
 
 }  // namespace esp32calc_alt
-

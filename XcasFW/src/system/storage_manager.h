@@ -21,6 +21,7 @@ struct ExternalAppManifest {
   bool on_sd = false;
   bool on_internal = false;
   bool allow_keymap = false;
+  bool wants_wifi = false;
   char id[32] {};
   char name[48] {};
   char kind[24] {};

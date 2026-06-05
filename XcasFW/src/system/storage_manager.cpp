@@ -143,12 +143,7 @@ void seed_wokwi_sd_if_empty() {
   }
 
   char path[160] {};
-  append_path(path, sizeof(path), kWokwiSdConfigPath, "wifi.ini");
-  bool ok = write_text_file_if_missing(path,
-                                       "# Wokwi/dev default. Replace on real SD card.\n"
-                                       "ssid=Wokwi-GUEST\n"
-                                       "password=\n"
-                                       "hostname=esp32calc\n");
+  bool ok = true;
   append_path(path, sizeof(path), kWokwiSdConfigPath, "keymap.ini");
   ok = write_text_file_if_missing(path,
                                   "# Wokwi SD keymap.\n"
@@ -161,6 +156,7 @@ void seed_wokwi_sd_if_empty() {
                                   "name=Hello MPY\n"
                                   "kind=micropython\n"
                                   "entry=main.py\n"
+                                  "wifi=false\n"
                                   "allow_keymap=true\n") &&
        ok;
   append_path(path, sizeof(path), kWokwiSdHelloPath, "main.py");
@@ -393,6 +389,10 @@ bool StorageManager::load_app_manifest(const char* manifest_path,
       copy_text(manifest.entry, sizeof(manifest.entry), value);
     } else if (strcasecmp(key, "allow_keymap") == 0) {
       manifest.allow_keymap = parse_bool(value);
+    } else if (strcasecmp(key, "wifi") == 0 ||
+               strcasecmp(key, "requires_wifi") == 0 ||
+               strcasecmp(key, "network") == 0) {
+      manifest.wants_wifi = parse_bool(value);
     }
   }
   std::fclose(file);

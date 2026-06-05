@@ -20,3 +20,10 @@ target_compile_options(${COMPONENT_LIB}
     -Wno-missing-field-initializers
     -Wno-sign-compare
 )
+
+target_compile_definitions(${COMPONENT_LIB}
+  PRIVATE
+    # libtommath also exports mp_init(). Giac must bind to libtommath, while
+    # MicroPython can keep its init private behind the embed API.
+    mp_init=micropython_mp_init
+)

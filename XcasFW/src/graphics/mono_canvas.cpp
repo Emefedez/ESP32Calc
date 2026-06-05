@@ -217,16 +217,16 @@ char read_text_char(const char*& text) {
 
 }  // namespace
 
-void MonoCanvas::begin_frame(CanvasRefreshKind kind) {
+void MonoCanvas::begin_frame(bool full_refresh) {
   update_hint_ = {};
-  update_hint_.kind = kind;
-  if (kind == CanvasRefreshKind::Full) {
+  update_hint_.full_refresh = full_refresh;
+  if (full_refresh) {
     request_full_refresh();
   }
 }
 
 void MonoCanvas::request_full_refresh() {
-  update_hint_.kind = CanvasRefreshKind::Full;
+  update_hint_.full_refresh = true;
   update_hint_.x = 0;
   update_hint_.y = 0;
   update_hint_.width = kWidth;
@@ -238,7 +238,7 @@ void MonoCanvas::request_partial_refresh(int x, int y, int width, int height) {
 }
 
 void MonoCanvas::mark_dirty(int x, int y, int width, int height) {
-  if (width <= 0 || height <= 0 || update_hint_.kind == CanvasRefreshKind::Full) {
+  if (width <= 0 || height <= 0 || update_hint_.full_refresh) {
     return;
   }
 

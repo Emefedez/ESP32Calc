@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <atomic>
 
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
@@ -23,9 +24,11 @@ class MathService {
   esp_err_t start();
   bool submit(const MathRequest& request);
   bool poll_result(MathResult& result, TickType_t wait_ticks);
+  bool busy() const;
 
  private:
-  static constexpr UBaseType_t kQueueDepth = 4;
+  static constexpr UBaseType_t kRequestQueueDepth = 1;
+  static constexpr UBaseType_t kResultQueueDepth = 2;
   static constexpr uint32_t kTaskStackBytes = 64 * 1024;
   static constexpr uint32_t kFallbackTaskStackBytes = 24 * 1024;
   static constexpr UBaseType_t kTaskPriority = 5;
@@ -40,8 +43,9 @@ class MathService {
   // handoff bounded and avoids heap churn while keys are being pressed.
   StaticQueue_t request_queue_storage_ {};
   StaticQueue_t result_queue_storage_ {};
-  uint8_t request_queue_buffer_[kQueueDepth * sizeof(MathRequest)] {};
-  uint8_t result_queue_buffer_[kQueueDepth * sizeof(MathResult)] {};
+  uint8_t request_queue_buffer_[kRequestQueueDepth * sizeof(MathRequest)] {};
+  uint8_t result_queue_buffer_[kResultQueueDepth * sizeof(MathResult)] {};
+  std::atomic_bool busy_ {false};
   // Giac context lives only on the worker side. UI sends bounded requests and
   // never holds CAS objects or raw Giac trees.
   giac::GiacBridge giac_bridge_ {};

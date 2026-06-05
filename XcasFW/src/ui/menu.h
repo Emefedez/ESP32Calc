@@ -13,6 +13,7 @@
 #include "math/math_service.h"
 #include "system/app_runtime.h"
 #include "system/storage_manager.h"
+#include "system/wifi_manager.h"
 #include "ui/menu_constants.h"
 
 namespace esp32calc_alt {
@@ -31,7 +32,8 @@ class MenuUi {
   MenuUi(QueueHandle_t app_events,
          Weact213BwDisplay& display,
          MathService& math,
-         StorageManager& storage);
+         StorageManager& storage,
+         WifiManager& wifi);
   ~MenuUi();
   [[noreturn]] void run();
 
@@ -210,6 +212,7 @@ class MenuUi {
   Weact213BwDisplay& display_;
   MathService& math_;
   StorageManager& storage_;
+  WifiManager& wifi_;
   AppRuntime app_runtime_ {};
   MonoCanvas canvas_ {};
   // One active mode object, placement-new into fixed storage. Menus do not all

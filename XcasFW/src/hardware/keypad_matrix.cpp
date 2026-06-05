@@ -83,7 +83,7 @@ void KeypadMatrix::task() {
         if (counters_[row][col] >= config::kInputDebounceSamples &&
             raw[row][col] != stable_[row][col]) {
           stable_[row][col] = raw[row][col];
-          publish_key(row, col, raw[row][col] ? KeyPhase::Pressed : KeyPhase::Released);
+          publish_key(row, col, raw[row][col]);
         }
       }
     }
@@ -116,17 +116,17 @@ void KeypadMatrix::scan_raw(bool (&pressed)[KeypadMatrix::kRows][KeypadMatrix::k
   }
 }
 
-void KeypadMatrix::publish_key(uint8_t row, uint8_t col, KeyPhase phase) {
+void KeypadMatrix::publish_key(uint8_t row, uint8_t col, bool pressed) {
   const KeyDef& key = key_at(row, col);
   if (is_blank_key(key)) {
     return;
   }
 
   AppEvent event {};
-  event.type = AppEventType::Key;
-  event.key = KeyEvent {row, col, key.label, phase};
+  event.is_key = true;
+  event.key = KeyEvent {row, col, pressed, false, false};
 
-  if (phase == KeyPhase::Pressed) {
+  if (pressed) {
     ESP_LOGI(TAG, "press r%u c%u %s", row, col, key.label);
   }
 

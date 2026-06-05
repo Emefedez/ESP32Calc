@@ -33,7 +33,6 @@ class AppRuntime {
 
   AppRuntimeState state_ = AppRuntimeState::Idle;
   void* mpy_heap_ = nullptr;
-  size_t mpy_heap_size_ = 0;
   bool mpy_started_ = false;
   char active_id_[32] {};
   char active_name_[48] {};

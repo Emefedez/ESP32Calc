@@ -885,6 +885,10 @@ void MenuUi::submit_expression(bool decimal_output) {
     status_ = "EMPTY EXPR";
     return;
   }
+  if (math_.busy()) {
+    status_ = "MATH BUSY";
+    return;
+  }
 
   MathRequest request {};
   request.kind = MathJobKind::Numeric;
@@ -920,6 +924,8 @@ void MenuUi::submit_expression(bool decimal_output) {
     // d/dx(...) alias was shaped before generic expansion.
   } else if (extract_named_call(expanded_expression, "solve", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "system", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "sistema", body, sizeof(body)) ||
+             extract_named_call(expanded_expression, "sistemas", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "systems", body, sizeof(body)) ||
              extract_named_call(expanded_expression, "sys", body, sizeof(body))) {
     request.kind = MathJobKind::Solve;
@@ -1030,7 +1036,7 @@ void MenuUi::submit_expression(bool decimal_output) {
     status_ = decimal_output ? "DECIMAL QUEUED" : "QUEUED";
     ESP_LOGI(constants::kLogTag, "queued expression: %s", request.expression);
   } else {
-    status_ = "QUEUE FULL";
+    status_ = math_.busy() ? "MATH BUSY" : "QUEUE FULL";
   }
 }
 void MenuUi::apply_constants_key(const KeyEvent& key) {

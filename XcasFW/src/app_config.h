@@ -43,6 +43,10 @@
 #define ESP32CALC_APP_RUNTIME_SOFT_REBOOT_ON_CLOSE 0
 #endif
 
+#ifndef ESP32CALC_ENABLE_WIFI_APPS
+#define ESP32CALC_ENABLE_WIFI_APPS 0
+#endif
+
 #ifndef ESP32CALC_MICROPYTHON_HEAP_BYTES
 #define ESP32CALC_MICROPYTHON_HEAP_BYTES (32 * 1024)
 #endif
@@ -69,7 +73,7 @@ constexpr uint8_t kWirelessMode = 0;
 
 constexpr uint32_t kBatteryPollPeriodMs = ESP32CALC_BATTERY_POLL_PERIOD_MS;
 constexpr uint16_t kEpdFullRefreshInterval = ESP32CALC_EPD_FULL_REFRESH_INTERVAL;
-
+constexpr bool kWifiAppsEnabled = ESP32CALC_ENABLE_WIFI_APPS != 0;
 constexpr uint8_t kCoreServicesCore = 0;
 constexpr uint8_t kUiCore = 1;
 
