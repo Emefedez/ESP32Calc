@@ -140,3 +140,10 @@ Open Source software and hardware lead to the possibility of toying around with 
 > <img src="/images/indefinite_menu.jpg" alt="indefinite_menu" width="500"/>
 > 2. It works :)
 > <img src="/images/indefinite_integral.jpg" alt="indefinite_integral" width="500"/>
+
+* You can load custom (micro)python scripts which reboot the calculator into a `"MPY MODE"` in which unnecesary bits like GIAC are not loaded. This mode is compatible with reading inputs.
+
+### Here, we see how it can print specific lines, read the same key multiple times, or read different inputs:
+
+> `XcasFW/sdcard/programs/hello_mpy`
+> <img src="/images/mpy_demo.jpg" alt="mpy_demo" width="500"/>
