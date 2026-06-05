@@ -30,6 +30,7 @@ idf_component_register(
     "."
     "battery"
     "display"
+    "generated"
     "graphics"
     "hardware"
     "math"

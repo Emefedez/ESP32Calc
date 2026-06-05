@@ -1,6 +1,7 @@
 .pio/
 .vscode/
 compile_commands.json
+src/generated/
 sdkconfig
 sdkconfig.*
 !sdkconfig.defaults

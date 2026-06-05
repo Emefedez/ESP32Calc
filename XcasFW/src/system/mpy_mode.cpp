@@ -74,8 +74,8 @@ void render_terminal(Weact213BwDisplay& display) {
   canvas.begin_frame(true);
   canvas.clear(true);
 
-  canvas.draw_text(2, kStatusBarY, "MPY", 1, true);
-  canvas.hline(0, kStatusBarH, MonoCanvas::kWidth, true);
+  // canvas.draw_text(2, kStatusBarY, "MPY", 1, true);
+  // canvas.hline(0, kStatusBarH, MonoCanvas::kWidth, true);
 
   int line_start = static_cast<int>(count_lines_from_end(g_text_buf, g_text_len, kMaxLines));
   int display_y = kTextStartY;
@@ -95,7 +95,7 @@ void render_terminal(Weact213BwDisplay& display) {
     line_start = line_end + 1;
   }
 
-  canvas.draw_text(4, MonoCanvas::kHeight - kCharH, "AC=EXIT", 1, true);
+  canvas.draw_text(205, MonoCanvas::kHeight - kCharH - 1, "AC=EXIT", 1, true);
   display.update_canvas(canvas);
 }
 

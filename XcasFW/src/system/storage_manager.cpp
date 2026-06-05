@@ -17,17 +17,16 @@
 #include "hardware/pins.h"
 #include "sdmmc_cmd.h"
 
+#if ESP32CALC_WOKWI
+#include "generated/sd_seed.h"
+#endif
+
 namespace esp32calc_alt {
 namespace {
 
 constexpr const char* TAG = "storage";
 constexpr size_t kLineCapacity = 256;
 constexpr size_t kCopyBufferSize = 512;
-
-#if ESP32CALC_WOKWI
-constexpr const char* kWokwiSdConfigPath = "/sdcard/config";
-constexpr const char* kWokwiSdHelloPath = "/sdcard/programs/hello_mpy";
-#endif
 
 bool has_text(const char* text) {
   return text != nullptr && text[0] != '\0';
@@ -115,62 +114,27 @@ void append_path(char* output, size_t output_size, const char* base, const char*
 }
 
 #if ESP32CALC_WOKWI
-size_t count_dir_entries(const char* path) {
-  DIR* dir = opendir(path);
-  if (dir == nullptr) {
-    return 0;
-  }
-  dirent* entry = nullptr;
-  size_t count = 0;
-  while ((entry = readdir(dir)) != nullptr) {
-    if (entry->d_name[0] != '.') {
-      ++count;
+void ensure_parent_dirs(const char* path) {
+  char tmp[160] {};
+  std::strncpy(tmp, path, sizeof(tmp) - 1);
+  for (char* p = tmp + 1; *p; ++p) {
+    if (*p == '/') {
+      *p = '\0';
+      ensure_dir(tmp);
+      *p = '/';
     }
   }
-  closedir(dir);
-  return count;
 }
 
 void seed_wokwi_sd_if_empty() {
-  if (count_dir_entries(config::kSdMountPoint) > 0) {
-    return;
-  }
-  if (!ensure_dir(kWokwiSdConfigPath) ||
-      !ensure_dir(config::kProgramsPath) ||
-      !ensure_dir(kWokwiSdHelloPath)) {
-    ESP_LOGW(TAG, "wokwi SD fixture dirs failed");
-    return;
-  }
-
-  char path[160] {};
   bool ok = true;
-  append_path(path, sizeof(path), kWokwiSdConfigPath, "keymap.ini");
-  ok = write_text_file_if_missing(path,
-                                  "# Wokwi SD keymap.\n"
-                                  "key.8.1.label=APP\n"
-                                  "key.8.1.normal=:app.hello_mpy\n") &&
-       ok;
-  append_path(path, sizeof(path), kWokwiSdHelloPath, "app.ini");
-  ok = write_text_file_if_missing(path,
-                                  "id=hello_mpy\n"
-                                  "name=Hello MPY\n"
-                                  "kind=micropython\n"
-                                  "entry=main.py\n"
-                                  "wifi=false\n"
-                                  "allow_keymap=true\n") &&
-       ok;
-  append_path(path, sizeof(path), kWokwiSdHelloPath, "main.py");
-  ok = write_text_file_if_missing(path,
-                                  "# Minimal SD app payload.\n"
-                                  "# AppRuntime opens this file only after launch.\n"
-                                  "print(\"hello from ESP32Calc\")\n") &&
-       ok;
-  append_path(path, sizeof(path), kWokwiSdHelloPath, "keymap.ini");
-  ok = write_text_file_if_missing(path,
-                                  "# Active while MicroPython app owns input.\n"
-                                  "key.8.0.label=BACK\n"
-                                  "key.8.0.normal=:app.exit\n") &&
-       ok;
+  char path[160] {};
+  for (size_t i = 0; i < seed_data::kFileCount; ++i) {
+    const auto& entry = seed_data::kEntries[i];
+    std::snprintf(path, sizeof(path), "%s/%s", config::kSdMountPoint, entry.path);
+    ensure_parent_dirs(path);
+    ok = write_text_file_if_missing(path, entry.data) && ok;
+  }
   ESP_LOGI(TAG, "wokwi SD fixture %s", ok ? "seeded" : "partial");
 }
 #endif
