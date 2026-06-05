@@ -1,0 +1,25 @@
+No.,Quantity,Comment,Designator,Footprint,Value,Manufacturer Part,Manufacturer,Supplier Part,Supplier,JLCPCB Price,JLCPCB Stock,Buy Link
+1,3,22uF,"C1,C4,C7",C0603,22uF,CL10A226MP8NUNE,SAMSUNG(三星),C86295,LCSC,0.0024,8517,https://www.lcsc.com/product-detail/C86295.html
+2,2,10uF,"C2,C3",C0603,10uF,CL10A106KP8NNNC,SAMSUNG(三星),C19702,LCSC,0.0016,4723528,https://www.lcsc.com/product-detail/C19702.html
+3,1,22uF,C5,C0603,22uF,CL10A226MQ8NRNC,SAMSUNG(三星),C59461,LCSC,0.0015,14580226,https://www.lcsc.com/product-detail/C59461.html
+4,2,100nF,"C6,C9",C0603,100nF,CL10B104KB8NNNC,SAMSUNG(三星),C1591,LCSC,0.0005,8421183,https://www.lcsc.com/product-detail/C1591.html
+5,1,1uF,C8,C0603,1uF,CL10B105KA8NNNC,SAMSUNG(三星),C29936,LCSC,0.0011,2742709,https://www.lcsc.com/product-detail/C29936.html
+6,1,0603L150SLYR,F1,F0603,,0603L150SLYR,Littelfuse(美国力特),C207018,LCSC,0.0494,2496,https://www.lcsc.com/product-detail/C207018.html
+7,1,1.5uH,L1,L0805,1.5uH,CMI201209U1R5KT,FH(风华),C139220,LCSC,0.0034,30278,https://www.lcsc.com/product-detail/C139220.html
+8,1,XL-1608SURC-06,LED1,LED0603-RD_RED,,XL-1608SURC-06,XINGLIGHT(成兴光),C965799,LCSC,0.0006,4787500,https://www.lcsc.com/product-detail/C965799.html
+9,2,Test-Point,"POINT-3.3V?,POINT_SENSE1",Test-Point-0.5mm,,,,,,,,
+10,1,POINT-BAT,POINT-BAT1,Test-Point-0.5mm,,,,,,,,
+11,1,1.5kΩ,R1,R0402,1.5kΩ,RMC04021.5K1%N,Tyohm(幸亚电阻),C269672,LCSC,0.0004,8622,https://www.lcsc.com/product-detail/C269672.html
+12,1,1MΩ,R2,R0603,1MΩ,FRC0603F1004TS,FOJAN(富捷),C2907003,LCSC,0.0002,2735557,https://www.lcsc.com/product-detail/C2907003.html
+13,1,1kΩ,R3,R0603,1kΩ,FRC0603J102 TS,FOJAN(富捷),C2907113,LCSC,0.0002,9500984,https://www.lcsc.com/product-detail/C2907113.html
+14,1,180kΩ,R4,R0603,180kΩ,RC0603FR-07180KL,YAGEO(国巨),C123419,LCSC,0.0003,214408,https://www.lcsc.com/product-detail/C123419.html
+15,1,2kΩ,R5,R0603,2kΩ,FRC0603J202 TS,FOJAN(富捷),C2907137,LCSC,0.0002,10585082,https://www.lcsc.com/product-detail/C2907137.html
+16,1,47kΩ,R6,R0603,47kΩ,RC0603FR-0747KL,YAGEO(国巨),C105579,LCSC,0.0003,701810,https://www.lcsc.com/product-detail/C105579.html
+17,2,100kΩ,"R7,R10",R0603,100kΩ,RC0603FR-07100KL,YAGEO(国巨),C14675,LCSC,0.0003,2724442,https://www.lcsc.com/product-detail/C14675.html
+18,2,5.1kΩ,"R8,R9",R0603,5.1kΩ,RMC06035.1K1%N,Tyohm(幸亚电阻),C269716,LCSC,0.0005,7709,https://www.lcsc.com/product-detail/C269716.html
+19,1,MINI MSK12CO2,SW1,SW-SMD_MSK12CO2,,MINI MSK12CO2,SHOU HAN(首韩),C2681570,LCSC,0.025,81788,https://www.lcsc.com/product-detail/C2681570.html
+20,1,TPS63020DSJT,U1,VSON-14_L4.0-W3.0-P0.50-BL-EP_TI_DSJ,,TPS63020DSJT,TI(德州仪器),C544952,LCSC,0.2047,387,https://www.lcsc.com/product-detail/C544952.html
+21,1,BQ24092DGQR,U2,MSOP-10_L3.0-W3.0-P0.50-LS5.0-BL-EP,,BQ24092DGQR,TI(德州仪器),C133237,LCSC,0.1247,2338,https://www.lcsc.com/product-detail/C133237.html
+22,2,UCLAMP0571P.TNT,"U3,U6",SGP1610N2_L1.6-W1.0-P1.1-RD,,UCLAMP0571P.TNT,SEMTECH,C512387,LCSC,0.0548,6575,https://www.lcsc.com/product-detail/C512387.html
+23,1,532610271,U4,CONN-SMD_532610271,,532610271,MOLEX,C177225,LCSC,0.0193,38602,https://www.lcsc.com/product-detail/C177225.html
+24,1,HX TYPE-C 6PIN,U5,USB-C-SMD_HX-TYPE-C-6PIN,,HX TYPE-C 6PIN,hanxia(韩下),C18357552,LCSC,0.0068,15732,https://www.lcsc.com/product-detail/C18357552.html

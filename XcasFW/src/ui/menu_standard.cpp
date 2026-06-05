@@ -1718,7 +1718,10 @@ void MenuUi::render_standard() {
     } else if (std::strstr(result_text_, "poly1") == nullptr) {
       const size_t result_len = std::strlen(result_text_);
       size_t source_offset = 0;
-      for (size_t line = 0; line < 3 && source_offset < result_len; ++line) {
+      constexpr size_t kResultTextRows = 4;
+      constexpr int kResultTextY = 27;
+      constexpr int kResultTextLineHeight = 11;
+      for (size_t line = 0; line < kResultTextRows && source_offset < result_len; ++line) {
         char line_text[constants::kVisibleResultChars + 1] {};
         size_t line_len = 0;
         while (source_offset < result_len && result_text_[source_offset] == ' ') {
@@ -1737,7 +1740,11 @@ void MenuUi::render_standard() {
         while (source_offset < result_len && result_text_[source_offset] == ' ') {
           ++source_offset;
         }
-        canvas_.draw_text(28, 30 + static_cast<int>(line) * 14, line_text, 1, true);
+        canvas_.draw_text(28,
+                          kResultTextY + static_cast<int>(line) * kResultTextLineHeight,
+                          line_text,
+                          1,
+                          true);
       }
     }
   }
