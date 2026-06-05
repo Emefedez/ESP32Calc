@@ -629,6 +629,17 @@ void MenuUi::apply_apps_key(const KeyEvent& key) {
     }
   }
 
+  if (app_stage_ == AppMenuStage::Running) {
+    if (def.role == KeyRole::Clear) {
+      return_to_app_list();
+      return;
+    }
+    if (token != nullptr) {
+      app_runtime_.on_key(token);
+    }
+    return;
+  }
+
   if (def.role == KeyRole::Clear) {
     return_to_app_list();
     return;

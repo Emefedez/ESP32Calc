@@ -18,6 +18,7 @@ esp_err_t micropython_runtime_start(void* heap,
                                     bool* script_ok);
 void micropython_runtime_stop(void);
 bool micropython_runtime_active(void);
+void micropython_runtime_on_key(const char* token);
 
 #ifdef __cplusplus
 }

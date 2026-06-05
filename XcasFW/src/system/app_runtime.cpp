@@ -102,8 +102,7 @@ void* allocate_mpy_heap(size_t size) {
 
 esp_err_t AppRuntime::open(const ExternalAppManifest& manifest) {
   close(false);
-  copy_text(active_id_, sizeof(active_id_), manifest.id);
-  copy_text(active_name_, sizeof(active_name_), has_text(manifest.name) ? manifest.name : manifest.id);
+  manifest_ = &manifest;
 
   if (strcasecmp(manifest.kind, "micropython") != 0) {
     set_error("unsupported app kind");
@@ -161,14 +160,14 @@ esp_err_t AppRuntime::open(const ExternalAppManifest& manifest) {
   if (!has_text(preview_)) {
     copy_text(preview_, sizeof(preview_), "no output");
   }
-  ESP_LOGI(TAG, "open id=%s entry=%s heap=%u", active_id_, entry_path_, static_cast<unsigned>(kMicroPythonHeapBytes));
+  ESP_LOGI(TAG, "open id=%s entry=%s heap=%u", active_id(), entry_path_, static_cast<unsigned>(kMicroPythonHeapBytes));
   return ESP_OK;
 }
 
 void AppRuntime::close(bool allow_soft_reboot) {
   const bool had_runtime = state_ != AppRuntimeState::Idle || mpy_started_ || mpy_heap_ != nullptr;
   if (had_runtime) {
-    ESP_LOGI(TAG, "close id=%s", active_id_);
+    ESP_LOGI(TAG, "close id=%s", active_id());
   }
   release_vm();
   reset();
@@ -181,6 +180,13 @@ void AppRuntime::close(bool allow_soft_reboot) {
 #else
   (void)allow_soft_reboot;
 #endif
+}
+
+void AppRuntime::on_key(const char* token) {
+  if (state_ != AppRuntimeState::Running || !mpy_started_) {
+    return;
+  }
+  micropython_runtime_on_key(token);
 }
 
 void AppRuntime::release_vm() {
@@ -198,8 +204,7 @@ void AppRuntime::reset() {
   state_ = AppRuntimeState::Idle;
   mpy_heap_ = nullptr;
   mpy_started_ = false;
-  active_id_[0] = '\0';
-  active_name_[0] = '\0';
+  manifest_ = nullptr;
   entry_path_[0] = '\0';
   message_[0] = '\0';
   preview_[0] = '\0';
@@ -211,7 +216,7 @@ void AppRuntime::set_error(const char* message, bool clear_preview) {
   if (clear_preview) {
     preview_[0] = '\0';
   }
-  ESP_LOGW(TAG, "open failed id=%s: %s", active_id_, message_);
+  ESP_LOGW(TAG, "open failed id=%s: %s", active_id(), message_);
 }
 
 }  // namespace esp32calc_alt

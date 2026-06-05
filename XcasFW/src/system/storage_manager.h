@@ -23,11 +23,11 @@ struct ExternalAppManifest {
   bool allow_keymap = false;
   bool wants_wifi = false;
   char id[32] {};
-  char name[48] {};
-  char kind[24] {};
-  char entry[64] {};
-  char source_path[128] {};
-  char internal_path[128] {};
+  char name[32] {};
+  char kind[16] {};
+  char entry[32] {};
+  char source_path[96] {};
+  char internal_path[96] {};
 };
 
 class StorageManager {

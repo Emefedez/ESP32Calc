@@ -9,6 +9,7 @@ extern "C" {
 #include "py/obj.h"
 #include "py/objlist.h"
 #include "py/parse.h"
+#include "py/qstr.h"
 #include "py/runtime.h"
 }
 
@@ -17,6 +18,7 @@ static size_t g_output_size = 0;
 static size_t g_output_used = 0;
 static bool g_output_truncated = false;
 static bool g_runtime_active = false;
+static mp_obj_t g_handle_key = mp_const_none;
 
 static void output_append_char(char ch) {
   if (g_output == nullptr || g_output_size == 0) {
@@ -96,6 +98,33 @@ static bool exec_source(const char* source) {
   return false;
 }
 
+static void cache_handle_key(void) {
+  g_handle_key = mp_const_none;
+  nlr_buf_t nlr;
+  if (nlr_push(&nlr) == 0) {
+    mp_obj_t func = mp_load_name(qstr_from_str("handle_key"));
+    if (mp_obj_is_callable(func)) {
+      g_handle_key = func;
+    }
+    nlr_pop();
+  }
+}
+
+static void call_handle_key(const char* token) {
+  if (g_handle_key == mp_const_none) {
+    return;
+  }
+  nlr_buf_t nlr;
+  if (nlr_push(&nlr) == 0) {
+    mp_obj_t arg = mp_obj_new_str(token, std::strlen(token));
+    mp_call_function_1(g_handle_key, arg);
+    nlr_pop();
+  } else {
+    mp_obj_print_exception(&mp_plat_print, (mp_obj_t)nlr.ret_val);
+    g_handle_key = mp_const_none;
+  }
+}
+
 static void add_import_path(const char* import_path) {
   if (import_path == nullptr || import_path[0] == '\0') {
     return;
@@ -134,6 +163,9 @@ esp_err_t micropython_runtime_start(void* heap,
   if (script_ok != nullptr) {
     *script_ok = ok;
   }
+  if (ok) {
+    cache_handle_key();
+  }
   return ESP_OK;
 }
 
@@ -141,6 +173,7 @@ void micropython_runtime_stop(void) {
   if (!g_runtime_active) {
     return;
   }
+  g_handle_key = mp_const_none;
   mp_embed_deinit();
   g_runtime_active = false;
   output_reset(nullptr, 0);
@@ -148,4 +181,11 @@ void micropython_runtime_stop(void) {
 
 bool micropython_runtime_active(void) {
   return g_runtime_active;
+}
+
+void micropython_runtime_on_key(const char* token) {
+  if (!g_runtime_active || token == nullptr || token[0] == '\0') {
+    return;
+  }
+  call_handle_key(token);
 }
