@@ -26,21 +26,21 @@ Unlike other alternatives that use Matrix or TFT displays, this device only refr
 
 
 >## Main PCB Schematic:
->![image](/calculator_schematics/Main.jpg)
+>![image](/calculator_mainboard/calculator_schematics/Main.jpg)
 
 
 >## Power PCB Schematic:
->![image](/power_board_schematics/Schematic.jpg)
+>![image](/power_board/power_board_schematics/Schematic.jpg)
 
 >## Main PCB:
->![image](/calculator_pcb/ViewFront.jpg)
->![image](/calculator_pcb/ViewBack.jpg)
+>![image](/calculator_mainboard/calculator_pcb/ViewFront.jpg)
+>![image](/calculator_mainboard/calculator_pcb/ViewBack.jpg)
 
 > **oshwlab link**:  https://oshwlab.com/mfdez920/project_zszewshq
 
 
 >## Custom Power PCB:
->![image](/power_board_pcb/View.jpg)
+>![image](/power_board/power_board_pcb/View.jpg)
 
 > **oshwlab link**: https://oshwlab.com/mfdez920/project_wijthujf
 
