@@ -1,4 +1,4 @@
-g
+![image](https://emefedez.github.io/images/static/logos/projects/ESP32CALC_logo.png)
 
 
 # Open Source Calculator intended for Symbolic Calculus and custom programs, based on the ESP32-S3
