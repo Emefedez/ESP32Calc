@@ -77,7 +77,7 @@ I (177172) math_engine: solve solutions (4): x=-3; x=-1; x=1; x=3
 ## PARTS LIST:
 
 - There is a proper spreadsheet, but since that is not supported in markdown, this is an ASCII version:
-```
+- 
 | No. | Quantity | Comment | Designator | Footprint | Value | Manufacturer Part | Manufacturer | Supplier Part | Supplier | JLCPCB Unit Price | JLCPCB Price | JLCPCB Stock | Buy Link |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | 3 | 100uF | C1 | C2 | C5 | C1206 | 100uF | GRM31CR60J107ME39L | muRata(村田) | C77085 | LCSC | 0.0171 | 0.0513 | 42714 | https://www.lcsc.com/product-detail/C77085.html |
@@ -95,7 +95,6 @@ I (177172) math_engine: solve solutions (4): x=-3; x=-1; x=1; x=3
 | 13 | 1 | 2.4GHz | U5 | WIRELM-SMD_ESP32-S3-WROOM-1 | 2.4GHz | ESP32-S3-WROOM-1-N16R8 | ESPRESSIF(乐鑫) | C2913202 | LCSC | 727 | 727 | 27666 | https://www.lcsc.com/product-detail/C2913202.html |
 |  | 1 | FTDI FT232RL CH340N | Not on Board | Not on Board |  | FT232RL CH340N | Aitver Electronics |  |  | 14.3236 | 14.6122 |  |  |
 
-```
 
 
 ## Building:
