@@ -165,3 +165,13 @@ I (177172) math_engine: solve solutions (4): x=-3; x=-1; x=1; x=3
 > `XCasFW/sdcard/programs/hello_mpy`
 
 > <img src="/images/mpy_demo.jpg" alt="mpy_demo" width="500"/>
+
+
+## Update on cost:
+
+1. Getting the PCBs built: 37.98€ before shipping (50.95€ through DHL to Spain, or 51.21€ with IOSS included before hand)
+2. Display: 12,29€
+3. FTDI Adapter: 1,50€ 
+4. LCSC Component BOM: 38.84€ shipped (3 ESP32 modules as they are really fragile when not in a dev board)
+5. Filament roll: around 10€ (I have some already)
+* Total spending to build IRL: **around 115€**
