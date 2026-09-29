@@ -17,7 +17,7 @@ Open Source software and hardware lead to the possibility of toying around with 
 
 I hate how the Casio Calculators approved for exams here in Europe can't do symbolic calculus. It is one of the parts of math-related subjects which I find hardest, there are solvers online yet my calculator won't help.
 
-This led me through a rabbit whole on clone calculators, my first idea was basically cloning the FX991-SP II Iberia with matrix display and all. After researching and reading, I started shifting into a "design-from-scratch" approach, where I develop a device with an e-ink display too.
+This led me through a rabbit hole on clone calculators, my first idea was basically cloning the FX991-SP II Iberia with matrix display and all. After researching and reading, I started shifting into a "design-from-scratch" approach, where I develop a device with an e-ink display too.
 
 This is my first hardware project that is not in "soldering-what-some-guy-told-me" territory, although obviously I did read and apply knowledge from existing schematics.
 
