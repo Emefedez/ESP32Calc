@@ -44,6 +44,19 @@ Unlike other alternatives that use Matrix or TFT displays, this device only refr
 
 > **oshwlab link**: https://oshwlab.com/mfdez920/project_wijthujf
 
+## PCB production files
+
+Updated from the FINAL EasyEDA projects on 2026-09-29. The existing v1.5 Gerber filenames now contain the through-hole via revision; both project archives include schematics, PCB layouts, and libraries.
+
+| Board | EasyEDA project | Gerber archive |
+| --- | --- | --- |
+| Calculator mainboard | [Project](calculator_mainboard/esp32calc_mainboard.epro2) | [Gerbers](calculator_mainboard/calculator_pcb/calculator_gerber_v1.5.zip) |
+| Power board | [Project](power_board/power_pcb_project.epro2) | [Gerbers](power_board/power_board_pcb/power_gerber_v1.5.zip) |
+
+Both boards use four copper layers with standard through-hole vias: 314 on the mainboard and 59 on the power board. The mainboard Gerbers also include the corrected top cutout. Clearance and connectivity checks pass; the existing schematic/PCB netlist mismatches are intentional.
+
+The power board retains vias in SMT pads. Request resin plugging and plating over those vias when ordering, as recommended by the manufacturer; this process must be specified with the fabrication order.
+
 
 ## Main Features:
 1.   Open Source Firmware
