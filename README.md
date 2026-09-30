@@ -17,7 +17,7 @@ Open Source software and hardware lead to the possibility of toying around with 
 
 I hate how the Casio Calculators approved for exams here in Europe can't do symbolic calculus. It is one of the parts of math-related subjects which I find hardest, there are solvers online yet my calculator won't help.
 
-This led me through a rabbit whole on clone calculators, my first idea was basically cloning the FX991-SP II Iberia with matrix display and all. After researching and reading, I started shifting into a "design-from-scratch" approach, where I develop a device with an e-ink display too.
+This led me through a rabbit hole on clone calculators, my first idea was basically cloning the FX991-SP II Iberia with matrix display and all. After researching and reading, I started shifting into a "design-from-scratch" approach, where I develop a device with an e-ink display too.
 
 This is my first hardware project that is not in "soldering-what-some-guy-told-me" territory, although obviously I did read and apply knowledge from existing schematics.
 
@@ -46,12 +46,12 @@ Unlike other alternatives that use Matrix or TFT displays, this device only refr
 
 ## PCB production files
 
-Updated from the FINAL EasyEDA projects on 2026-09-29. The existing v1.5 Gerber filenames now contain the through-hole via revision; both project archives include schematics, PCB layouts, and libraries.
+Updated EasyEDA project archives and v1.6 Gerber exports on 2026-09-30; both project archives include schematics, PCB layouts, and libraries.
 
 | Board | EasyEDA project | Gerber archive |
 | --- | --- | --- |
-| Calculator mainboard | [Project](calculator_mainboard/esp32calc_mainboard.epro2) | [Gerbers](calculator_mainboard/calculator_pcb/calculator_gerber_v1.5.zip) |
-| Power board | [Project](power_board/power_pcb_project.epro2) | [Gerbers](power_board/power_board_pcb/power_gerber_v1.5.zip) |
+| Calculator mainboard | [Project](calculator_mainboard/calculator_pcb/calculator-epro.epro2) | [Gerbers](calculator_mainboard/calculator_pcb/calculator_gerber_1-6.zip) |
+| Power board | [Project](power_board/power_board_pcb/power_epro_1-6.epro2) | [Gerbers](power_board/power_board_pcb/power_gerber_1-6.zip) |
 
 Both boards use four copper layers with standard through-hole vias: 314 on the mainboard and 59 on the power board. The mainboard Gerbers also include the corrected top cutout. Clearance and connectivity checks pass; the existing schematic/PCB netlist mismatches are intentional.
 
